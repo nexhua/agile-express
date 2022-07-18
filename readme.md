@@ -1,0 +1,1 @@
+Bu readme BitBucket test için oluşturulmuştur.
