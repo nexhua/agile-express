@@ -30,7 +30,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .anyRequest().fullyAuthenticated()
                 .and()
-                .formLogin();
+                .formLogin()
+                .and()
+                .logout()
+                .deleteCookies("JSESSIONID");
+
+        http.csrf().disable();
     }
 
 

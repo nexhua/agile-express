@@ -128,3 +128,14 @@ objectclass: groupOfUniqueNames
 cn: submanagers
 ou: submanager
 uniqueMember: uid=ben,ou=people,dc=springframework,dc=org
+
+dn: uid=mert,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Ben Alex
+sn: Alex
+uid: mert
+userPassword: $2a$10$lc4L9nVdHSQk172CuPlF5.wxghamIP0CX55bwi2IKGiYe2RgVe0r.
+
