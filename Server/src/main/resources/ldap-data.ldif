@@ -129,13 +129,24 @@ cn: submanagers
 ou: submanager
 uniqueMember: uid=ben,ou=people,dc=springframework,dc=org
 
-dn: uid=mert,ou=people,dc=springframework,dc=org
+
+
+dn: uid=mert.koca,ou=people,dc=springframework,dc=org
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
 objectclass: inetOrgPerson
-cn: Ben Alex
-sn: Alex
-uid: mert
-userPassword: $2a$10$lc4L9nVdHSQk172CuPlF5.wxghamIP0CX55bwi2IKGiYe2RgVe0r.
+cn: Mert Koca
+sn: Koca
+uid: mert.koca
+userPassword: {bcrypt}$2a$10$GCvzKDZuWZf/oN9Hs68PVOXOz.xZh5Q1DLg0TSN5uFWsaSKs3y/cW
 
+dn: uid=hasan.hüseyin,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Hasan Hüseyin
+sn: Hüseyin
+uid: hasan.hüseyin
+userPassword: {bcrypt}$2a$10$rImMtIY7x9RZL74P.4I4zeE8jdUT2dQ1u19hlAiDsomFJR1TCHu8C

@@ -1,5 +1,6 @@
 package AgileExpress.Server.Authentication;
 
+import AgileExpress.Server.LDAP.CustomBcryptPasswordEncoder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,7 +20,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .url("ldap://localhost:8389/dc=springframework,dc=org")
                 .and()
                 .passwordCompare()
-                .passwordEncoder(new BCryptPasswordEncoder())
+                .passwordEncoder(new CustomBcryptPasswordEncoder())
                 .passwordAttribute("userPassword");
     }
 
@@ -28,6 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                .antMatchers("/api/auth/**").permitAll()
                 .anyRequest().fullyAuthenticated()
                 .and()
                 .formLogin()

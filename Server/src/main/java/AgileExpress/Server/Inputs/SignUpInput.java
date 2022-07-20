@@ -1,8 +1,7 @@
 package AgileExpress.Server.Inputs;
 
+import AgileExpress.Server.LDAP.CustomBcryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 public class SignUpInput {
 
@@ -15,11 +14,13 @@ public class SignUpInput {
 
     public SignUpInput(String name, String surname, String email, String userName, String password, String organization)
     {
+        BCryptPasswordEncoder encoder = new CustomBcryptPasswordEncoder();
+
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.userName = userName;
-        this.passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.passwordHash = encoder.encode(password);
         this.organization = organization;
     }
 
