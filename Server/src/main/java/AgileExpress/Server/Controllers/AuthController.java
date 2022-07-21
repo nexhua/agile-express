@@ -5,6 +5,7 @@ import AgileExpress.Server.Inputs.SignUpInput;
 import AgileExpress.Server.LDAP.LDIFUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,8 +15,14 @@ import java.net.URISyntaxException;
 @RestController
 public class AuthController {
 
+    @GetMapping(ApiRouteConstants.SignIn)
+    public String getSignIn()
+    {
+        return "Sign In Page";
+    }
+
     @PostMapping(ApiRouteConstants.SignIn)
-    public String SignIn()
+    public String postSignIn()
     {
         return "Sign In Page";
     }

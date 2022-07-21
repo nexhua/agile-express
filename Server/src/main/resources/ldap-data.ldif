@@ -150,3 +150,13 @@ cn: Hasan Hüseyin
 sn: Hüseyin
 uid: hasan.hüseyin
 userPassword: {bcrypt}$2a$10$rImMtIY7x9RZL74P.4I4zeE8jdUT2dQ1u19hlAiDsomFJR1TCHu8C
+
+dn: uid=mahoreis,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Mahmut Hasan
+sn: Hasan
+uid: mahoreis
+userPassword: {bcrypt}$2a$10$pH73.tUgiMF7NGDr819Nwukr30IFvbP7L7MSW3uEzx/CLFu./xyjm

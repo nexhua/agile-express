@@ -61,8 +61,6 @@ public class LDIFUser {
             Files.write(Paths.get("Project/Server/src/main/resources/ldap-data.ldif"), this.getOutput().getBytes(), StandardOpenOption.APPEND);
         }catch (IOException e) {
             e.getStackTrace();
-        } finally {
-
         }
     }
 }
