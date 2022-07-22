@@ -1,9 +1,6 @@
-import logo from './logo.svg';
-import './App.css';
-import Hello from './pages/Hello';
-import User from './pages/User';
 import { BrowserRouter, Route } from 'react-router-dom'; 
 import React from 'react';
+import routes from './components/PageResolver';
 
 
 class App extends React.Component {
@@ -19,16 +16,5 @@ class App extends React.Component {
     );
   }
 }
-
-const routes = [ {
-  path: '/hello',
-  component: Hello
-} , {
-  path: '/user',
-  component: User
-} , {
-  path: '/dashboard',
-  component: User
-}]; 
 
 export default App;
