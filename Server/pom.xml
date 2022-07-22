@@ -30,10 +30,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
@@ -44,6 +40,7 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- SECURITY DEPENDENCIES -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -60,12 +57,16 @@
 			<groupId>com.unboundid</groupId>
 			<artifactId>unboundid-ldapsdk</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -82,6 +83,9 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+			<!-- front-end-maven-plugin -->
+			<!-- creates a production build of react -->
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
@@ -125,6 +129,8 @@
 				</executions>
 			</plugin>
 
+			<!-- maven-resources-plugin -->
+			<!-- moves the build file of react to target/classes/static -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
@@ -148,5 +154,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
