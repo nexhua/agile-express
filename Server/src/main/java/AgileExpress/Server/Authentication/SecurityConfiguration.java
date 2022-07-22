@@ -33,6 +33,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().fullyAuthenticated()
                 .and()
                 .formLogin()
+                .defaultSuccessUrl("/dashboard", true)
                 .and()
                 .logout()
                 .deleteCookies("JSESSIONID");
