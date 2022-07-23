@@ -2,10 +2,11 @@ package AgileExpress.Server.LDAP;
 
 import AgileExpress.Server.Constants.UserTypes;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Scanner;
 
 public class LDIFUser {
 
@@ -39,7 +40,7 @@ public class LDIFUser {
         elements[2] = "ou=people";
         elements[3] = "dc=springframework,dc=org";
 
-        this.dn = "\n\n" + String.join(",", elements).replaceFirst(",","");
+        this.dn = "\n\n" + String.join(",", elements).replaceFirst(",", "");
     }
 
     private String getUidString() {
@@ -58,9 +59,15 @@ public class LDIFUser {
 
     public void save() {
         try {
-            Files.write(Paths.get("Project/Server/src/main/resources/ldap-data.ldif"), this.getOutput().getBytes(), StandardOpenOption.APPEND);
-        }catch (IOException e) {
-            e.getStackTrace();
+            FileWriter fileWriter = new FileWriter("src/main/resources/ldap-data.ldif", true);
+            BufferedWriter writer = new BufferedWriter(fileWriter);
+
+            writer.write(this.getOutput());
+            writer.close();
+
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
         }
     }
 }
+

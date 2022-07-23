@@ -15,23 +15,6 @@ import java.net.URISyntaxException;
 @RestController
 public class AuthController {
 
-    @GetMapping(ApiRouteConstants.SignIn)
-    public String getSignIn()
-    {
-        return "Sign In Page";
-    }
-
-    @PostMapping(ApiRouteConstants.SignIn)
-    public String postSignIn()
-    {
-        return "Sign In Page";
-    }
-
-    @PostMapping(ApiRouteConstants.SignOut)
-    public String SignOut()
-    {
-        return "Sign Out Page";
-    }
 
     @PostMapping(ApiRouteConstants.SignUp)
     public ResponseEntity SignUp(@RequestBody SignUpInput input) throws URISyntaxException
