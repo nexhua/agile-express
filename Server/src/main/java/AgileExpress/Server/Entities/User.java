@@ -11,11 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Document(collection = "users")
-public class User {
-
-    @Id
-    @GeneratedValue
-    private String id;
+public class User extends UserBase {
 
     @Indexed(unique = true)
     private String username;
@@ -31,8 +27,9 @@ public class User {
     private UserTypes type = UserTypes.TEAM_MEMBER;
 
     @Field("projects")
-    private List<String> projectIds;
+    private List<ProjectBase> projectIds;
 
+    public User() { }
     public User(String username) {
         this.username = username;
     }
@@ -47,14 +44,6 @@ public class User {
     }
 
     //region Getter and Setters
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
@@ -96,11 +85,11 @@ public class User {
         this.type = type;
     }
 
-    public List<String> getProjectIds() {
+    public List<ProjectBase> getProjectIds() {
         return projectIds;
     }
 
-    public void setProjectIds(List<String> projectIds) {
+    public void setProjectIds(List<ProjectBase> projectIds) {
         this.projectIds = projectIds;
     }
 

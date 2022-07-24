@@ -1,4 +1,9 @@
 package AgileExpress.Server.Entities;
 
-public class Task {
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("tasks")
+public class Task extends TaskBase {
+
+    public Task() { }
 }
