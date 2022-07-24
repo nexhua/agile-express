@@ -160,3 +160,13 @@ cn: Mahmut Hasan
 sn: Hasan
 uid: mahoreis
 userPassword: {bcrypt}$2a$10$pH73.tUgiMF7NGDr819Nwukr30IFvbP7L7MSW3uEzx/CLFu./xyjm
+
+dn: uid=benjamin,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Benjamin Clock
+sn: Clock
+uid: benjamin
+userPassword: {bcrypt}$2a$10$lIARd3vB79JGIRJ/LVjer.UtfJZS2KSmLhfJ1VUyE2WkjxNqUJopa

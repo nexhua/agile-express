@@ -1,6 +1,8 @@
 package AgileExpress.Server.Inputs;
 
+import AgileExpress.Server.Constants.UserTypes;
 import AgileExpress.Server.LDAP.CustomBcryptPasswordEncoder;
+import org.hibernate.usertype.UserType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class SignUpInput {
@@ -11,8 +13,9 @@ public class SignUpInput {
     private String userName;
     private String passwordHash;
     private String organization;
+    private UserTypes type = UserTypes.TEAM_MEMBER;
 
-    public SignUpInput(String name, String surname, String email, String userName, String password, String organization)
+    public SignUpInput(String name, String surname, String email, String userName, String password, String organization, UserTypes type)
     {
         BCryptPasswordEncoder encoder = new CustomBcryptPasswordEncoder();
 
@@ -22,6 +25,7 @@ public class SignUpInput {
         this.userName = userName;
         this.passwordHash = encoder.encode(password);
         this.organization = organization;
+        this.type = type;
     }
 
     //region Getter and Setters
@@ -72,6 +76,14 @@ public class SignUpInput {
 
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    public UserTypes getType() {
+        return type;
+    }
+
+    public void setType(UserTypes type) {
+        this.type = type;
     }
 
     //endregion
