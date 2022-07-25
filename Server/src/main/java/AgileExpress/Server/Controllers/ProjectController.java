@@ -2,6 +2,7 @@ package AgileExpress.Server.Controllers;
 
 import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Entities.Project;
+import AgileExpress.Server.Inputs.ProjectAddUserInput;
 import AgileExpress.Server.Inputs.CreateProjectInput;
 import AgileExpress.Server.Repositories.ProjectRepository;
 import com.mongodb.MongoException;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,10 +25,10 @@ public class ProjectController {
     }
 
     @GetMapping(ApiRouteConstants.GetProject)
-    public ResponseEntity<?> getProject(@RequestParam(name = "id") String id) {
+    public ResponseEntity<?> getProject(@PathVariable String projectID) {
         ResponseEntity response;
         try {
-            Optional<Project> project = repository.findById(id);
+            Optional<Project> project = repository.findById(projectID);
             if (project.isEmpty()) {
                 response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
@@ -38,6 +40,18 @@ public class ProjectController {
             response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @GetMapping(ApiRouteConstants.GetProjects)
+    public ResponseEntity<?> getProjects() {
+        ResponseEntity response;
+        try {
+            List<Project> result = this.repository.findAll();
+            response = new ResponseEntity(result, HttpStatus.OK);
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }
@@ -56,5 +70,11 @@ public class ProjectController {
         }
 
         return new ResponseEntity(status);
+    }
+
+    @PostMapping(ApiRouteConstants.ProjectAddUser)
+    public ResponseEntity addUsers(@RequestBody ProjectAddUserInput input) {
+        this.repository.findByProjectName(input);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
