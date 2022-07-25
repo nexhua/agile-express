@@ -6,6 +6,7 @@ import AgileExpress.Server.Inputs.ProjectAddUserInput;
 import AgileExpress.Server.Inputs.CreateProjectInput;
 import AgileExpress.Server.Repositories.ProjectRepository;
 import com.mongodb.MongoException;
+import com.mongodb.client.result.UpdateResult;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,8 +62,7 @@ public class ProjectController {
         DateTime startDateMilis = new DateTime(input.getStartDate());
         DateTime endDateMilis = new DateTime(input.getEndDate());
         Project project = new Project(input.getProjectName(), new Date(startDateMilis.getMillis()), new Date(endDateMilis.getMillis()));
-        HttpStatus status = HttpStatus.OK;
-
+        HttpStatus status = HttpStatus.CREATED;
         try {
             repository.insert(project);
         } catch (MongoException e) {
@@ -74,7 +74,7 @@ public class ProjectController {
 
     @PostMapping(ApiRouteConstants.ProjectAddUser)
     public ResponseEntity addUsers(@RequestBody ProjectAddUserInput input) {
-        this.repository.findByProjectName(input);
-        return new ResponseEntity(HttpStatus.OK);
+        UpdateResult result = this.repository.findByProjectName(input);
+        return new ResponseEntity(result, HttpStatus.OK);
     }
 }

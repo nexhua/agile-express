@@ -25,7 +25,7 @@ public class UserController {
 
     @GetMapping(ApiRouteConstants.GetUsers)
     public ResponseEntity<?> getUsers() {
-        List<User> userList = Collections.emptyList();
+        List<User> userList;
         ResponseEntity response;
         try {
             userList = repository.findAll();
@@ -38,7 +38,19 @@ public class UserController {
     }
 
     @GetMapping(ApiRouteConstants.GetUser)
-    public ResponseEntity<?> getUser(@RequestParam(name = "username") String username) {
-        return new ResponseEntity<>(repository.findByUsername(username),HttpStatus.OK);
+    public ResponseEntity<?> getUser(@PathVariable String username) {
+        User user = null;
+        ResponseEntity response;
+        try {
+            user = repository.findByUsername(username);
+            if(user != null) {
+                response = new ResponseEntity(user, HttpStatus.OK);
+            } else {
+                response = new ResponseEntity(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
     }
 }
