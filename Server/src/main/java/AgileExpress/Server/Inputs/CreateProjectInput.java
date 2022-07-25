@@ -1,16 +1,14 @@
 package AgileExpress.Server.Inputs;
 
-import java.util.Date;
-
-public class ProjectInput {
+public class CreateProjectInput {
 
     private String projectName;
 
-    private Date startDate;
+    private String startDate;
 
-    private Date endDate;
+    private String endDate;
 
-    public ProjectInput(String projectName, Date startDate, Date endDate) {
+    public CreateProjectInput(String projectName, String startDate, String endDate) {
         this.projectName = projectName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -24,19 +22,19 @@ public class ProjectInput {
         this.projectName = projectName;
     }
 
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public String  getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 }

@@ -3,7 +3,7 @@ package AgileExpress.Server.Entities;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-public class ProjectBase {
+public class ProjectBase implements Cloneable {
 
     @Id
     @GeneratedValue
@@ -15,5 +15,9 @@ public class ProjectBase {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public ProjectBase() {
+
     }
 }

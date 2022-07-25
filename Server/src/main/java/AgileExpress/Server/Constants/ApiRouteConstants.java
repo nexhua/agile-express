@@ -10,17 +10,18 @@ public class ApiRouteConstants {
 
     //region User Routes
 
-    public static final String GetUsers = "api/users";
+    public static final String GetUsers = "/api/users";
 
-    public static final String GetUser = "api/users/{username}";
+    public static final String GetUser = "/api/users/{username}";
 
     //endregion
 
     //region Project Routes
 
-    public static final String AddProject = "api/project/new";
+    public static final String GetProject = "/api/project";
+    public static final String AddProject = "/api/project/new";
 
-    public static final String ProjectAddUser = "api/project/{username}";
+    public static final String ProjectAddUser = "/api/project/add";
 
     //endregion
 }

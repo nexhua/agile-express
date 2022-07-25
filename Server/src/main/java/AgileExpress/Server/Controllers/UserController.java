@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
@@ -24,24 +25,20 @@ public class UserController {
 
     @GetMapping(ApiRouteConstants.GetUsers)
     public ResponseEntity<?> getUsers() {
-        boolean querySuccess = false;
         List<User> userList = Collections.emptyList();
-
+        ResponseEntity response;
         try {
             userList = repository.findAll();
-            querySuccess = true;
+            response = new ResponseEntity<>(userList, HttpStatus.OK);
         } catch (MongoException e) {
             System.out.println(e.getMessage());
+            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        if (querySuccess) {
-            return new ResponseEntity<>(userList, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return response;
     }
 
     @GetMapping(ApiRouteConstants.GetUser)
-    public ResponseEntity<?> getUser(@PathVariable String username) {
+    public ResponseEntity<?> getUser(@RequestParam(name = "username") String username) {
         return new ResponseEntity<>(repository.findByUsername(username),HttpStatus.OK);
     }
 }
