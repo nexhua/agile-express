@@ -6,6 +6,8 @@ public class ApiRouteConstants {
 
     public static final String SignUp = "/api/auth/signup";
 
+    public static final String GetUsername = "/api/auth/username";
+
     //endregion
 
     //region User Routes
@@ -20,10 +22,11 @@ public class ApiRouteConstants {
 
     public static final String GetProject = "/api/projects/{projectID}";
     public static final String GetProjects = "/api/projects";
-    public static final String AddProject = "/api/projects/new";
     public static final String ProjectUser = "/api/projects/user";
 
-    public static final String ProjectDeleteUser = "/api/projects/remove";
+    public static final String ProjectsSprint = "/api/projects/sprint";
+
+    public static final String ProjectsTask = "/api/projects/task";
 
     //endregion
 }

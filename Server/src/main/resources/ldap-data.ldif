@@ -180,3 +180,13 @@ cn: Mustafa Sandal
 sn: Sandal
 uid: mstf
 userPassword: {bcrypt}$2a$10$W01guxBvK2Rbl3YQYKJPF.uoaTvLSnqJQwNRHdysL4mGqHfbVe6ey
+
+dn: uid=john.doe,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: John Doe
+sn: Doe
+uid: john.doe
+userPassword: {bcrypt}$2a$10$t9IyaO94JNnQlC6qJBD78.eHrr8o7YvhfvYBm9nqlrj3V6BoYdjfC

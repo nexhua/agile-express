@@ -2,18 +2,23 @@ package AgileExpress.Server.Controllers;
 
 import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Entities.User;
+import AgileExpress.Server.Helpers.AuthHelper;
 import AgileExpress.Server.Inputs.SignUpInput;
 import AgileExpress.Server.LDAP.LDIFUser;
 import AgileExpress.Server.Repositories.UserRepository;
 import com.mongodb.MongoException;
+import org.bson.json.JsonObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URISyntaxException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestController
 public class AuthController {
@@ -23,9 +28,9 @@ public class AuthController {
     public AuthController(UserRepository repository) {
         this.repository = repository;
     }
+
     @PostMapping(ApiRouteConstants.SignUp)
-    public ResponseEntity SignUp(@RequestBody SignUpInput input) throws URISyntaxException
-    {
+    public ResponseEntity SignUp(@RequestBody SignUpInput input) throws URISyntaxException {
         User user = new User(input.getUserName(), input.getEmail(), input.getName(), input.getSurname(), input.getType());
 
         ResponseEntity response;
@@ -39,5 +44,16 @@ public class AuthController {
             response = new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return response;
+    }
+
+    @GetMapping(ApiRouteConstants.GetUsername)
+    public ResponseEntity<?> currentUserName() {
+        if (AuthHelper.isAuthenticated()) {
+            Map<String, Object> object = new LinkedHashMap<>();
+            object.put("username", AuthHelper.getUsername());
+
+            return ResponseEntity.ok().body(object);
+        }
+        return ResponseEntity.notFound().build();
     }
 }

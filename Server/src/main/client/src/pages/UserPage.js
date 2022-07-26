@@ -10,7 +10,7 @@ class User extends React.Component {
 
 
     async componentDidMount() {
-        const response = await fetch("/username",
+        const response = await fetch("/api/auth/username",
         {
             method: "GET",
             headers: {

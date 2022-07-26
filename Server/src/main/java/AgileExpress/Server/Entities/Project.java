@@ -20,6 +20,8 @@ public class Project extends ProjectBase {
 
     private List<TeamMember> teamMembers = Collections.emptyList();
 
+    private List<Sprint> sprints = Collections.emptyList();
+
     public Project() { }
 
     public Project(String projectName, Date startDate, Date endDate) {
@@ -37,6 +39,7 @@ public class Project extends ProjectBase {
         this.teamMembers = teamMembers;
     }
 
+    //region Getter and Setters
     public String getProjectName() {
         return projectName;
     }
@@ -84,4 +87,6 @@ public class Project extends ProjectBase {
     public void setTeamMembers(List<TeamMember> teamMembers) {
         this.teamMembers = teamMembers;
     }
+
+    //endregion
 }

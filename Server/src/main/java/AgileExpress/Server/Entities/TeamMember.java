@@ -22,6 +22,8 @@ public class TeamMember {
         this.projectRole = projectRole;
     }
 
+    //region Getter and Setters
+
     public String getId() {
         return id;
     }
@@ -39,6 +41,9 @@ public class TeamMember {
     }
 
     public Document toDocument() {
-        return new Document("_id",new ObjectId(this.getId())).append("projectRole", this.getProjectRole());
+        return new Document("_id",new ObjectId(this.getId()))
+                .append("projectRole", this.getProjectRole());
     }
+
+    //endregion
 }

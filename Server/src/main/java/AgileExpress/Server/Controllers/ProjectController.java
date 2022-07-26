@@ -2,9 +2,7 @@ package AgileExpress.Server.Controllers;
 
 import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Entities.Project;
-import AgileExpress.Server.Inputs.ProjectAddUserInput;
-import AgileExpress.Server.Inputs.CreateProjectInput;
-import AgileExpress.Server.Inputs.ProjectRemoveUserInput;
+import AgileExpress.Server.Inputs.*;
 import AgileExpress.Server.Repositories.ProjectRepository;
 import com.mongodb.MongoException;
 import com.mongodb.client.result.UpdateResult;
@@ -58,7 +56,7 @@ public class ProjectController {
         return response;
     }
 
-    @PostMapping(ApiRouteConstants.AddProject)
+    @PostMapping(ApiRouteConstants.GetProjects)
     public ResponseEntity createProject(@RequestBody CreateProjectInput input) {
         DateTime startDateMilis = new DateTime(input.getStartDate());
         DateTime endDateMilis = new DateTime(input.getEndDate());
@@ -83,5 +81,28 @@ public class ProjectController {
     public ResponseEntity removeUser(@RequestBody ProjectRemoveUserInput input) {
         UpdateResult result = this.repository.removeTeamMember(input);
         return new ResponseEntity(result, HttpStatus.OK);
+    }
+
+    @GetMapping(ApiRouteConstants.ProjectsTask)
+    public ResponseEntity<?> getTasks(@RequestBody ProjectGetTasksInput input) {
+        ResponseEntity response;
+        try {
+            Optional<Project> project = this.repository.findById(input.getProjectID());
+            if (project.isEmpty()) {
+                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                Project projectObject = project.get();
+                response = new ResponseEntity<>(projectObject.getTasks(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @PostMapping(ApiRouteConstants.ProjectsTask)
+    public ResponseEntity<?> createTask(@RequestBody ProjectCreateTaskInput input) {
+        UpdateResult result = this.repository.addTask(input);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

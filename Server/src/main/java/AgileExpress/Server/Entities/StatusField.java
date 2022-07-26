@@ -11,6 +11,8 @@ public class StatusField {
         this.isDeletable = isDeletable;
     }
 
+    //region Getter and Setters
+
     public String getStatusName() {
         return statusName;
     }
@@ -26,4 +28,6 @@ public class StatusField {
     public void setDeletable(boolean deletable) {
         isDeletable = deletable;
     }
+
+    //endregion
 }
