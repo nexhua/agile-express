@@ -1,15 +1,21 @@
 package AgileExpress.Server.Entities;
 
 import AgileExpress.Server.Constants.UserTypes;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+@Document
 public class TeamMember {
 
     @Id
+    @GeneratedValue
     private String id;
 
     private UserTypes projectRole;
+
+    public TeamMember() { }
 
     public TeamMember(String id, UserTypes projectRole) {
         this.id = id;

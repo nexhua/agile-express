@@ -2,6 +2,7 @@ package AgileExpress.Server.Repositories;
 
 import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Inputs.ProjectAddUserInput;
+import AgileExpress.Server.Inputs.ProjectRemoveUserInput;
 import AgileExpress.Server.Repositories.ProjectRepositoryCustom;
 import com.mongodb.MongoException;
 import com.mongodb.client.model.Accumulators;
@@ -26,24 +27,25 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     }
 
     @Override
-    public UpdateResult findByProjectName(ProjectAddUserInput input) {
-        /*
-        MatchOperation matchOperation = Aggregation.match(new Criteria(new ObjectId(input.getProjectId()).toString()));
-        ProjectionOperation projectionOperation = Aggregation.project("projectName");
-        Document user = new Document();
-        user.append("_id", new ObjectId(input.getUserIds().get(0)));
-        //AccumulatorOperators addToSet = Accumulators.addToSet("teamMembers", new Document().append());
-
-        Aggregation aggregation = Aggregation.newAggregation(matchOperation, projectionOperation);
-
-        AggregationResults<Project> output = mongoTemplate.aggregate(aggregation,"projects",Project.class);
-        */
-
+    public UpdateResult addTeamMember(ProjectAddUserInput input) {
         UpdateResult result;
         try {
             result = mongoTemplate.getCollection("projects")
                     .updateOne(Filters.eq("_id", new ObjectId(input.getProjectId())),
                             Updates.addEachToSet("teamMembers", input.ToObjectArray()));
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult removeTeamMember(ProjectRemoveUserInput input) {
+        UpdateResult result;
+        try {
+            result = mongoTemplate.getCollection("projects")
+                    .updateOne(Filters.eq("_id", new ObjectId(input.getProjectID())),
+                            Updates.pull("teamMembers", new Document("_id", input.getUserID())));
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }

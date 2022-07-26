@@ -4,6 +4,7 @@ import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Inputs.ProjectAddUserInput;
 import AgileExpress.Server.Inputs.CreateProjectInput;
+import AgileExpress.Server.Inputs.ProjectRemoveUserInput;
 import AgileExpress.Server.Repositories.ProjectRepository;
 import com.mongodb.MongoException;
 import com.mongodb.client.result.UpdateResult;
@@ -72,9 +73,15 @@ public class ProjectController {
         return new ResponseEntity(status);
     }
 
-    @PostMapping(ApiRouteConstants.ProjectAddUser)
+    @PostMapping(ApiRouteConstants.ProjectUser)
     public ResponseEntity addUsers(@RequestBody ProjectAddUserInput input) {
-        UpdateResult result = this.repository.findByProjectName(input);
+        UpdateResult result = this.repository.addTeamMember(input);
+        return new ResponseEntity(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping(ApiRouteConstants.ProjectUser)
+    public ResponseEntity removeUser(@RequestBody ProjectRemoveUserInput input) {
+        UpdateResult result = this.repository.removeTeamMember(input);
         return new ResponseEntity(result, HttpStatus.OK);
     }
 }

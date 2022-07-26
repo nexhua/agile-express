@@ -21,7 +21,9 @@ public class ApiRouteConstants {
     public static final String GetProject = "/api/projects/{projectID}";
     public static final String GetProjects = "/api/projects";
     public static final String AddProject = "/api/projects/new";
-    public static final String ProjectAddUser = "/api/projects/add";
+    public static final String ProjectUser = "/api/projects/user";
+
+    public static final String ProjectDeleteUser = "/api/projects/remove";
 
     //endregion
 }

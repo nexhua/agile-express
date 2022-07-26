@@ -1,9 +1,12 @@
 package AgileExpress.Server.Repositories;
 
 import AgileExpress.Server.Inputs.ProjectAddUserInput;
+import AgileExpress.Server.Inputs.ProjectRemoveUserInput;
 import com.mongodb.client.result.UpdateResult;
 
 public interface ProjectRepositoryCustom {
 
-    UpdateResult findByProjectName(ProjectAddUserInput input);
+    UpdateResult addTeamMember(ProjectAddUserInput input);
+
+    UpdateResult removeTeamMember(ProjectRemoveUserInput input);
 }

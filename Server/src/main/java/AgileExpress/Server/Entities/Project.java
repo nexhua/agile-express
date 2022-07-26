@@ -18,7 +18,7 @@ public class Project extends ProjectBase {
 
     private List<TaskBase> tasks = Collections.emptyList();
 
-    private List<UserBase> teamMembers = Collections.emptyList();
+    private List<TeamMember> teamMembers = Collections.emptyList();
 
     public Project() { }
 
@@ -28,7 +28,7 @@ public class Project extends ProjectBase {
         this.endDate = endDate;
     }
 
-    public Project(String projectName, Date  startDate, Date endDate, List<String> statusFields, List<TaskBase> tasks, List<UserBase> teamMembers) {
+    public Project(String projectName, Date  startDate, Date endDate, List<String> statusFields, List<TaskBase> tasks, List<TeamMember> teamMembers) {
         this.projectName = projectName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -77,11 +77,11 @@ public class Project extends ProjectBase {
         this.tasks = tasks;
     }
 
-    public List<UserBase> getTeamMembers() {
+    public List<TeamMember> getTeamMembers() {
         return teamMembers;
     }
 
-    public void setTeamMembers(List<UserBase> teamMembers) {
+    public void setTeamMembers(List<TeamMember> teamMembers) {
         this.teamMembers = teamMembers;
     }
 }

@@ -170,3 +170,13 @@ cn: Benjamin Clock
 sn: Clock
 uid: benjamin
 userPassword: {bcrypt}$2a$10$ei0fJ.pX8KzD4yfDFs73dumyVBsT6YVwneYQkk4koDAug4LsuVrBW
+
+dn: uid=mstf,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Mustafa Sandal
+sn: Sandal
+uid: mstf
+userPassword: {bcrypt}$2a$10$W01guxBvK2Rbl3YQYKJPF.uoaTvLSnqJQwNRHdysL4mGqHfbVe6ey
