@@ -32,7 +32,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         try {
             result = mongoTemplate.getCollection("projects")
                     .updateOne(Filters.eq("_id", new ObjectId(input.getProjectId())),
-                            Updates.addEachToSet("teamMembers", input.ToObjectArray()));
+                            Updates.addEachToSet("teamMembers", input.ToDocumentArray()));
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }
@@ -45,7 +45,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         try {
             result = mongoTemplate.getCollection("projects")
                     .updateOne(Filters.eq("_id", new ObjectId(input.getProjectID())),
-                            Updates.pull("teamMembers", new Document("_id", input.getUserID())));
+                            Updates.pull("teamMembers", new Document("_id", new ObjectId(input.getUserID()))));
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }

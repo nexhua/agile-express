@@ -2,6 +2,7 @@ package AgileExpress.Server.Inputs;
 
 import AgileExpress.Server.Constants.UserTypes;
 import AgileExpress.Server.Entities.TeamMember;
+import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,9 +27,17 @@ public class ProjectAddUserInput {
     }
 
     public List<TeamMember> ToObjectArray() {
-        List<TeamMember> members = new ArrayList<TeamMember>();
+        List<TeamMember> members = new ArrayList<>();
         for(String id : userIds) {
             members.add(new TeamMember(id, UserTypes.TEAM_MEMBER));
+        }
+        return members;
+    }
+
+    public List<Document> ToDocumentArray() {
+        List<Document> members = new ArrayList<>();
+        for(String id : userIds) {
+            members.add(new TeamMember(id, UserTypes.TEAM_MEMBER).toDocument());
         }
         return members;
     }

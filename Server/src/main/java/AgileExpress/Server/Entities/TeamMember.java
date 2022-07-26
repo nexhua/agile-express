@@ -1,12 +1,12 @@
 package AgileExpress.Server.Entities;
 
 import AgileExpress.Server.Constants.UserTypes;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.bson.types.ObjectId;
+import org.bson.Document;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Document
 public class TeamMember {
 
     @Id
@@ -36,5 +36,9 @@ public class TeamMember {
 
     public void setProjectRole(UserTypes projectRole) {
         this.projectRole = projectRole;
+    }
+
+    public Document toDocument() {
+        return new Document("_id",new ObjectId(this.getId())).append("projectRole", this.getProjectRole());
     }
 }
