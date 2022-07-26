@@ -16,7 +16,7 @@ public class Project extends ProjectBase {
 
     private List<String> statusFields = Arrays.asList("Backlog");
 
-    private List<TaskBase> tasks = Collections.emptyList();
+    private List<Task> tasks = Collections.emptyList();
 
     private List<TeamMember> teamMembers = Collections.emptyList();
 
@@ -30,7 +30,7 @@ public class Project extends ProjectBase {
         this.endDate = endDate;
     }
 
-    public Project(String projectName, Date  startDate, Date endDate, List<String> statusFields, List<TaskBase> tasks, List<TeamMember> teamMembers) {
+    public Project(String projectName, Date  startDate, Date endDate, List<String> statusFields, List<Task> tasks, List<TeamMember> teamMembers) {
         this.projectName = projectName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -72,11 +72,11 @@ public class Project extends ProjectBase {
         this.statusFields = statusFields;
     }
 
-    public List<TaskBase> getTasks() {
+    public List<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<TaskBase> tasks) {
+    public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
 

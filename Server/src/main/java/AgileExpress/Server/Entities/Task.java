@@ -13,9 +13,6 @@ import java.util.List;
 
 public class Task extends TaskBase {
 
-    @Id
-    @GeneratedValue
-    private String id;
     private String name;
     private String description;
     private String createdBy;
@@ -40,7 +37,7 @@ public class Task extends TaskBase {
     }
 
     public Document toDocument() {
-        return new Document("_id", new ObjectId())
+        return new Document("_id", super.getId())
                 .append("name", this.getName())
                 .append("description", this.getDescription())
                 .append("createdBy", this.getCreatedBy())
