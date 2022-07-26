@@ -13,5 +13,7 @@ public class MongoConstants {
 
     public static final String ProjectTasks = "tasks";
 
+    public static final String ProjectInnerTask = "projects.tasks";
+
     public static final String NoDescription = "No Description Provided";
 }

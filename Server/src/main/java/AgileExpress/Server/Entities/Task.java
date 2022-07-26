@@ -37,7 +37,7 @@ public class Task extends TaskBase {
     }
 
     public Document toDocument() {
-        return new Document("_id", super.getId())
+        return new Document("_id", new ObjectId())
                 .append("name", this.getName())
                 .append("description", this.getDescription())
                 .append("createdBy", this.getCreatedBy())

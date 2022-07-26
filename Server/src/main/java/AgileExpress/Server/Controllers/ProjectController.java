@@ -1,9 +1,12 @@
 package AgileExpress.Server.Controllers;
 
 import AgileExpress.Server.Constants.ApiRouteConstants;
+import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Entities.Project;
+import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.*;
 import AgileExpress.Server.Repositories.ProjectRepository;
+import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.result.UpdateResult;
 import org.joda.time.DateTime;
@@ -12,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,5 +109,27 @@ public class ProjectController {
     public ResponseEntity<?> createTask(@RequestBody ProjectCreateTaskInput input) {
         UpdateResult result = this.repository.addTask(input);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PutMapping(ApiRouteConstants.ProjectsTaskPath)
+    public ResponseEntity<?> updateTask(@PathVariable String taskID, @RequestBody(required = false) ProjectUpdateTaskInput input) {
+        ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(input);
+
+
+        ResponseEntity response;
+        Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
+        if (optionalPropertyInfo.isEmpty()) {
+            response = new ResponseEntity(
+                    ErrorMessages.MissingPropertyError("projectID"),
+                    HttpStatus.BAD_REQUEST);
+        } else {
+            response = new ResponseEntity<>(HttpStatus.OK);
+            PropertyInfo<?> propertyInfo = optionalPropertyInfo.get();
+            String projectID = propertyInfo.getPropertyValue().toString();
+            this.repository.updateTask(projectID, taskID, propertyInfoList);
+        }
+
+
+        return response;
     }
 }
