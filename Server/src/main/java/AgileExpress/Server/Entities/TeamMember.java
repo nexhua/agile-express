@@ -40,5 +40,10 @@ public class TeamMember {
         this.projectRole = projectRole;
     }
 
+    public Document toDocument() {
+        return new Document("_id",new ObjectId(this.getId()))
+                .append("projectRole", this.getProjectRole());
+    }
+
     //endregion
 }

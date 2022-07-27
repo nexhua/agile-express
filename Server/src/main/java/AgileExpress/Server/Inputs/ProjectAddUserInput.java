@@ -2,7 +2,6 @@ package AgileExpress.Server.Inputs;
 
 import AgileExpress.Server.Constants.UserTypes;
 import AgileExpress.Server.Entities.TeamMember;
-import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Interfaces.IToInputObject;
 import org.bson.Document;
 
@@ -28,11 +27,10 @@ public class ProjectAddUserInput {
         return false;
     }
 
-
     public List<Document> ToDocumentArray() {
         List<Document> members = new ArrayList<>();
         for(String id : userIds) {
-            members.add(ReflectionHelper.toDocument(new TeamMember(id, UserTypes.TEAM_MEMBER)));
+            members.add(new TeamMember(id, UserTypes.TEAM_MEMBER).toDocument());
         }
         return members;
     }
