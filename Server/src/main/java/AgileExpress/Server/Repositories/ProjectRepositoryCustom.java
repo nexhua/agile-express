@@ -1,9 +1,6 @@
 package AgileExpress.Server.Repositories;
 
-import AgileExpress.Server.Inputs.ProjectAddUserInput;
-import AgileExpress.Server.Inputs.ProjectCreateTaskInput;
-import AgileExpress.Server.Inputs.ProjectRemoveUserInput;
-import AgileExpress.Server.Inputs.TaskAddCommentInput;
+import AgileExpress.Server.Inputs.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -21,4 +18,6 @@ public interface ProjectRepositoryCustom {
     Document updateTask(String projectID, String taskID, ArrayList<PropertyInfo<?>> propertyInfoList);
 
     UpdateResult addCommentToTask(TaskAddCommentInput input);
+
+    UpdateResult addAssigneeToTask(TaskAddAssigneeInput input);
 }

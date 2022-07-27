@@ -4,10 +4,7 @@ import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Helpers.QueryHelper;
 import AgileExpress.Server.Helpers.ReflectionHelper;
-import AgileExpress.Server.Inputs.ProjectAddUserInput;
-import AgileExpress.Server.Inputs.ProjectCreateTaskInput;
-import AgileExpress.Server.Inputs.ProjectRemoveUserInput;
-import AgileExpress.Server.Inputs.TaskAddCommentInput;
+import AgileExpress.Server.Inputs.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.model.Filters;
@@ -111,17 +108,32 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     public UpdateResult addCommentToTask(TaskAddCommentInput input) {
         UpdateResult result;
         try {
-            Bson projectFilter = Filters.eq(MongoConstants.Id,
-                    QueryHelper.createID(input.getProjectID()));
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
 
-            Bson taskFilter = Filters.eq(
-                    QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id),
-                    QueryHelper.createID(input.getTaskID()));
+            Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id), QueryHelper.createID(input.getTaskID()));
 
             String commentName = QueryHelper
                     .asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Comments);
 
-            Bson update = Updates.push(commentName, ReflectionHelper.toDocument(input.toObject()));
+            Bson update = Updates.push(commentName, input.toDocument());
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(Filters.and(projectFilter, taskFilter), update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult addAssigneeToTask(TaskAddAssigneeInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id), QueryHelper.createID(input.getTaskID()));
+
+            String assigneesName = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Assignees);
+
+            Bson update = Updates.push(assigneesName, input.toDocument());
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.and(projectFilter, taskFilter), update);
         } catch (MongoException e) {

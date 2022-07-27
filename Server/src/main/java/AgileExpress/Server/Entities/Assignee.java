@@ -9,6 +9,7 @@ public class Assignee {
     @Id
     @GeneratedValue
     private String id;
+    @Id
     private String userID;
     private String assignedBy;
     private Date assignedAt;
@@ -46,7 +47,6 @@ public class Assignee {
     public void setAssignedAt(Date assignedAt) {
         this.assignedAt = assignedAt;
     }
-
 
     //endregion
 }

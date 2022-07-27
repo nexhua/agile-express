@@ -150,6 +150,19 @@ public class ProjectController {
         } catch (Exception e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return response;
+    }
+
+    //ADD ASSIGNEE TO A TASK IN A PROJECT
+    @PostMapping(ApiRouteConstants.ProjectTaskAssignee)
+    public ResponseEntity<?> addAssigneeToTask(@RequestBody TaskAddAssigneeInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.addAssigneeToTask(input);
+            response = new ResponseEntity(result, HttpStatus.CREATED);
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
     }
 }

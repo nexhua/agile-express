@@ -28,6 +28,7 @@ public class ApiRouteConstants {
     public static final String ProjectsTask = "/api/projects/task";
     public static final String ProjectsTaskPath = "/api/projects/task/{taskID}";
     public static final String ProjectsTaskComment = "/api/projects/task/comments";
+    public static final String ProjectTaskAssignee = "/api/projects/task/assignees";
 
     //endregion
 }
