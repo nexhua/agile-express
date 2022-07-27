@@ -10,9 +10,7 @@ public class Assignee {
     @GeneratedValue
     private String id;
     private String userID;
-
     private String assignedBy;
-
     private Date assignedAt;
 
     public Assignee() { }

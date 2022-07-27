@@ -72,6 +72,7 @@ public class ReflectionHelper {
                 document.put(fieldName, fieldValue);
             }
         }
+        document.put(MongoConstants.Class, object.getClass().getName());
         return document;
     }
 

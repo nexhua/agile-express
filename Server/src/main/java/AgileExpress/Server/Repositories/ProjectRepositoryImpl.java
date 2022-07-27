@@ -11,6 +11,7 @@ import AgileExpress.Server.Inputs.TaskAddCommentInput;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -18,7 +19,9 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.UpdateDefinition;
 
+import java.sql.Ref;
 import java.util.ArrayList;
 
 
@@ -107,14 +110,19 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     public UpdateResult addCommentToTask(TaskAddCommentInput input) {
         UpdateResult result;
         try {
-            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
-            Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id),
+            Bson projectFilter = Filters.eq(MongoConstants.Id,
+                    QueryHelper.createID(input.getProjectID()));
+
+            Bson taskFilter = Filters.eq(
+                    QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id),
                     QueryHelper.createID(input.getTaskID()));
+
+            String commentName = QueryHelper
+                    .asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Comments);
+
+            Bson update = Updates.push(commentName, ReflectionHelper.toDocument(input.toComment()));
             result = mongoTemplate.getCollection(MongoConstants.Projects)
-                    .updateOne(Filters.and(projectFilter, taskFilter),
-                            Updates.push(
-                                    QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Comments),
-                                    ReflectionHelper.toDocument(input.toComment())));
+                    .updateOne(Filters.and(projectFilter, taskFilter), update);
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }

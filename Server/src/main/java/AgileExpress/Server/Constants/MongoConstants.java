@@ -12,6 +12,8 @@ public class MongoConstants {
     public static final String ProjectTeamMembers = "teamMembers";
     public static final String NoDescription = "No Description Provided";
 
+    public static final String Class = "_class";
+
     //region Projects
 
     public static final String ProjectName = "projectName";
