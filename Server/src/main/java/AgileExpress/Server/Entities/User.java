@@ -11,8 +11,11 @@ import java.util.Collections;
 import java.util.List;
 
 @Document(collection = "users")
-public class User extends UserBase {
+public class User {
 
+    @Id
+    @GeneratedValue
+    private String id;
     @Indexed(unique = true)
     private String username;
 
@@ -27,7 +30,7 @@ public class User extends UserBase {
     private UserTypes type = UserTypes.TEAM_MEMBER;
 
     @Field("projects")
-    private List<ProjectBase> projectIds;
+    private List<Project> projectIds;
 
     public User() { }
     public User(String username) {
@@ -85,11 +88,11 @@ public class User extends UserBase {
         this.type = type;
     }
 
-    public List<ProjectBase> getProjectIds() {
+    public List<Project> getProjectIds() {
         return projectIds;
     }
 
-    public void setProjectIds(List<ProjectBase> projectIds) {
+    public void setProjectIds(List<Project> projectIds) {
         this.projectIds = projectIds;
     }
 

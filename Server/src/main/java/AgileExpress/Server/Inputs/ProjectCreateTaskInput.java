@@ -1,11 +1,14 @@
 package AgileExpress.Server.Inputs;
 
 import AgileExpress.Server.Entities.Task;
+import AgileExpress.Server.Helpers.ReflectionHelper;
+import AgileExpress.Server.Interfaces.IToInputDocument;
+import AgileExpress.Server.Interfaces.IToInputObject;
 import org.bson.Document;
 
 import java.util.Date;
 
-public class ProjectCreateTaskInput {
+public class ProjectCreateTaskInput implements IToInputObject<Task>, IToInputDocument {
 
     private String projectID;
     private String name;
@@ -24,12 +27,13 @@ public class ProjectCreateTaskInput {
         this.setStoryPoint(storyPoint);
     }
 
-    public Task toTask() {
+    @Override
+    public Task toObject() {
         return new Task(this.getName(), this.getDescription(), this.getCreatedBy(), this.getStoryPoint());
     }
 
     public Document toDocument() {
-        return this.toTask().toDocument();
+        return ReflectionHelper.toDocument(this.toObject());
     }
 
     //region Getter and Setters

@@ -70,6 +70,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }
+
         return result;
     }
 
@@ -120,7 +121,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
             String commentName = QueryHelper
                     .asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Comments);
 
-            Bson update = Updates.push(commentName, ReflectionHelper.toDocument(input.toComment()));
+            Bson update = Updates.push(commentName, ReflectionHelper.toDocument(input.toObject()));
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.and(projectFilter, taskFilter), update);
         } catch (MongoException e) {

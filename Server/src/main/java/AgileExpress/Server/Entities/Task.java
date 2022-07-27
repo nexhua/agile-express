@@ -4,12 +4,17 @@ import AgileExpress.Server.Constants.MongoConstants;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class Task extends TaskBase {
+public class Task {
 
+    @Id
+    @GeneratedValue
+    private String id;
     private String name;
     private String description;
     private String createdBy;
@@ -33,21 +38,15 @@ public class Task extends TaskBase {
         this.sprint = MongoConstants.Unassigned;
     }
 
-    public Document toDocument() {
-        return new Document("_id", new ObjectId())
-                .append("name", this.getName())
-                .append("description", this.getDescription())
-                .append("createdBy", this.getCreatedBy())
-                .append("createdAt", this.getCreatedAt())
-                .append("storyPoint", this.getStoryPoint())
-                .append("currentStatus", this.getCurrentStatus())
-                .append("sprint", this.getSprint())
-                .append("comments", this.getComments())
-                .append("assignees", this.getAssignees())
-                .append("labels", this.getLabels());
+    //region Getter and Setters
+
+    public String getId() {
+        return id;
     }
 
-    //region Getter and Setters
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

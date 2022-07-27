@@ -3,11 +3,16 @@ package AgileExpress.Server.Entities;
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.*;
 
 @Document("projects")
-public class Project extends ProjectBase {
+public class Project {
 
+    @Id
+    @GeneratedValue
+    private String id;
     private String projectName;
 
     private Date startDate;
@@ -40,6 +45,23 @@ public class Project extends ProjectBase {
     }
 
     //region Getter and Setters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<Sprint> getSprints() {
+        return sprints;
+    }
+
+    public void setSprints(List<Sprint> sprints) {
+        this.sprints = sprints;
+    }
+
     public String getProjectName() {
         return projectName;
     }

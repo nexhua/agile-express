@@ -2,6 +2,8 @@ package AgileExpress.Server.Inputs;
 
 import AgileExpress.Server.Constants.UserTypes;
 import AgileExpress.Server.Entities.TeamMember;
+import AgileExpress.Server.Helpers.ReflectionHelper;
+import AgileExpress.Server.Interfaces.IToInputObject;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -26,21 +28,16 @@ public class ProjectAddUserInput {
         return false;
     }
 
-    public List<TeamMember> ToObjectArray() {
-        List<TeamMember> members = new ArrayList<>();
-        for(String id : userIds) {
-            members.add(new TeamMember(id, UserTypes.TEAM_MEMBER));
-        }
-        return members;
-    }
 
     public List<Document> ToDocumentArray() {
         List<Document> members = new ArrayList<>();
         for(String id : userIds) {
-            members.add(new TeamMember(id, UserTypes.TEAM_MEMBER).toDocument());
+            members.add(ReflectionHelper.toDocument(new TeamMember(id, UserTypes.TEAM_MEMBER)));
         }
         return members;
     }
+
+    //region Getter and Setters
 
     public List<String> getUserIds() {
         return userIds;
@@ -57,4 +54,6 @@ public class ProjectAddUserInput {
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
+
+    //endregion
 }

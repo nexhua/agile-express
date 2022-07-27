@@ -1,8 +1,12 @@
 package AgileExpress.Server.Inputs;
 
 import AgileExpress.Server.Entities.Comment;
+import AgileExpress.Server.Helpers.ReflectionHelper;
+import AgileExpress.Server.Interfaces.IToInputDocument;
+import AgileExpress.Server.Interfaces.IToInputObject;
+import org.bson.Document;
 
-public class TaskAddCommentInput {
+public class TaskAddCommentInput implements IToInputObject<Comment>, IToInputDocument {
 
     private String projectID;
 
@@ -21,8 +25,14 @@ public class TaskAddCommentInput {
         this.comment = comment;
     }
 
-    public Comment toComment() {
+    @Override
+    public Comment toObject() {
         return new Comment(this.getUsername(), this.getComment());
+    }
+
+    @Override
+    public Document toDocument() {
+        return ReflectionHelper.toDocument(this.toObject());
     }
 
     //region Getters and Setters
@@ -58,7 +68,6 @@ public class TaskAddCommentInput {
     public void setComment(String comment) {
         this.comment = comment;
     }
-
 
     //endregion
 }
