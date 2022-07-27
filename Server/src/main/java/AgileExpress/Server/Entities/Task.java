@@ -4,9 +4,6 @@ import AgileExpress.Server.Constants.MongoConstants;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +19,7 @@ public class Task extends TaskBase {
     private String sprint;
     private List<Comment> comments = Collections.emptyList();
     private List<Assignee> assignees = Collections.emptyList();
-    private List<String> labels = Collections.emptyList();
+    private List<Label> labels = Collections.emptyList();
 
     public Task() {
     }
@@ -120,11 +117,11 @@ public class Task extends TaskBase {
         this.assignees = assignees;
     }
 
-    public List<String> getLabels() {
+    public List<Label> getLabels() {
         return labels;
     }
 
-    public void setLabels(List<String> labels) {
+    public void setLabels(List<Label> labels) {
         this.labels = labels;
     }
 

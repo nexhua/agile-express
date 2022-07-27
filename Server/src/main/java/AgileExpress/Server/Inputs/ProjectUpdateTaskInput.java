@@ -14,9 +14,6 @@ public class ProjectUpdateTaskInput {
     private int storyPoint = 0;
     private Number currentStatus = 0;
     private String sprint;
-    private List<Comment> comments = Collections.emptyList();
-    private List<Assignee> assignees = Collections.emptyList();
-    private List<String> labels = Collections.emptyList();
 
     public ProjectUpdateTaskInput() { }
 
@@ -69,31 +66,6 @@ public class ProjectUpdateTaskInput {
     public void setSprint(String sprint) {
         this.sprint = sprint;
     }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public List<Assignee> getAssignees() {
-        return assignees;
-    }
-
-    public void setAssignees(List<Assignee> assignees) {
-        this.assignees = assignees;
-    }
-
-    public List<String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(List<String> labels) {
-        this.labels = labels;
-    }
-
 
     //endregion
 }

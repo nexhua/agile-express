@@ -1,7 +1,13 @@
 package AgileExpress.Server.Entities;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 public class Comment {
 
+    @Id
+    @GeneratedValue
+    private String id;
     private String username;
 
     private String comment;
@@ -14,6 +20,14 @@ public class Comment {
     }
 
     //region Getter and Setters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;

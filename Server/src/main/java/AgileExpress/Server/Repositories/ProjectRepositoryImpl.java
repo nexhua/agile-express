@@ -1,9 +1,13 @@
 package AgileExpress.Server.Repositories;
 
+import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
+import AgileExpress.Server.Helpers.QueryHelper;
+import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.ProjectAddUserInput;
 import AgileExpress.Server.Inputs.ProjectCreateTaskInput;
 import AgileExpress.Server.Inputs.ProjectRemoveUserInput;
+import AgileExpress.Server.Inputs.TaskAddCommentInput;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.model.Filters;
@@ -59,7 +63,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         try {
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.eq(MongoConstants.Id, new ObjectId(input.getProjectID())),
-                            Updates.push(MongoConstants.ProjectTasks, input.toDocument()));
+                            Updates.push(MongoConstants.Tasks, input.toDocument()));
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }
@@ -67,24 +71,50 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     }
 
     @Override
-    public UpdateResult updateTask(String projectID, String taskID, ArrayList<PropertyInfo<?>> propertyInfoList) {
-        UpdateResult result;
+    public Document updateTask(String projectID, String taskID, ArrayList<PropertyInfo<?>> propertyInfoList) {
+        Document result;
 
         ArrayList<Bson> updatePredicates = new ArrayList<>();
 
         for (PropertyInfo<?> propertyInfo : propertyInfoList) {
-            if (propertyInfo.isString()) {
+            if (propertyInfo.isString() || propertyInfo.isNumeric()) {
                 if (!propertyInfo.getPropertyName().equals("projectID")) {
-                    updatePredicates.add(new Document(propertyInfo.getPropertyName(), propertyInfo.getPropertyValue()));
+                    String property = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, propertyInfo.getPropertyName());
+                    updatePredicates.add(Updates.set(property, propertyInfo.getPropertyValue()));
                 }
             }
         }
+
+        if (updatePredicates.size() == 0) {
+            return new Document(ErrorMessages.Title, ErrorMessages.NoPropertyToUpdateError(updatePredicates.size()));
+        }
+
         try {
             Bson projectFilter = Filters.eq(MongoConstants.Id, new ObjectId(projectID));
-            Bson taskFilter = Filters.eq(MongoConstants.ProjectInnerTask, new ObjectId(taskID));
+            Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id),
+                    new ObjectId(taskID));
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .findOneAndUpdate(Filters.and(projectFilter, taskFilter),
+                            Updates.combine(updatePredicates));
+        } catch (MongoException e) {
+            result = new Document("Error", e.getMessage());
+        }
+        return result;
+    }
+
+
+    @Override
+    public UpdateResult addCommentToTask(TaskAddCommentInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id),
+                    QueryHelper.createID(input.getTaskID()));
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.and(projectFilter, taskFilter),
-                            Updates.combine(updatePredicates));
+                            Updates.push(
+                                    QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Comments),
+                                    ReflectionHelper.toDocument(input.toComment())));
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }

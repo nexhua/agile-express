@@ -24,9 +24,12 @@ public class ProjectCreateTaskInput {
         this.setStoryPoint(storyPoint);
     }
 
+    public Task toTask() {
+        return new Task(this.getName(), this.getDescription(), this.getCreatedBy(), this.getStoryPoint());
+    }
+
     public Document toDocument() {
-        Task task = new Task(this.getName(), this.getDescription(), this.getCreatedBy(), this.getStoryPoint());
-        return task.toDocument();
+        return this.toTask().toDocument();
     }
 
     //region Getter and Setters

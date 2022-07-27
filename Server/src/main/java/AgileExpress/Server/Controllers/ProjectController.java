@@ -9,6 +9,7 @@ import AgileExpress.Server.Repositories.ProjectRepository;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +29,7 @@ public class ProjectController {
         this.repository = repository;
     }
 
+    //GET PROJECT
     @GetMapping(ApiRouteConstants.GetProject)
     public ResponseEntity<?> getProject(@PathVariable String projectID) {
         ResponseEntity response;
@@ -49,6 +50,7 @@ public class ProjectController {
         return response;
     }
 
+    //GET PROJECTS
     @GetMapping(ApiRouteConstants.GetProjects)
     public ResponseEntity<?> getProjects() {
         ResponseEntity response;
@@ -61,6 +63,7 @@ public class ProjectController {
         return response;
     }
 
+    //CREATE PROJECT
     @PostMapping(ApiRouteConstants.GetProjects)
     public ResponseEntity createProject(@RequestBody CreateProjectInput input) {
         DateTime startDateMilis = new DateTime(input.getStartDate());
@@ -76,18 +79,21 @@ public class ProjectController {
         return new ResponseEntity(status);
     }
 
+    //ADD USER TO PROJECT
     @PostMapping(ApiRouteConstants.ProjectUser)
     public ResponseEntity addUsers(@RequestBody ProjectAddUserInput input) {
         UpdateResult result = this.repository.addTeamMember(input);
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
+    //DELETE USER FROM PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectUser)
     public ResponseEntity removeUser(@RequestBody ProjectRemoveUserInput input) {
         UpdateResult result = this.repository.removeTeamMember(input);
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
+    //GET TASK FROM PROJECT
     @GetMapping(ApiRouteConstants.ProjectsTask)
     public ResponseEntity<?> getTasks(@RequestBody ProjectGetTasksInput input) {
         ResponseEntity response;
@@ -105,14 +111,16 @@ public class ProjectController {
         return response;
     }
 
+    //CREATE TASK IN A PROJECT
     @PostMapping(ApiRouteConstants.ProjectsTask)
-    public ResponseEntity<?> createTask(@RequestBody ProjectCreateTaskInput input) {
+    public ResponseEntity<?> addTask(@RequestBody ProjectCreateTaskInput input) {
         UpdateResult result = this.repository.addTask(input);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    //UPDATE SOME PROPERTIES OF AN TASK IN A PROJECT
     @PutMapping(ApiRouteConstants.ProjectsTaskPath)
-    public ResponseEntity<?> updateTask(@PathVariable String taskID, @RequestBody(required = false) ProjectUpdateTaskInput input) {
+    public ResponseEntity<?> updateProject(@PathVariable String taskID, @RequestBody(required = false) ProjectUpdateTaskInput input) {
         ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(input);
 
 
@@ -120,16 +128,28 @@ public class ProjectController {
         Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
         if (optionalPropertyInfo.isEmpty()) {
             response = new ResponseEntity(
-                    ErrorMessages.MissingPropertyError("projectID"),
+                    new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
                     HttpStatus.BAD_REQUEST);
         } else {
-            response = new ResponseEntity<>(HttpStatus.OK);
             PropertyInfo<?> propertyInfo = optionalPropertyInfo.get();
             String projectID = propertyInfo.getPropertyValue().toString();
-            this.repository.updateTask(projectID, taskID, propertyInfoList);
+            Document result = this.repository.updateTask(projectID, taskID, propertyInfoList);
+            response = new ResponseEntity<>(result, HttpStatus.OK);
         }
 
-
         return response;
+    }
+
+    //ADD COMMENT TO A TASK IN A PROJECT
+    @PostMapping(ApiRouteConstants.ProjectsTaskComment)
+    public ResponseEntity<?> addCommentToTask(@RequestBody TaskAddCommentInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.addCommentToTask(input);
+            response = new ResponseEntity(result, HttpStatus.CREATED);
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

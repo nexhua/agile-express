@@ -129,8 +129,6 @@ cn: submanagers
 ou: submanager
 uniqueMember: uid=ben,ou=people,dc=springframework,dc=org
 
-
-
 dn: uid=mert.koca,ou=people,dc=springframework,dc=org
 objectclass: top
 objectclass: person
@@ -139,47 +137,7 @@ objectclass: inetOrgPerson
 cn: Mert Koca
 sn: Koca
 uid: mert.koca
-userPassword: {bcrypt}$2a$10$GCvzKDZuWZf/oN9Hs68PVOXOz.xZh5Q1DLg0TSN5uFWsaSKs3y/cW
-
-dn: uid=hasan.hüseyin,ou=people,dc=springframework,dc=org
-objectclass: top
-objectclass: person
-objectclass: organizationalPerson
-objectclass: inetOrgPerson
-cn: Hasan Hüseyin
-sn: Hüseyin
-uid: hasan.hüseyin
-userPassword: {bcrypt}$2a$10$rImMtIY7x9RZL74P.4I4zeE8jdUT2dQ1u19hlAiDsomFJR1TCHu8C
-
-dn: uid=mahoreis,ou=people,dc=springframework,dc=org
-objectclass: top
-objectclass: person
-objectclass: organizationalPerson
-objectclass: inetOrgPerson
-cn: Mahmut Hasan
-sn: Hasan
-uid: mahoreis
-userPassword: {bcrypt}$2a$10$pH73.tUgiMF7NGDr819Nwukr30IFvbP7L7MSW3uEzx/CLFu./xyjm
-
-dn: uid=benjamin,ou=people,dc=springframework,dc=org
-objectclass: top
-objectclass: person
-objectclass: organizationalPerson
-objectclass: inetOrgPerson
-cn: Benjamin Clock
-sn: Clock
-uid: benjamin
-userPassword: {bcrypt}$2a$10$ei0fJ.pX8KzD4yfDFs73dumyVBsT6YVwneYQkk4koDAug4LsuVrBW
-
-dn: uid=mstf,ou=people,dc=springframework,dc=org
-objectclass: top
-objectclass: person
-objectclass: organizationalPerson
-objectclass: inetOrgPerson
-cn: Mustafa Sandal
-sn: Sandal
-uid: mstf
-userPassword: {bcrypt}$2a$10$W01guxBvK2Rbl3YQYKJPF.uoaTvLSnqJQwNRHdysL4mGqHfbVe6ey
+userPassword: {bcrypt}$2a$10$JxCz6gYS.hZHRx1sDekOkuWYN08lB0t45QsjnawoELr.i/enzc1kq
 
 dn: uid=john.doe,ou=people,dc=springframework,dc=org
 objectclass: top
@@ -189,4 +147,4 @@ objectclass: inetOrgPerson
 cn: John Doe
 sn: Doe
 uid: john.doe
-userPassword: {bcrypt}$2a$10$t9IyaO94JNnQlC6qJBD78.eHrr8o7YvhfvYBm9nqlrj3V6BoYdjfC
+userPassword: {bcrypt}$2a$10$Hw6rkGblSnRRTxaBW9WG/ue17JG3u2nl59BLlrXjb0nQiskaxNsmm

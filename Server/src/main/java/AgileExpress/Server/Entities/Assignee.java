@@ -1,9 +1,14 @@
 package AgileExpress.Server.Entities;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Date;
 
 public class Assignee {
 
+    @Id
+    @GeneratedValue
+    private String id;
     private String userID;
 
     private String assignedBy;

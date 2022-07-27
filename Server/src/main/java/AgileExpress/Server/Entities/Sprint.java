@@ -1,9 +1,14 @@
 package AgileExpress.Server.Entities;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Date;
 
 public class Sprint {
 
+    @Id
+    @GeneratedValue
+    private String id;
     private Date startDate;
 
     private Date endDate;
