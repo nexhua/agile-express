@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 public class Task {
@@ -36,6 +37,10 @@ public class Task {
         this.storyPoint = storyPoint;
         this.createdAt = new Date();
         this.sprint = MongoConstants.Unassigned;
+    }
+
+    public Optional<Assignee> getAssignee(String userID) {
+        return this.getAssignees().stream().filter(a -> a.getUserID().equals(userID)).findFirst();
     }
 
     //region Getter and Setters

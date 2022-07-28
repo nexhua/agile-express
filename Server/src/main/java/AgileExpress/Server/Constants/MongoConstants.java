@@ -52,5 +52,7 @@ public class MongoConstants {
 
     public static final String Labels = "labels";
 
+    public static final String UserID = "userID";
+
     //endregion
 }

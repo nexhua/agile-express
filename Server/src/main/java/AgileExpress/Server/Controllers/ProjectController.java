@@ -2,8 +2,11 @@ package AgileExpress.Server.Controllers;
 
 import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Constants.ErrorMessages;
+import AgileExpress.Server.Constants.MongoConstants;
+import AgileExpress.Server.Entities.Assignee;
 import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Entities.Task;
+import AgileExpress.Server.Helpers.ProjectHelper;
 import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.Project.*;
 import AgileExpress.Server.Inputs.Task.*;
@@ -228,6 +231,38 @@ public class ProjectController {
         return response;
     }
 
+
+    //TODO: Change to search userID for all projects
+    //GET ASSIGNEE OF A TASK IN A PROJECT
+    @GetMapping(ApiRouteConstants.ProjectTaskAssigneePath)
+    public ResponseEntity<?> getAssignee(@PathVariable String userID, @RequestBody TaskGetAssigneeInput input) {
+        ResponseEntity response;
+        try {
+            Optional<Project> optionalProject = this.repository.findById(input.getProjectID());
+            if (optionalProject.isEmpty()) {
+                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                Project project = optionalProject.get();
+                Optional<Task> optionalTask = project.getTask(input.getTaskID());
+                if (optionalTask.isEmpty()) {
+                    response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } else {
+                    Task task = optionalTask.get();
+                    Optional<Assignee> optionalAssignee = task.getAssignee(userID);
+                    if (optionalAssignee.isEmpty()) {
+                        response = new ResponseEntity(HttpStatus.NOT_FOUND);
+                    }
+                    else {
+                        response = new ResponseEntity<>(optionalAssignee.get(), HttpStatus.OK);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
     //GET ASSIGNEES OF A TASK IN A PROJECT
     @GetMapping(ApiRouteConstants.ProjectTaskAssignee)
     public ResponseEntity<?> getAssignees(@RequestBody BaseProjectAndTaskInput input) {
@@ -257,8 +292,15 @@ public class ProjectController {
     public ResponseEntity<?> addAssigneeToTask(@RequestBody TaskAddAssigneeInput input) {
         ResponseEntity response;
         try {
-            UpdateResult result = this.repository.addAssigneeToTask(input);
-            response = new ResponseEntity(result, HttpStatus.CREATED);
+            boolean userAssigned = ProjectHelper.isUserAssigned(this.repository.findById(input.getProjectID()), input);
+
+            if (!userAssigned) {
+                UpdateResult result = this.repository.addAssigneeToTask(input);
+                response = new ResponseEntity(result, HttpStatus.CREATED);
+            } else {
+                response = new ResponseEntity(new Document(ErrorMessages.Title,
+                        ErrorMessages.PropertyAlreadyExistsWithValue(MongoConstants.UserID)), HttpStatus.BAD_REQUEST);
+            }
         } catch (Exception e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
