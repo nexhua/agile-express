@@ -1,4 +1,4 @@
-package AgileExpress.Server.Inputs;
+package AgileExpress.Server.Inputs.User;
 
 import AgileExpress.Server.Constants.UserTypes;
 import AgileExpress.Server.LDAP.CustomBcryptPasswordEncoder;

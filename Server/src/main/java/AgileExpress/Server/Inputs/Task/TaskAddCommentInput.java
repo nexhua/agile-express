@@ -1,4 +1,4 @@
-package AgileExpress.Server.Inputs;
+package AgileExpress.Server.Inputs.Task;
 
 import AgileExpress.Server.Entities.Comment;
 import AgileExpress.Server.Helpers.ReflectionHelper;

@@ -1,4 +1,4 @@
-package AgileExpress.Server.Inputs;
+package AgileExpress.Server.Inputs.Task;
 
 import AgileExpress.Server.Entities.Assignee;
 import AgileExpress.Server.Helpers.ReflectionHelper;
@@ -11,10 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TaskAddAssigneeInput extends BaseProjectAndTaskInput implements IToInputObject<Assignee>, IToInputDocument {
 
-
     private String userID;
-
-
     private String assignedBy;
 
     public TaskAddAssigneeInput() {

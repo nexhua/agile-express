@@ -1,7 +1,4 @@
-package AgileExpress.Server.Inputs;
-
-import AgileExpress.Server.Entities.Comment;
-import AgileExpress.Server.Interfaces.IToInputObject;
+package AgileExpress.Server.Inputs.Task;
 
 public class TaskDeleteCommentInput extends BaseProjectAndTaskInput {
 

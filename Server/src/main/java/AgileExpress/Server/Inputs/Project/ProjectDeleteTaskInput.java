@@ -1,4 +1,4 @@
-package AgileExpress.Server.Inputs;
+package AgileExpress.Server.Inputs.Project;
 
 public class ProjectDeleteTaskInput {
 

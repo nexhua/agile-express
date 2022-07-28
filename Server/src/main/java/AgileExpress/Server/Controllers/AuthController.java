@@ -3,11 +3,10 @@ package AgileExpress.Server.Controllers;
 import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Entities.User;
 import AgileExpress.Server.Helpers.AuthHelper;
-import AgileExpress.Server.Inputs.SignUpInput;
+import AgileExpress.Server.Inputs.User.SignUpInput;
 import AgileExpress.Server.LDAP.LDIFUser;
 import AgileExpress.Server.Repositories.UserRepository;
 import com.mongodb.MongoException;
-import org.bson.json.JsonObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

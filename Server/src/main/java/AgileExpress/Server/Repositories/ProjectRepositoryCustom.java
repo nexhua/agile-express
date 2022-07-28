@@ -1,13 +1,17 @@
 package AgileExpress.Server.Repositories;
 
-import AgileExpress.Server.Entities.Task;
-import AgileExpress.Server.Inputs.*;
+import AgileExpress.Server.Inputs.Project.ProjectAddUserInput;
+import AgileExpress.Server.Inputs.Project.ProjectCreateTaskInput;
+import AgileExpress.Server.Inputs.Project.ProjectDeleteTaskInput;
+import AgileExpress.Server.Inputs.Project.ProjectRemoveUserInput;
+import AgileExpress.Server.Inputs.Task.TaskAddAssigneeInput;
+import AgileExpress.Server.Inputs.Task.TaskAddCommentInput;
+import AgileExpress.Server.Inputs.Task.TaskDeleteCommentInput;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 public interface ProjectRepositoryCustom {
 

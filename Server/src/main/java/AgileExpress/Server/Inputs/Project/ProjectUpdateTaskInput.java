@@ -1,4 +1,4 @@
-package AgileExpress.Server.Inputs;
+package AgileExpress.Server.Inputs.Project;
 
 import AgileExpress.Server.Entities.Assignee;
 import AgileExpress.Server.Entities.Comment;
