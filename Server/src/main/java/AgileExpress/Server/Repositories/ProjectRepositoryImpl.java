@@ -7,10 +7,7 @@ import AgileExpress.Server.Inputs.Project.ProjectAddUserInput;
 import AgileExpress.Server.Inputs.Project.ProjectCreateTaskInput;
 import AgileExpress.Server.Inputs.Project.ProjectDeleteTaskInput;
 import AgileExpress.Server.Inputs.Project.ProjectRemoveUserInput;
-import AgileExpress.Server.Inputs.Task.TaskAddAssigneeInput;
-import AgileExpress.Server.Inputs.Task.TaskAddCommentInput;
-import AgileExpress.Server.Inputs.Task.TaskDeleteAssigneeInput;
-import AgileExpress.Server.Inputs.Task.TaskDeleteCommentInput;
+import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.model.Filters;
@@ -190,6 +187,44 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
             String fieldName = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Assignees, "");
 
             Bson update = Updates.pull(fieldName, new Document(MongoConstants.Id, QueryHelper.createID(input.getAssigneeID())));
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(Filters.and(projectFilter, taskFilter), update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult addLabelToTask(TaskAddLabelInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id), QueryHelper.createID(input.getTaskID()));
+
+            String assigneesName = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Labels);
+
+            Bson update = Updates.push(assigneesName, input.toDocument());
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(Filters.and(projectFilter, taskFilter), update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult removeLabelFromTask(TaskDeleteLabelInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id), QueryHelper.createID(input.getTaskID()));
+
+            String fieldName = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Labels, "");
+
+            Bson update = Updates.pull(fieldName, new Document(MongoConstants.Id, QueryHelper.createID(input.getLabelID())));
 
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.and(projectFilter, taskFilter), update);

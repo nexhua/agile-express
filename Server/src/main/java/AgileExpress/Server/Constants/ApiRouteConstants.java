@@ -30,7 +30,7 @@ public class ApiRouteConstants {
     public static final String ProjectsTaskPath = "/api/projects/task/{taskID}";
     public static final String ProjectsTaskComment = "/api/projects/task/comments";
     public static final String ProjectTaskAssignee = "/api/projects/task/assignees";
-
     public static final String ProjectTaskAssigneePath = "/api/projects/task/assignees/{userID}";
+    public static final String ProjectTaskLabel = "/api/project/task/labels";
     //endregion
 }

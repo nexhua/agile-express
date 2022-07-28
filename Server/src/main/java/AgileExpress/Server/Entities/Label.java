@@ -1,6 +1,13 @@
 package AgileExpress.Server.Entities;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 public class Label {
+
+    @Id
+    @GeneratedValue
+    private String id;
 
     private String labelName;
 
@@ -17,6 +24,14 @@ public class Label {
     }
 
     //region Getter and Setters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getLabelName() {
         return labelName;

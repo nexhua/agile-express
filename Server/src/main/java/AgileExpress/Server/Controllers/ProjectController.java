@@ -251,8 +251,7 @@ public class ProjectController {
                     Optional<Assignee> optionalAssignee = task.getAssignee(userID);
                     if (optionalAssignee.isEmpty()) {
                         response = new ResponseEntity(HttpStatus.NOT_FOUND);
-                    }
-                    else {
+                    } else {
                         response = new ResponseEntity<>(optionalAssignee.get(), HttpStatus.OK);
                     }
                 }
@@ -307,12 +306,57 @@ public class ProjectController {
         return response;
     }
 
-    //DELETE ASSIGNEE FROM A TASK IN PROJECT
+    //DELETE ASSIGNEE FROM A TASK IN A PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectTaskAssignee)
     public ResponseEntity<?> removeAssigneeFromTask(@RequestBody TaskDeleteAssigneeInput input) {
         ResponseEntity response;
         try {
             UpdateResult result = this.repository.removeAssigneeFromTask(input);
+            response = new ResponseEntity(result, HttpStatus.OK);
+        } catch (MongoException e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    //GET LABELS FROM A TASK IN A PROJECT
+    @GetMapping(ApiRouteConstants.ProjectTaskLabel)
+    public ResponseEntity<?> getLabels(@RequestBody BaseProjectAndTaskInput input) {
+        ResponseEntity response = new ResponseEntity(HttpStatus.NOT_FOUND);
+        try {
+            Optional<Project> optionalProject = this.repository.findById(input.getProjectID());
+            if (!optionalProject.isEmpty()) {
+                Project project = optionalProject.get();
+                Optional<Task> optionalTask = project.getTask(input.getTaskID());
+                if (!optionalTask.isEmpty()) {
+                    Task task = optionalTask.get();
+                    response = new ResponseEntity<>(task.getLabels(), HttpStatus.OK);
+                }
+            }
+        } catch (MongoException e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+
+    @PostMapping(ApiRouteConstants.ProjectTaskLabel)
+    public ResponseEntity<?> addLabel(@RequestBody TaskAddLabelInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.addLabelToTask(input);
+            response = new ResponseEntity<>(result, HttpStatus.CREATED);
+        } catch (MongoException e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @DeleteMapping(ApiRouteConstants.ProjectTaskLabel)
+    public ResponseEntity<?> deleteLabel(@RequestBody TaskDeleteLabelInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.removeLabelFromTask(input);
             response = new ResponseEntity(result, HttpStatus.OK);
         } catch (MongoException e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
