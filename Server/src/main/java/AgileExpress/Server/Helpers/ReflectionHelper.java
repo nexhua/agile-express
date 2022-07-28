@@ -1,6 +1,7 @@
 package AgileExpress.Server.Helpers;
 
 import AgileExpress.Server.Constants.MongoConstants;
+import AgileExpress.Server.Utility.IDGenerationPolicy;
 import AgileExpress.Server.Utility.PropertyInfo;
 import org.bson.Document;
 import org.springframework.util.CollectionUtils;
@@ -9,6 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Queue;
 
 public class ReflectionHelper {
 
@@ -52,23 +54,27 @@ public class ReflectionHelper {
         return propertyInfoList;
     }
 
-    public static Document toDocument(Object object) {
+    public static Document toDocument(Object object, Queue<String> ids) {
         Field[] fields = object.getClass().getDeclaredFields();
 
         Document document = new Document();
 
-        for(Field field : fields) {
+        for (Field field : fields) {
             String fieldName = field.getName();
             Object fieldValue = null;
             field.setAccessible(true);
             try {
                 fieldValue = field.get(object);
-            } catch (IllegalAccessException e) { }
+            } catch (IllegalAccessException e) {
+            }
 
-            if(checkIfFieldAnnotationHasId(field)) {
-               document.put(MongoConstants.Id, QueryHelper.createdID());
-            } else
-            {
+            if (checkIfFieldAnnotationHasId(field)) {
+                if (!getIDGenerationPolicy(field)) {
+                    document.put(fieldName, QueryHelper.createID(ids.remove()));
+                } else {
+                    document.put(MongoConstants.Id, QueryHelper.createdID());
+                }
+            } else {
                 document.put(fieldName, fieldValue);
             }
         }
@@ -78,11 +84,21 @@ public class ReflectionHelper {
 
     public static boolean checkIfFieldAnnotationHasId(Field field) {
         boolean hasIdAsAnnotation = false;
-        for(Annotation annotation : field.getDeclaredAnnotations()) {
-            if(annotation.annotationType().getSimpleName().equals("Id")) {
+        for (Annotation annotation : field.getDeclaredAnnotations()) {
+            if (annotation.annotationType().getSimpleName().equals("Id")) {
                 return true;
             }
         }
         return hasIdAsAnnotation;
+    }
+
+    public static boolean getIDGenerationPolicy(Field field) {
+        boolean shouldGenerateNewObjectID = true;
+        for (Annotation annotation : field.getDeclaredAnnotations()) {
+            if (annotation.annotationType().getSimpleName().equals("IDGenerationPolicy")) {
+                return false;
+            }
+        }
+        return shouldGenerateNewObjectID;
     }
 }

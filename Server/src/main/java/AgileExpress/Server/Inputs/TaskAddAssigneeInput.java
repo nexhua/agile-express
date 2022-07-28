@@ -6,56 +6,39 @@ import AgileExpress.Server.Interfaces.IToInputDocument;
 import AgileExpress.Server.Interfaces.IToInputObject;
 import org.bson.Document;
 
-public class TaskAddAssigneeInput implements IToInputObject<Assignee>, IToInputDocument {
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-    private String projectID;
+public class TaskAddAssigneeInput extends BaseProjectAndTaskInput implements IToInputObject<Assignee>, IToInputDocument {
 
-    private String taskID;
 
     private String userID;
 
-    private String username;
 
     private String assignedBy;
 
     public TaskAddAssigneeInput() {
     }
 
-    public TaskAddAssigneeInput(String projectID, String taskID, String userID, String assignedBy, String username) {
-        this.projectID = projectID;
-        this.taskID = taskID;
+    public TaskAddAssigneeInput(String projectID, String taskID, String userID, String assignedBy) {
+        super(projectID, taskID);
         this.userID = userID;
         this.assignedBy = assignedBy;
-        this.username = username;
     }
 
     @Override
     public Assignee toObject() {
-        return new Assignee(this.getUserID(), this.getAssignedBy(), this.getUsername());
+        return new Assignee(this.getUserID(), this.getAssignedBy());
     }
 
     @Override
     public Document toDocument() {
-        return ReflectionHelper.toDocument(this.toObject());
+        Queue<String> idQueue = new ConcurrentLinkedQueue<>();
+        idQueue.add(this.getUserID());
+        return ReflectionHelper.toDocument(this.toObject(), idQueue);
     }
 
     //region Getter and Setters
-
-    public String getProjectID() {
-        return projectID;
-    }
-
-    public void setProjectID(String projectID) {
-        this.projectID = projectID;
-    }
-
-    public String getTaskID() {
-        return taskID;
-    }
-
-    public void setTaskID(String taskID) {
-        this.taskID = taskID;
-    }
 
     public String getUserID() {
         return userID;
@@ -71,14 +54,6 @@ public class TaskAddAssigneeInput implements IToInputObject<Assignee>, IToInputD
 
     public void setAssignedBy(String assignedBy) {
         this.assignedBy = assignedBy;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     //endregion

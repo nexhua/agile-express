@@ -32,7 +32,7 @@ public class TaskAddCommentInput implements IToInputObject<Comment>, IToInputDoc
 
     @Override
     public Document toDocument() {
-        return ReflectionHelper.toDocument(this.toObject());
+        return ReflectionHelper.toDocument(this.toObject(), null);
     }
 
     //region Getters and Setters

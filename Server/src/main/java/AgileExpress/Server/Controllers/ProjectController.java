@@ -214,6 +214,7 @@ public class ProjectController {
         return response;
     }
 
+    //DELETE A COMMENT FROM A TASK IN A PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectsTaskComment)
     public ResponseEntity<?> deleteCommentFromTask(@RequestBody TaskDeleteCommentInput input) {
         ResponseEntity response;
@@ -221,6 +222,30 @@ public class ProjectController {
             UpdateResult result = this.repository.removeCommentFromTask(input);
             response = new ResponseEntity(result, HttpStatus.OK);
         } catch (MongoException e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    //GET ASSIGNEES OF A TASK IN A PROJECT
+    @GetMapping(ApiRouteConstants.ProjectTaskAssignee)
+    public ResponseEntity<?> getAssignees(BaseProjectAndTaskInput input) {
+        ResponseEntity response;
+        try {
+            Optional<Project> optionalProject = this.repository.findById(input.getProjectID());
+            if (optionalProject.isEmpty()) {
+                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                Project project = optionalProject.get();
+                Optional<Task> optionalTask = project.getTask(input.getTaskID());
+                if (optionalTask.isEmpty()) {
+                    response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } else {
+                    Task task = optionalTask.get();
+                    response = new ResponseEntity<>(task.getAssignees(), HttpStatus.OK);
+                }
+            }
+        } catch (Exception e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;

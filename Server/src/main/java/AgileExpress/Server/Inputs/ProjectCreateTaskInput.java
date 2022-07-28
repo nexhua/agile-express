@@ -33,7 +33,7 @@ public class ProjectCreateTaskInput implements IToInputObject<Task>, IToInputDoc
     }
 
     public Document toDocument() {
-        return ReflectionHelper.toDocument(this.toObject());
+        return ReflectionHelper.toDocument(this.toObject(), null);
     }
 
     //region Getter and Setters
