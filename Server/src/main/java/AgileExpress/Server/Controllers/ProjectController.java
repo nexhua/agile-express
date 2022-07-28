@@ -3,6 +3,7 @@ package AgileExpress.Server.Controllers;
 import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Entities.Project;
+import AgileExpress.Server.Entities.Task;
 import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.*;
 import AgileExpress.Server.Repositories.ProjectRepository;
@@ -34,7 +35,7 @@ public class ProjectController {
     public ResponseEntity<?> getProject(@PathVariable String projectID) {
         ResponseEntity response;
         try {
-            Optional<Project> project = repository.findById(projectID);
+            Optional<Project> project = this.repository.findById(projectID);
             if (project.isEmpty()) {
                 response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
@@ -93,8 +94,8 @@ public class ProjectController {
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
-    //GET TASK FROM PROJECT
-    @GetMapping(ApiRouteConstants.ProjectsTask)
+    //GET TASKS FROM PROJECT
+    @GetMapping(ApiRouteConstants.ProjectsTasks)
     public ResponseEntity<?> getTasks(@RequestBody ProjectGetTasksInput input) {
         ResponseEntity response;
         try {
@@ -104,6 +105,29 @@ public class ProjectController {
             } else {
                 Project projectObject = project.get();
                 response = new ResponseEntity<>(projectObject.getTasks(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    //GET A TASK FROM A PROJECT
+    @GetMapping(ApiRouteConstants.ProjectsTask)
+    public ResponseEntity<?> getTask(@RequestBody BaseProjectAndTaskInput input) {
+        ResponseEntity response;
+        try {
+            Optional<Project> optionalProject = this.repository.findById(input.getProjectID());
+            if (optionalProject.isEmpty()) {
+                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                Optional<Task> optionalTask = optionalProject.get().getTask(input.getTaskID());
+                if (optionalTask.isEmpty()) {
+                    response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } else {
+                    Task task = optionalTask.get();
+                    response = new ResponseEntity<>(task, HttpStatus.OK);
+                }
             }
         } catch (Exception e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -140,6 +164,43 @@ public class ProjectController {
         return response;
     }
 
+    //DELETE TASK FROM A PROJECT
+    @DeleteMapping(ApiRouteConstants.ProjectsTask)
+    public ResponseEntity<?> deleteTask(@RequestBody ProjectDeleteTaskInput input) {
+        ResponseEntity<?> response;
+        try {
+            UpdateResult result = this.repository.deleteTask(input);
+            response = new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    //GET COMMENTS FROM A TASK IN A PROJECT
+    @GetMapping(ApiRouteConstants.ProjectsTaskComment)
+    public ResponseEntity<?> getComments(@RequestBody BaseProjectAndTaskInput input) {
+        ResponseEntity response;
+        try {
+            Optional<Project> optionalProject = this.repository.findById(input.getProjectID());
+            if (optionalProject.isEmpty()) {
+                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                Project project = optionalProject.get();
+                Optional<Task> optionalTask = project.getTask(input.getTaskID());
+                if (optionalTask.isEmpty()) {
+                    response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } else {
+                    Task task = optionalTask.get();
+                    response = new ResponseEntity<>(task.getComments(), HttpStatus.OK);
+                }
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
     //ADD COMMENT TO A TASK IN A PROJECT
     @PostMapping(ApiRouteConstants.ProjectsTaskComment)
     public ResponseEntity<?> addCommentToTask(@RequestBody TaskAddCommentInput input) {
@@ -148,6 +209,18 @@ public class ProjectController {
             UpdateResult result = this.repository.addCommentToTask(input);
             response = new ResponseEntity(result, HttpStatus.CREATED);
         } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @DeleteMapping(ApiRouteConstants.ProjectsTaskComment)
+    public ResponseEntity<?> deleteCommentFromTask(@RequestBody TaskDeleteCommentInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.removeCommentFromTask(input);
+            response = new ResponseEntity(result, HttpStatus.OK);
+        } catch (MongoException e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;

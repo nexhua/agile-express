@@ -14,21 +14,24 @@ public class TaskAddAssigneeInput implements IToInputObject<Assignee>, IToInputD
 
     private String userID;
 
+    private String username;
+
     private String assignedBy;
 
     public TaskAddAssigneeInput() {
     }
 
-    public TaskAddAssigneeInput(String projectID, String taskID, String userID, String assignedBy) {
+    public TaskAddAssigneeInput(String projectID, String taskID, String userID, String assignedBy, String username) {
         this.projectID = projectID;
         this.taskID = taskID;
         this.userID = userID;
         this.assignedBy = assignedBy;
+        this.username = username;
     }
 
     @Override
     public Assignee toObject() {
-        return new Assignee(this.getUserID(), this.getAssignedBy());
+        return new Assignee(this.getUserID(), this.getAssignedBy(), this.getUsername());
     }
 
     @Override
@@ -70,6 +73,13 @@ public class TaskAddAssigneeInput implements IToInputObject<Assignee>, IToInputD
         this.assignedBy = assignedBy;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     //endregion
 }

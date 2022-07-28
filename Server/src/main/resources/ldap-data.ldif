@@ -129,16 +129,6 @@ cn: submanagers
 ou: submanager
 uniqueMember: uid=ben,ou=people,dc=springframework,dc=org
 
-dn: uid=mert.koca,ou=people,dc=springframework,dc=org
-objectclass: top
-objectclass: person
-objectclass: organizationalPerson
-objectclass: inetOrgPerson
-cn: Mert Koca
-sn: Koca
-uid: mert.koca
-userPassword: {bcrypt}$2a$10$JxCz6gYS.hZHRx1sDekOkuWYN08lB0t45QsjnawoELr.i/enzc1kq
-
 dn: uid=john.doe,ou=people,dc=springframework,dc=org
 objectclass: top
 objectclass: person
@@ -147,4 +137,24 @@ objectclass: inetOrgPerson
 cn: John Doe
 sn: Doe
 uid: john.doe
-userPassword: {bcrypt}$2a$10$Hw6rkGblSnRRTxaBW9WG/ue17JG3u2nl59BLlrXjb0nQiskaxNsmm
+userPassword: {bcrypt}$2a$10$zGWFwx5u9Ey5XVr8DW/T.um33R7Wd/kjTK5IUD8/HaeDwopTbdXzW
+
+dn: uid=mert.koca,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Mert Koca
+sn: Koca
+uid: mert.koca
+userPassword: {bcrypt}$2a$10$a9C.tStS6ZpBDaqmaRDifuhqdtItTkrgYRMkKzvYUvTYxV6agOYYq
+
+dn: uid=mehmet.yıldız,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Mehmet Yıldız
+sn: Yıldız
+uid: mehmet.yıldız
+userPassword: {bcrypt}$2a$10$FRXPglN/bFBSSSmAlBNYTuVZFNrQLq95zXb8aOiABi80nJ0ilR36.

@@ -44,6 +44,10 @@ public class Project {
         this.teamMembers = teamMembers;
     }
 
+    public Optional<Task> getTask(String id) {
+        return this.getTasks().stream().filter(t-> t.getId().equals(id)).findFirst();
+    }
+
     //region Getter and Setters
 
     public String getId() {

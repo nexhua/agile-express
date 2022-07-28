@@ -27,7 +27,7 @@ public class User {
     private String surname;
 
     @Field("role")
-    private UserTypes type = UserTypes.TEAM_MEMBER;
+    private UserTypes type;
 
     @Field("projects")
     private List<Project> projectIds;

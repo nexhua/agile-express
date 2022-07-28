@@ -24,6 +24,14 @@ public class AccessLevelHelper implements ApplicationContextAware {
         return user.getType();
     }
 
+    public boolean hasHigherAccessLevel(UserTypes user, UserTypes reference) {
+        return user.compareTo(reference) > 0;
+    }
+
+    public boolean hasHigherOrEqualAccessLevel(UserTypes user, UserTypes reference) {
+        return user.compareTo(reference) >= 0;
+    }
+
     public static <T extends Object> T getBean(Class<T> beanClass) {
         return context.getBean(beanClass);
     }

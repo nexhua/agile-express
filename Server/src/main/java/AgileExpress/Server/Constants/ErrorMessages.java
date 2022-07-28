@@ -11,4 +11,8 @@ public class ErrorMessages {
     public static String NoPropertyToUpdateError(int foundPropertyCount) {
         return String.format("Found %s properties to update. Please send the request with the correct properties", foundPropertyCount);
     }
+
+    public static String DocumentNotFound(String seearchedObjectName) {
+        return String.format("Could not find the \"%s\" object in the database.", seearchedObjectName);
+    }
 }

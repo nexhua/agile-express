@@ -3,12 +3,10 @@ package AgileExpress.Server.Repositories;
 import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Helpers.QueryHelper;
-import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -16,9 +14,9 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.UpdateDefinition;
 
-import java.sql.Ref;
+
+
 import java.util.ArrayList;
 
 
@@ -103,6 +101,21 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         return result;
     }
 
+    @Override
+    public UpdateResult deleteTask(ProjectDeleteTaskInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+
+            Bson update = Updates.pull(MongoConstants.Tasks, new Document(MongoConstants.Id, QueryHelper.createID(input.getTaskID())));
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(projectFilter, update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
 
     @Override
     public UpdateResult addCommentToTask(TaskAddCommentInput input) {
@@ -116,6 +129,25 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                     .asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Comments);
 
             Bson update = Updates.push(commentName, input.toDocument());
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(Filters.and(projectFilter, taskFilter), update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult removeCommentFromTask(TaskDeleteCommentInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id), QueryHelper.createID(input.getTaskID()));
+
+            String fieldName = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Comments, "");
+
+            Bson update = Updates.pull(fieldName, new Document(MongoConstants.Id, QueryHelper.createID(input.getCommentID())));
+
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.and(projectFilter, taskFilter), update);
         } catch (MongoException e) {
