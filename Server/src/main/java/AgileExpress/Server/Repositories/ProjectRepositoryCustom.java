@@ -6,6 +6,7 @@ import AgileExpress.Server.Inputs.Project.ProjectDeleteTaskInput;
 import AgileExpress.Server.Inputs.Project.ProjectRemoveUserInput;
 import AgileExpress.Server.Inputs.Task.TaskAddAssigneeInput;
 import AgileExpress.Server.Inputs.Task.TaskAddCommentInput;
+import AgileExpress.Server.Inputs.Task.TaskDeleteAssigneeInput;
 import AgileExpress.Server.Inputs.Task.TaskDeleteCommentInput;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.client.result.UpdateResult;
@@ -32,4 +33,6 @@ public interface ProjectRepositoryCustom {
     UpdateResult removeCommentFromTask(TaskDeleteCommentInput input);
 
     UpdateResult addAssigneeToTask(TaskAddAssigneeInput input);
+
+    UpdateResult removeAssigneeFromTask(TaskDeleteAssigneeInput input);
 }

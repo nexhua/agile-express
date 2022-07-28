@@ -6,10 +6,7 @@ import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Entities.Task;
 import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.Project.*;
-import AgileExpress.Server.Inputs.Task.BaseProjectAndTaskInput;
-import AgileExpress.Server.Inputs.Task.TaskAddAssigneeInput;
-import AgileExpress.Server.Inputs.Task.TaskAddCommentInput;
-import AgileExpress.Server.Inputs.Task.TaskDeleteCommentInput;
+import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Repositories.ProjectRepository;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
@@ -233,7 +230,7 @@ public class ProjectController {
 
     //GET ASSIGNEES OF A TASK IN A PROJECT
     @GetMapping(ApiRouteConstants.ProjectTaskAssignee)
-    public ResponseEntity<?> getAssignees(BaseProjectAndTaskInput input) {
+    public ResponseEntity<?> getAssignees(@RequestBody BaseProjectAndTaskInput input) {
         ResponseEntity response;
         try {
             Optional<Project> optionalProject = this.repository.findById(input.getProjectID());
@@ -263,6 +260,19 @@ public class ProjectController {
             UpdateResult result = this.repository.addAssigneeToTask(input);
             response = new ResponseEntity(result, HttpStatus.CREATED);
         } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    //DELETE ASSIGNEE FROM A TASK IN PROJECT
+    @DeleteMapping(ApiRouteConstants.ProjectTaskAssignee)
+    public ResponseEntity<?> removeAssigneeFromTask(@RequestBody TaskDeleteAssigneeInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.removeAssigneeFromTask(input);
+            response = new ResponseEntity(result, HttpStatus.OK);
+        } catch (MongoException e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
