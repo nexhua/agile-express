@@ -1,27 +1,19 @@
 package AgileExpress.Server.Inputs.Project;
 
-public class ProjectDeleteTaskInput {
+public class ProjectDeleteTaskInput extends BaseProjectInput {
 
-    private String projectID;
 
     private String taskID;
 
     public ProjectDeleteTaskInput() { }
 
     public ProjectDeleteTaskInput(String projectID, String taskID) {
-        this.projectID = projectID;
+        super(projectID);
         this.taskID = taskID;
     }
 
     //region Getter and Setters
 
-    public String getProjectID() {
-        return projectID;
-    }
-
-    public void setProjectID(String projectID) {
-        this.projectID = projectID;
-    }
 
     public String getTaskID() {
         return taskID;

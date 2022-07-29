@@ -1,17 +1,16 @@
 package AgileExpress.Server.Inputs.Project;
 
-//TODO: ??
-public class ProjectGetTasksInput {
+public class BaseProjectInput {
 
     private String projectID;
 
-    public ProjectGetTasksInput() { }
+    public BaseProjectInput() { };
 
-    public ProjectGetTasksInput(String projectID) {
+    public BaseProjectInput(String projectID) {
         this.projectID = projectID;
     }
 
-    //region Getter and Setters
+    //region Getters and Setter
 
     public String getProjectID() {
         return projectID;

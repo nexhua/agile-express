@@ -3,15 +3,13 @@ package AgileExpress.Server.Repositories;
 import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Helpers.QueryHelper;
-import AgileExpress.Server.Inputs.Project.ProjectAddUserInput;
-import AgileExpress.Server.Inputs.Project.ProjectCreateTaskInput;
-import AgileExpress.Server.Inputs.Project.ProjectDeleteTaskInput;
-import AgileExpress.Server.Inputs.Project.ProjectRemoveUserInput;
+import AgileExpress.Server.Inputs.Project.*;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -37,7 +35,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         UpdateResult result;
         try {
             result = mongoTemplate.getCollection(MongoConstants.Projects)
-                    .updateOne(Filters.eq(MongoConstants.Id, new ObjectId(input.getProjectId())),
+                    .updateOne(Filters.eq(MongoConstants.Id, new ObjectId(input.getProjectID())),
                             Updates.addEachToSet(MongoConstants.ProjectTeamMembers, input.ToDocumentArray()));
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
@@ -98,6 +96,20 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                             Updates.combine(updateOperations));
         } catch (MongoException e) {
             result = new Document(ErrorMessages.Title, e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public DeleteResult deleteProject(BaseProjectInput input) {
+        DeleteResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .deleteOne(projectFilter);
+        } catch (MongoException e) {
+            result = DeleteResult.unacknowledged();
         }
         return result;
     }

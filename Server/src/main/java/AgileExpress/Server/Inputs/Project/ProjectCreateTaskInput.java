@@ -8,9 +8,8 @@ import org.bson.Document;
 
 import java.util.Date;
 
-public class ProjectCreateTaskInput implements IToInputObject<Task>, IToInputDocument {
+public class ProjectCreateTaskInput extends BaseProjectInput implements IToInputObject<Task>, IToInputDocument {
 
-    private String projectID;
     private String name;
     private String description;
     private String createdBy;
@@ -20,7 +19,7 @@ public class ProjectCreateTaskInput implements IToInputObject<Task>, IToInputDoc
     }
 
     public ProjectCreateTaskInput(String projectID, String name, String description, String createdBy, int storyPoint) {
-        this.projectID = projectID;
+        super(projectID);
         this.name = name;
         this.description = description;
         this.createdBy = createdBy;
@@ -37,14 +36,6 @@ public class ProjectCreateTaskInput implements IToInputObject<Task>, IToInputDoc
     }
 
     //region Getter and Setters
-
-    public String getProjectID() {
-        return projectID;
-    }
-
-    public void setProjectID(String projectID) {
-        this.projectID = projectID;
-    }
 
     public String getName() {
         return name;

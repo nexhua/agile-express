@@ -13,6 +13,7 @@ import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Repositories.ProjectRepository;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.joda.time.DateTime;
@@ -103,6 +104,18 @@ public class ProjectController {
             response = new ResponseEntity<>(result, HttpStatus.OK);
         }
 
+        return response;
+    }
+
+    @DeleteMapping(ApiRouteConstants.Projects)
+    public ResponseEntity<?> deleteProject(@RequestBody BaseProjectInput input) {
+        ResponseEntity<?> response;
+        try {
+            DeleteResult result = this.repository.deleteProject(input);
+            response = new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return response;
     }
 

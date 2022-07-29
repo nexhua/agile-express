@@ -1,11 +1,9 @@
 package AgileExpress.Server.Repositories;
 
-import AgileExpress.Server.Inputs.Project.ProjectAddUserInput;
-import AgileExpress.Server.Inputs.Project.ProjectCreateTaskInput;
-import AgileExpress.Server.Inputs.Project.ProjectDeleteTaskInput;
-import AgileExpress.Server.Inputs.Project.ProjectRemoveUserInput;
+import AgileExpress.Server.Inputs.Project.*;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Utility.PropertyInfo;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
@@ -19,6 +17,8 @@ public interface ProjectRepositoryCustom {
 
 
     Document updateProject(String projectID, ArrayList<PropertyInfo<?>> propertyInfoList);
+
+    DeleteResult deleteProject(BaseProjectInput input);
 
     UpdateResult addTask(ProjectCreateTaskInput input);
 

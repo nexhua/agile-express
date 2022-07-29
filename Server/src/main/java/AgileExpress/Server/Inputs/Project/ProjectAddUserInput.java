@@ -9,14 +9,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProjectAddUserInput {
+public class ProjectAddUserInput extends BaseProjectInput {
 
     private List<String> userIds = Collections.emptyList();
 
-    private String projectId;
-
     public ProjectAddUserInput() {
 
+    }
+
+    public ProjectAddUserInput(String projectID, List<String> userIds) {
+        super(projectID);
+        this.userIds = userIds;
     }
 
     public boolean Add(String id) {
@@ -43,14 +46,6 @@ public class ProjectAddUserInput {
 
     public void setUserIds(List<String> userIds) {
         this.userIds = userIds;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
     }
 
     //endregion

@@ -1,20 +1,18 @@
 package AgileExpress.Server.Inputs.Project;
 
-public class ProjectRemoveUserInput {
+public class ProjectRemoveUserInput extends BaseProjectInput {
 
-    private String projectID;
 
     private String userID;
 
     public ProjectRemoveUserInput() { }
 
-    public String getProjectID() {
-        return projectID;
+    public ProjectRemoveUserInput(String projectID, String userID) {
+        super(projectID);
+        this.userID = userID;
     }
 
-    public void setProjectID(String projectID) {
-        this.projectID = projectID;
-    }
+    //region Getters and Setters
 
     public String getUserID() {
         return userID;
@@ -23,4 +21,6 @@ public class ProjectRemoveUserInput {
     public void setUserID(String userID) {
         this.userID = userID;
     }
+
+    //endregion
 }
