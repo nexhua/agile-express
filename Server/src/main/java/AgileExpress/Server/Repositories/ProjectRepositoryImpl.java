@@ -4,6 +4,8 @@ import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Helpers.QueryHelper;
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
+import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
@@ -91,7 +93,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         try {
             Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(projectID));
 
-             result = mongoTemplate.getCollection(MongoConstants.Projects)
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .findOneAndUpdate(projectFilter,
                             Updates.combine(updateOperations));
         } catch (MongoException e) {
@@ -270,6 +272,38 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.and(projectFilter, taskFilter), update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult addSprint(SprintCreateInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID((input.getProjectID())));
+
+            Bson update = Updates.push(MongoConstants.Sprint, input.toDocument());
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(projectFilter, update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult deleteSprint(SprintDeleteInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+
+            Bson update = Updates.pull(MongoConstants.Sprint, new Document(MongoConstants.Id, QueryHelper.createID(input.getSprintID())));
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(projectFilter, update);
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }

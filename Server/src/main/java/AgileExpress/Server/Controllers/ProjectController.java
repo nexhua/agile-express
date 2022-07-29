@@ -5,10 +5,13 @@ import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Entities.Assignee;
 import AgileExpress.Server.Entities.Project;
+import AgileExpress.Server.Entities.Sprint;
 import AgileExpress.Server.Entities.Task;
 import AgileExpress.Server.Helpers.ProjectHelper;
 import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
+import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Repositories.ProjectRepository;
 import AgileExpress.Server.Utility.PropertyInfo;
@@ -392,6 +395,48 @@ public class ProjectController {
         ResponseEntity response;
         try {
             UpdateResult result = this.repository.removeLabelFromTask(input);
+            response = new ResponseEntity(result, HttpStatus.OK);
+        } catch (MongoException e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @GetMapping(ApiRouteConstants.ProjectsSprint)
+    public ResponseEntity<?> getSprints(@RequestBody BaseProjectInput input) {
+        ResponseEntity response;
+        try {
+            Optional<Project> project = this.repository.findById(input.getProjectID());
+            if (project.isEmpty()) {
+                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                Project projectObject = project.get();
+                response = new ResponseEntity<List<Sprint>>(projectObject.getSprints(), HttpStatus.OK);
+
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @PostMapping(ApiRouteConstants.ProjectsSprint)
+    public ResponseEntity<?> addSprint(@RequestBody SprintCreateInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.addSprint(input);
+            response = new ResponseEntity<>(result, HttpStatus.CREATED);
+        } catch (MongoException e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @DeleteMapping(ApiRouteConstants.ProjectsSprint)
+    public ResponseEntity<?> deleteSprint(@RequestBody SprintDeleteInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.deleteSprint(input);
             response = new ResponseEntity(result, HttpStatus.OK);
         } catch (MongoException e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);

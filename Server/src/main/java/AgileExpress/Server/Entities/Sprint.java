@@ -19,14 +19,22 @@ public class Sprint {
 
     public Sprint() { }
 
-    public Sprint(Date startDate, Date endDate, String goal, boolean isClosed) {
+    public Sprint(Date startDate, Date endDate, String goal) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.goal = goal;
-        this.isClosed = isClosed;
+        this.isClosed = false;
     }
 
     //region Getter and Setters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Date getStartDate() {
         return startDate;

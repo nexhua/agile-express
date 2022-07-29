@@ -1,6 +1,8 @@
 package AgileExpress.Server.Repositories;
 
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
+import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.client.result.DeleteResult;
@@ -38,4 +40,8 @@ public interface ProjectRepositoryCustom {
     UpdateResult addLabelToTask(TaskAddLabelInput input);
 
     UpdateResult removeLabelFromTask(TaskDeleteLabelInput input);
+
+    UpdateResult addSprint(SprintCreateInput input);
+
+    UpdateResult deleteSprint(SprintDeleteInput input);
 }

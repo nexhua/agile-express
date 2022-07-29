@@ -44,7 +44,7 @@ public class MongoConstants {
 
     public static final String CurrentStatus = "currentStatus";
 
-    public static final String Sprint = "sprint";
+    public static final String Sprint = "sprints";
 
     public static final String Comments = "comments";
 
