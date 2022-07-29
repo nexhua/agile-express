@@ -87,7 +87,7 @@ public class ProjectController {
 
     //UPDATE PROJECT
     @PutMapping(ApiRouteConstants.Projects)
-    public ResponseEntity<?> updateProject(@RequestBody ChangeProjectInput input) {
+    public ResponseEntity<?> updateProject(@RequestBody(required = false) ChangeProjectInput input) {
         ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(input);
 
 

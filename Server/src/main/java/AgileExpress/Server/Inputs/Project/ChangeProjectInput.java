@@ -7,10 +7,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class ChangeProjectInput extends BaseProjectInput {
+public class ChangeProjectInput {
 
 
-
+    private String projectID;
     private String projectName;
 
     private Date startDate;
@@ -23,7 +23,7 @@ public class ChangeProjectInput extends BaseProjectInput {
     public ChangeProjectInput() { }
 
     public ChangeProjectInput(String projectID, String projectName, Date startDate, Date endDate, List<String> statusFields) {
-        super(projectID);
+        this.projectID = projectID;
         this.projectName = projectName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -31,6 +31,14 @@ public class ChangeProjectInput extends BaseProjectInput {
     }
 
     //region Getter and Setters
+
+    public String getProjectID() {
+        return projectID;
+    }
+
+    public void setProjectID(String projectID) {
+        this.projectID = projectID;
+    }
 
     public String getProjectName() {
         return projectName;

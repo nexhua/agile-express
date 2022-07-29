@@ -6,8 +6,9 @@ import AgileExpress.Server.Entities.Comment;
 import java.util.Collections;
 import java.util.List;
 
-public class ProjectUpdateTaskInput extends BaseProjectInput {
+public class ProjectUpdateTaskInput {
 
+    private String projectID;
     private String name;
     private String description;
     private int storyPoint = 0;
@@ -17,7 +18,7 @@ public class ProjectUpdateTaskInput extends BaseProjectInput {
     public ProjectUpdateTaskInput() { }
 
     public ProjectUpdateTaskInput(String projectID, String name, String description, int storyPoint, Number currentStatus, String sprint) {
-        super(projectID);
+        this.projectID = projectID;
         this.name = name;
         this.description = description;
         this.storyPoint = storyPoint;
@@ -26,6 +27,14 @@ public class ProjectUpdateTaskInput extends BaseProjectInput {
     }
 
     //region Getter and Setters
+
+    public String getProjectID() {
+        return projectID;
+    }
+
+    public void setProjectID(String projectID) {
+        this.projectID = projectID;
+    }
 
     public String getName() {
         return name;

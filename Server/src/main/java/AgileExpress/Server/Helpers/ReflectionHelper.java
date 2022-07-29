@@ -52,6 +52,8 @@ public class ReflectionHelper {
                             if (hasAnnotation(field, IncludeEmpty.class.getSimpleName())) {
                                 propertyInfoList.add(new PropertyInfo<>(fieldName, (Collection<?>) value));
                             }
+                        } else {
+                            propertyInfoList.add(new PropertyInfo<>(fieldName, (Collection<?>) value));
                         }
                     } catch (Exception e) {
                     }
@@ -60,7 +62,7 @@ public class ReflectionHelper {
                     field.setAccessible(true);
                     try {
                         Object value = field.get(object);
-                        if (!((Date) value).toString().equals("")) {
+                        if (value != null) {
                             propertyInfoList.add(new PropertyInfo<>(fieldName, (Date) value));
                         }
                     } catch (Exception e) {
