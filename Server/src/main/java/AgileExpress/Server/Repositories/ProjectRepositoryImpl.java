@@ -73,6 +73,36 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     }
 
     @Override
+    public Document updateProject(String projectID, ArrayList<PropertyInfo<?>> propertyInfoList) {
+        Document result;
+
+        ArrayList<Bson> updateOperations = new ArrayList<>();
+
+        for (PropertyInfo<?> propertyInfo : propertyInfoList) {
+            if (propertyInfo.isString() || propertyInfo.isCollection() || propertyInfo.isDate()) {
+                if (!propertyInfo.getPropertyName().equals("projectID")) {
+                    updateOperations.add(Updates.set(propertyInfo.getPropertyName(), propertyInfo.getPropertyValue()));
+                }
+            }
+        }
+
+        if (updateOperations.size() == 0) {
+            return new Document(ErrorMessages.Title, ErrorMessages.NoPropertyToUpdateError(updateOperations.size()));
+        }
+
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(projectID));
+
+             result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .findOneAndUpdate(projectFilter,
+                            Updates.combine(updateOperations));
+        } catch (MongoException e) {
+            result = new Document(ErrorMessages.Title, e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
     public Document updateTask(String projectID, String taskID, ArrayList<PropertyInfo<?>> propertyInfoList) {
         Document result;
 

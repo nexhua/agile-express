@@ -1,6 +1,7 @@
 package AgileExpress.Server.Utility;
 
 import java.util.Collection;
+import java.util.Date;
 
 public class PropertyInfo<T> {
 
@@ -24,6 +25,10 @@ public class PropertyInfo<T> {
 
     public boolean isCollection() {
         return this.getPropertyValue() instanceof Collection<?>;
+    }
+
+    public boolean isDate() {
+        return this.getPropertyValue() instanceof Date;
     }
 
     //region Getter and Setters

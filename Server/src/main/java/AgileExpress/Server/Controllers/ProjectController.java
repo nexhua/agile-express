@@ -35,7 +35,7 @@ public class ProjectController {
     }
 
     //GET PROJECT
-    @GetMapping(ApiRouteConstants.GetProject)
+    @GetMapping(ApiRouteConstants.Project)
     public ResponseEntity<?> getProject(@PathVariable String projectID) {
         ResponseEntity response;
         try {
@@ -56,7 +56,7 @@ public class ProjectController {
     }
 
     //GET PROJECTS
-    @GetMapping(ApiRouteConstants.GetProjects)
+    @GetMapping(ApiRouteConstants.Projects)
     public ResponseEntity<?> getProjects() {
         ResponseEntity response;
         try {
@@ -69,7 +69,7 @@ public class ProjectController {
     }
 
     //CREATE PROJECT
-    @PostMapping(ApiRouteConstants.GetProjects)
+    @PostMapping(ApiRouteConstants.Projects)
     public ResponseEntity createProject(@RequestBody CreateProjectInput input) {
         DateTime startDateMilis = new DateTime(input.getStartDate());
         DateTime endDateMilis = new DateTime(input.getEndDate());
@@ -82,6 +82,28 @@ public class ProjectController {
         }
 
         return new ResponseEntity(status);
+    }
+
+    //UPDATE PROJECT
+    @PutMapping(ApiRouteConstants.Projects)
+    public ResponseEntity<?> updateProject(@RequestBody ChangeProjectInput input) {
+        ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(input);
+
+
+        ResponseEntity response;
+        Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
+        if (optionalPropertyInfo.isEmpty()) {
+            response = new ResponseEntity(
+                    new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
+                    HttpStatus.BAD_REQUEST);
+        } else {
+            PropertyInfo<?> propertyInfo = optionalPropertyInfo.get();
+            String projectID = propertyInfo.getPropertyValue().toString();
+            Document result = this.repository.updateProject(projectID, propertyInfoList);
+            response = new ResponseEntity<>(result, HttpStatus.OK);
+        }
+
+        return response;
     }
 
     //ADD USER TO PROJECT

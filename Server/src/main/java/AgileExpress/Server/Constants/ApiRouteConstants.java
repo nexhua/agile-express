@@ -20,8 +20,8 @@ public class ApiRouteConstants {
 
     //region Project Routes
 
-    public static final String GetProject = "/api/projects/{projectID}";
-    public static final String GetProjects = "/api/projects";
+    public static final String Project = "/api/projects/{projectID}";
+    public static final String Projects = "/api/projects";
     public static final String ProjectUser = "/api/projects/user";
 
     public static final String ProjectsSprint = "/api/projects/sprint";
@@ -31,6 +31,6 @@ public class ApiRouteConstants {
     public static final String ProjectsTaskComment = "/api/projects/task/comments";
     public static final String ProjectTaskAssignee = "/api/projects/task/assignees";
     public static final String ProjectTaskAssigneePath = "/api/projects/task/assignees/{userID}";
-    public static final String ProjectTaskLabel = "/api/project/task/labels";
+    public static final String ProjectTaskLabel = "/api/projects/task/labels";
     //endregion
 }

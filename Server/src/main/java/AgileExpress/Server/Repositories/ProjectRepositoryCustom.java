@@ -18,6 +18,8 @@ public interface ProjectRepositoryCustom {
     UpdateResult removeTeamMember(ProjectRemoveUserInput input);
 
 
+    Document updateProject(String projectID, ArrayList<PropertyInfo<?>> propertyInfoList);
+
     UpdateResult addTask(ProjectCreateTaskInput input);
 
     Document updateTask(String projectID, String taskID, ArrayList<PropertyInfo<?>> propertyInfoList);
