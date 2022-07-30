@@ -1,6 +1,7 @@
 package AgileExpress.Server.Repositories;
 
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
@@ -42,6 +43,8 @@ public interface ProjectRepositoryCustom {
     UpdateResult removeLabelFromTask(TaskDeleteLabelInput input);
 
     UpdateResult addSprint(SprintCreateInput input);
+
+    Document updateSprint(String projectID, String sprintID, ArrayList<PropertyInfo<?>> propertyInfoList);
 
     UpdateResult deleteSprint(SprintDeleteInput input);
 }

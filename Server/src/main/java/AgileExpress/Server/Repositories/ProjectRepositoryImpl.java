@@ -4,6 +4,7 @@ import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Helpers.QueryHelper;
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
@@ -290,6 +291,41 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                     .updateOne(projectFilter, update);
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public Document updateSprint(String projectID, String sprintID, ArrayList<PropertyInfo<?>> propertyInfoList) {
+        Document result;
+
+        ArrayList<Bson> updateOperations = new ArrayList<>();
+
+        for (PropertyInfo<?> propertyInfo : propertyInfoList) {
+            if (propertyInfo.isString() || propertyInfo.isCollection() || propertyInfo.isDate() || propertyInfo.isBoolean()) {
+                if (!propertyInfo.getPropertyName().equals("projectID")) {
+
+                    String propertyName = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Sprint, propertyInfo.getPropertyName());
+                    updateOperations.add(Updates.set(propertyName, propertyInfo.getPropertyValue()));
+                }
+            }
+        }
+
+        if (updateOperations.size() == 0) {
+            return new Document(ErrorMessages.Title, ErrorMessages.NoPropertyToUpdateError(updateOperations.size()));
+        }
+
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(projectID));
+            Bson sprintFilter = Filters.eq(
+                    QueryHelper.asInnerDocumentProperty(MongoConstants.Sprint, MongoConstants.Id), QueryHelper.createID(sprintID));
+
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .findOneAndUpdate(Filters.and(projectFilter, sprintFilter),
+                            Updates.combine(updateOperations));
+        } catch (MongoException e) {
+            result = new Document(ErrorMessages.Title, e.getMessage());
         }
         return result;
     }

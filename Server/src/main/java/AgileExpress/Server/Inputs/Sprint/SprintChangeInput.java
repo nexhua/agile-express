@@ -1,16 +1,13 @@
-package AgileExpress.Server.Entities;
+package AgileExpress.Server.Inputs.Sprint;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Date;
 
-public class Sprint {
+public class SprintChangeInput {
 
-    @Id
-    @GeneratedValue
-    private String id;
+    private String projectID;
+
     private Date startDate;
 
     private Date endDate;
@@ -20,23 +17,25 @@ public class Sprint {
     @JsonProperty("isClosed")
     private boolean isClosed;
 
-    public Sprint() { }
 
-    public Sprint(Date startDate, Date endDate, String goal) {
+    public SprintChangeInput() { }
+
+    public SprintChangeInput(String projectID, String sprintID, Date startDate, Date endDate, String goal, boolean isClosed) {
+        this.projectID = projectID;
         this.startDate = startDate;
         this.endDate = endDate;
         this.goal = goal;
-        this.isClosed = false;
+        this.isClosed = isClosed;
     }
 
-    //region Getter and Setters
+    //region Getters and Setters
 
-    public String getId() {
-        return id;
+    public String getProjectID() {
+        return projectID;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setProjectID(String projectID) {
+        this.projectID = projectID;
     }
 
     public Date getStartDate() {

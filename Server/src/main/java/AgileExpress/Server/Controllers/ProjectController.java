@@ -10,6 +10,7 @@ import AgileExpress.Server.Entities.Task;
 import AgileExpress.Server.Helpers.ProjectHelper;
 import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
@@ -377,7 +378,7 @@ public class ProjectController {
         return response;
     }
 
-
+    //ADD LABEL TO A TASK IN A PROJECT
     @PostMapping(ApiRouteConstants.ProjectTaskLabel)
     public ResponseEntity<?> addLabel(@RequestBody TaskAddLabelInput input) {
         ResponseEntity response;
@@ -390,6 +391,7 @@ public class ProjectController {
         return response;
     }
 
+    //DELETE LABEL FROM A TASK IN A PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectTaskLabel)
     public ResponseEntity<?> deleteLabel(@RequestBody TaskDeleteLabelInput input) {
         ResponseEntity response;
@@ -402,6 +404,7 @@ public class ProjectController {
         return response;
     }
 
+    //GET SPRINTS OF A PROJECT
     @GetMapping(ApiRouteConstants.ProjectsSprint)
     public ResponseEntity<?> getSprints(@RequestBody BaseProjectInput input) {
         ResponseEntity response;
@@ -420,6 +423,7 @@ public class ProjectController {
         return response;
     }
 
+    //ADD SPRINT TO A PROJECT
     @PostMapping(ApiRouteConstants.ProjectsSprint)
     public ResponseEntity<?> addSprint(@RequestBody SprintCreateInput input) {
         ResponseEntity response;
@@ -432,6 +436,28 @@ public class ProjectController {
         return response;
     }
 
+    //CHANGE A SPRINT IN A PROJECT
+    @PutMapping(ApiRouteConstants.ProjectsSprintPath)
+    public ResponseEntity<?> changeSprint(@PathVariable String sprintID, @RequestBody(required = false) SprintChangeInput i̇nput) {
+        ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(i̇nput);
+
+
+        ResponseEntity response;
+        Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
+        if (optionalPropertyInfo.isEmpty()) {
+            response = new ResponseEntity(
+                    new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
+                    HttpStatus.BAD_REQUEST);
+        } else {
+            Document result = this.repository.updateSprint(i̇nput.getProjectID(), sprintID, propertyInfoList);
+            response = new ResponseEntity<>(result, HttpStatus.OK);
+        }
+
+        return response;
+    }
+
+
+    //DELETE A SPRINT FROM A PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectsSprint)
     public ResponseEntity<?> deleteSprint(@RequestBody SprintDeleteInput input) {
         ResponseEntity response;

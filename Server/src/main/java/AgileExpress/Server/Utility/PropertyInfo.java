@@ -31,6 +31,10 @@ public class PropertyInfo<T> {
         return this.getPropertyValue() instanceof Date;
     }
 
+    public boolean isBoolean() {
+        return this.getPropertyValue() instanceof Boolean;
+    }
+
     //region Getter and Setters
 
     public String getPropertyName() {

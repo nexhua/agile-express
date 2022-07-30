@@ -25,6 +25,8 @@ public class ApiRouteConstants {
     public static final String ProjectUser = "/api/projects/user";
 
     public static final String ProjectsSprint = "/api/projects/sprints";
+
+    public static final String ProjectsSprintPath = "/api/projects/sprints/{sprintID}";
     public static final String ProjectsTask = "/api/projects/task";
     public static final String ProjectsTasks = "/api/projects/tasks";
     public static final String ProjectsTaskPath = "/api/projects/task/{taskID}";

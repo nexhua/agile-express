@@ -58,6 +58,14 @@ public class ReflectionHelper {
                     } catch (Exception e) {
                     }
                 }
+                case "boolean" -> {
+                    field.setAccessible(true);
+                    try {
+                        Object value = field.get(object);
+                        propertyInfoList.add(new PropertyInfo<>(fieldName, (boolean) value));
+                    } catch (Exception e) {
+                    }
+                }
                 case "Date" -> {
                     field.setAccessible(true);
                     try {
