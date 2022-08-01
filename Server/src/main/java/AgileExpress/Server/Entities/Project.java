@@ -19,7 +19,7 @@ public class Project {
 
     private Date endDate;
 
-    private List<String> statusFields = Arrays.asList("Backlog");
+    private List<String> statusFields = List.of("Backlog");
 
     private List<Task> tasks = Collections.emptyList();
 

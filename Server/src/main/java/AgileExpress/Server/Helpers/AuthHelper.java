@@ -18,9 +18,4 @@ public class AuthHelper {
         WebAuthenticationDetails details = (WebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
         return details.getSessionId();
     }
-
-    public static UserTypes getRole() {
-        return AccessLevelHelper.getBean(AccessLevelHelper.class).getAccessLevel();
-    }
-
 }

@@ -1,5 +1,6 @@
 package AgileExpress.Server.Repositories;
 
+import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Inputs.Project.*;
 import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
@@ -11,6 +12,7 @@ import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface ProjectRepositoryCustom {
 
@@ -18,6 +20,8 @@ public interface ProjectRepositoryCustom {
 
     UpdateResult removeTeamMember(ProjectRemoveUserInput input);
 
+
+    List<Document> findProjects(String userID);
 
     Document updateProject(String projectID, ArrayList<PropertyInfo<?>> propertyInfoList);
 

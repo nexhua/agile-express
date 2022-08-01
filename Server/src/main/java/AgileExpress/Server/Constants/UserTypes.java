@@ -1,8 +1,9 @@
 package AgileExpress.Server.Constants;
 
- public enum UserTypes {
+public enum UserTypes {
     TEAM_MEMBER,
     TEAM_LEAD,
     PROJECT_MANAGER,
+    SYSTEM_ADMIN,
     ADMIN
 }

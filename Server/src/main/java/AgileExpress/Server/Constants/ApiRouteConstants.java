@@ -16,6 +16,8 @@ public class ApiRouteConstants {
 
     public static final String GetUser = "/api/users/{username}";
 
+    public static final String GetAuthLevel = "/api/users/{userID}";
+
     //endregion
 
     //region Project Routes

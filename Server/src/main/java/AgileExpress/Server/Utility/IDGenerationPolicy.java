@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface IDGenerationPolicy {
-    public boolean generate() default true;
+    boolean generate() default true;
 }

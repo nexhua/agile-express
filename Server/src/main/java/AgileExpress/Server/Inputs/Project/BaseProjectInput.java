@@ -4,7 +4,7 @@ public class BaseProjectInput {
 
     private String projectID;
 
-    public BaseProjectInput() { };
+    public BaseProjectInput() { }
 
     public BaseProjectInput(String projectID) {
         this.projectID = projectID;

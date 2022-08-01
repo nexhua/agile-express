@@ -1,3 +1,4 @@
+import Dashboard from '../pages/DashboardPage';
 import Hello from '../pages/HelloPage';
 import User from '../pages/UserPage';
 
@@ -13,7 +14,7 @@ const routes = [ {
     component: User
   } , {
     path: '/dashboard',
-    component: User
+    component: Dashboard
   }]; 
 
 export default routes;

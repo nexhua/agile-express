@@ -3,10 +3,13 @@ package AgileExpress.Server.Controllers;
 import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
+import AgileExpress.Server.Constants.UserTypes;
 import AgileExpress.Server.Entities.Assignee;
 import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Entities.Sprint;
 import AgileExpress.Server.Entities.Task;
+import AgileExpress.Server.Helpers.AccessLevelHelper;
+import AgileExpress.Server.Helpers.AuthHelper;
 import AgileExpress.Server.Helpers.ProjectHelper;
 import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.Project.*;
@@ -15,6 +18,7 @@ import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Repositories.ProjectRepository;
+import AgileExpress.Server.Services.AccessLevelService;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.result.DeleteResult;
@@ -35,8 +39,11 @@ public class ProjectController {
 
     private final ProjectRepository repository;
 
-    public ProjectController(ProjectRepository repository) {
+    private final AccessLevelService service;
+
+    public ProjectController(ProjectRepository repository, AccessLevelService service) {
         this.repository = repository;
+        this.service = service;
     }
 
     //GET PROJECT
@@ -63,12 +70,23 @@ public class ProjectController {
     //GET PROJECTS
     @GetMapping(ApiRouteConstants.Projects)
     public ResponseEntity<?> getProjects() {
+        UserTypes userTypes = this.service.getUserType(AuthHelper.getUsername());
         ResponseEntity response;
-        try {
-            List<Project> result = this.repository.findAll();
-            response = new ResponseEntity(result, HttpStatus.OK);
-        } catch (Exception e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(userTypes, UserTypes.ADMIN)) {
+            try {
+                List<Project> result = this.repository.findAll();
+                response = new ResponseEntity(result, HttpStatus.OK);
+            } catch (Exception e) {
+                response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            try {
+                List<Document> projects = this.repository.findProjects("62e385bd3c3ede313bb7f4b9");
+                response = new ResponseEntity(projects, HttpStatus.OK);
+            } catch (Exception e) {
+                response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         return response;
     }
@@ -337,7 +355,7 @@ public class ProjectController {
                 response = new ResponseEntity(result, HttpStatus.CREATED);
             } else {
                 response = new ResponseEntity(new Document(ErrorMessages.Title,
-                        ErrorMessages.PropertyAlreadyExistsWithValue(MongoConstants.UserID)), HttpStatus.BAD_REQUEST);
+                        ErrorMessages.PropertyAlreadyExistsWithValueError(MongoConstants.UserID)), HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);

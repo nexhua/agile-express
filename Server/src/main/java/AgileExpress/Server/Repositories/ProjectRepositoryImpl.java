@@ -2,6 +2,7 @@ package AgileExpress.Server.Repositories;
 
 import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
+import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Helpers.QueryHelper;
 import AgileExpress.Server.Inputs.Project.*;
 import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
@@ -10,6 +11,7 @@ import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
@@ -22,6 +24,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
@@ -31,6 +35,24 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     @Autowired
     public ProjectRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+    }
+
+
+    @Override
+    public List<Document> findProjects(String userID) {
+        ArrayList<Document> projects = new ArrayList<>();
+        try {
+            Bson filter = Filters.eq(
+                    QueryHelper.asInnerDocumentProperty(MongoConstants.TeamMembers, MongoConstants.Id), QueryHelper.createID(userID));
+
+            FindIterable<Document> result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .find(filter);
+
+            result.forEach(projects::add);
+        } catch (MongoException e) {
+
+        }
+        return projects;
     }
 
     @Override
