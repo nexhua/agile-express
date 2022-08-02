@@ -2,7 +2,6 @@ package AgileExpress.Server.Repositories;
 
 import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Inputs.Project.*;
-import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
@@ -21,7 +20,7 @@ public interface ProjectRepositoryCustom {
     UpdateResult removeTeamMember(ProjectRemoveUserInput input);
 
 
-    List<Document> findProjects(String userID);
+    List<Project> findProjectsOfUser(String userID);
 
     Document updateProject(String projectID, ArrayList<PropertyInfo<?>> propertyInfoList);
 

@@ -4,10 +4,7 @@ import AgileExpress.Server.Constants.ApiRouteConstants;
 import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Constants.UserTypes;
-import AgileExpress.Server.Entities.Assignee;
-import AgileExpress.Server.Entities.Project;
-import AgileExpress.Server.Entities.Sprint;
-import AgileExpress.Server.Entities.Task;
+import AgileExpress.Server.Entities.*;
 import AgileExpress.Server.Helpers.AccessLevelHelper;
 import AgileExpress.Server.Helpers.AuthHelper;
 import AgileExpress.Server.Helpers.ProjectHelper;
@@ -70,7 +67,13 @@ public class ProjectController {
     //GET PROJECTS
     @GetMapping(ApiRouteConstants.Projects)
     public ResponseEntity<?> getProjects() {
-        UserTypes userTypes = this.service.getUserType(AuthHelper.getUsername());
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if(context == null) {
+            return new ResponseEntity<>(ErrorMessages.with(ErrorMessages.UserNotFoundError()), HttpStatus.NOT_FOUND);
+        }
+
+        UserTypes userTypes = context.getType();
         ResponseEntity response;
 
         if (AccessLevelHelper.hasHigherOrEqualAccessLevel(userTypes, UserTypes.ADMIN)) {
@@ -81,12 +84,19 @@ public class ProjectController {
                 response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            try {
-                List<Document> projects = this.repository.findProjects("62e385bd3c3ede313bb7f4b9");
-                response = new ResponseEntity(projects, HttpStatus.OK);
-            } catch (Exception e) {
-                response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            if (!context.getId().isEmpty()) {
+                try {
+                    List<Project> projects = this.repository.findProjectsOfUser(context.getId());
+                    response = new ResponseEntity(projects, HttpStatus.OK);
+                } catch (Exception e) {
+                    response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                response = new ResponseEntity(
+                        ErrorMessages.with(ErrorMessages.MissingPropertyError(MongoConstants.UserID)),
+                        HttpStatus.BAD_REQUEST);
             }
+
         }
         return response;
     }

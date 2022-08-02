@@ -26,6 +26,10 @@ public class ErrorMessages {
         return String.format("Unauthorized operation. This operation requires your access level to be higher or equal to %s", requiredAccessLevel.name());
     }
 
+    public static String UserNotFoundError() {
+        return "User not found";
+    }
+
     public static Document with(String errorMes) {
         return new Document(ErrorMessages.Title, errorMes);
     }

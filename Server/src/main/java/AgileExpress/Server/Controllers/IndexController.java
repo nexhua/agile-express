@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class DashboardController {
+public class IndexController {
 
     @GetMapping("/dashboard")
     public ModelAndView dashboard() {
@@ -24,6 +24,11 @@ public class DashboardController {
 
     @GetMapping("")
     public ModelAndView home() {
+        return new ModelAndView("index");
+    }
+
+    @GetMapping("/details/{projectID}")
+    public ModelAndView projectDetail() {
         return new ModelAndView("index");
     }
 }

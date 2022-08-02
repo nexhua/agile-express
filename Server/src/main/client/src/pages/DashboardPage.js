@@ -1,6 +1,8 @@
 import React from "react";
 import { Container, Table } from "reactstrap";
 import DetailList from "../components/DetailList";
+import { ToastContainer, toast } from "react-toastify";
+import AppNavbar from "../components/AppNavbar";
 
 class Dashboard extends React.Component {
   state = {
@@ -19,9 +21,6 @@ class Dashboard extends React.Component {
     if (response.status === 200) {
       const data = await response.json();
       this.setState({ projects: data });
-      if (this.state.projects.length === 0) {
-        console.log("No projects found to display");
-      }
     }
   }
 
@@ -43,6 +42,8 @@ class Dashboard extends React.Component {
 
     return (
       <div>
+        <AppNavbar />
+        <ToastContainer />
         <Container fluid>
           <h2>Projects</h2>
           <Table dark striped hover>
@@ -52,11 +53,13 @@ class Dashboard extends React.Component {
                 <th>Project Name</th>
                 <th>Start Date</th>
                 <th>End Date</th>
+                <th>Operation</th>
               </tr>
             </thead>
             <tbody>{detailList}</tbody>
           </Table>
         </Container>
+        <ToastContainer limit={1} />
       </div>
     );
   }

@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -39,8 +40,8 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 
     @Override
-    public List<Document> findProjects(String userID) {
-        ArrayList<Document> projects = new ArrayList<>();
+    public List<Project> findProjectsOfUser(String userID) {
+        ArrayList<Project> projects = new ArrayList<>();
         try {
             Bson filter = Filters.eq(
                     QueryHelper.asInnerDocumentProperty(MongoConstants.TeamMembers, MongoConstants.Id), QueryHelper.createID(userID));
@@ -48,7 +49,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
             FindIterable<Document> result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .find(filter);
 
-            result.forEach(projects::add);
+            for (Document document : result) {
+                projects.add(mongoTemplate.getConverter().read(Project.class, document));
+            }
         } catch (MongoException e) {
 
         }
