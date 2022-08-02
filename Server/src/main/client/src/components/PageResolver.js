@@ -21,7 +21,7 @@ const routes = [
     component: Dashboard,
   },
   {
-    path: "/detail/:projectID",
+    path: "/details/:projectID",
     component: ProjectDetail,
   },
 ];

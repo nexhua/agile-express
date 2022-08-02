@@ -7,6 +7,7 @@ class ProjectDetail extends React.Component {
     super(props);
     this.state = {
       projectID: this.props.match.params.projectID,
+      isLoaded: false,
     };
   }
 
@@ -15,6 +16,7 @@ class ProjectDetail extends React.Component {
     const data = await response.json();
     this.setState({
       project: data,
+      isLoaded: true,
     });
   }
 
@@ -27,7 +29,6 @@ class ProjectDetail extends React.Component {
     }
 
     let projectDetailComponent = <p> loading.. </p>;
-
     if (this.state.project) {
       projectDetailComponent = (
         <ProjectDetailComponent project={this.state.project} />

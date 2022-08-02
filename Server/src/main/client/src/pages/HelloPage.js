@@ -6,7 +6,9 @@ class Hello extends React.Component {
     return (
       <div>
         <AppNavbar />
-        <p>Hello world</p>
+        <div className="app-body app-bg-secondary">
+          <p>Hello world</p>
+        </div>
       </div>
     );
   }

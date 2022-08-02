@@ -44,9 +44,9 @@ class Dashboard extends React.Component {
       <div>
         <AppNavbar />
         <ToastContainer />
-        <Container fluid>
-          <h2>Projects</h2>
-          <Table dark striped hover>
+        <Container fluid className="app-body app-bg-secondary">
+          <h2 className="text-center py-2">Projects</h2>
+          <Table dark striped hover className="mt-2">
             <thead>
               <tr>
                 <th>#</th>

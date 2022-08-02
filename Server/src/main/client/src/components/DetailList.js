@@ -12,7 +12,7 @@ class DetailList extends React.Component {
   }
 
   handleClick(id) {
-    window.location.href = `/detail/${id}`;
+    window.location.href = `/details/${id}`;
   }
 
   render() {

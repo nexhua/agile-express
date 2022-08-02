@@ -1,0 +1,41 @@
+.row.row-hover:hover {
+    background-color: #959EAB;
+}
+
+
+.app-body {
+    height: 90vh;
+    background-color: #ADB3BB;
+}
+
+.app-bg-primary {
+    background-color: #283149;
+}
+
+.app-bg-secondary {
+    background-color: #404B69;
+}
+
+.app-bg-tertiary {
+    background-color: #00818A;
+}
+
+.app-bg-quaternary {
+    background-color: #DBEDF3;
+}
+
+.app-text-primary {
+    color: #041C32;
+}
+
+.app-text-secondary {
+    color: #04293A;
+}
+
+.app-text-tertiary {
+    color: #064663;
+}
+
+.app-text-quaternary {
+    color: #ECB365;
+}
