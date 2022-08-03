@@ -18,6 +18,7 @@ import AgileExpress.Server.Repositories.ProjectRepository;
 import AgileExpress.Server.Services.AccessLevelService;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -147,6 +148,22 @@ public class ProjectController {
             response = new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @GetMapping(ApiRouteConstants.ProjectTeamMembers)
+    public ResponseEntity getUsers(@PathVariable String projectID) {
+        Optional<ProjectTeamMembers> result = this.repository.getProjectTeamMembers(projectID);
+        ResponseEntity<?> response;
+
+        if(result.isEmpty()) {
+            response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        else {
+            ProjectTeamMembers projectTeamMembers = result.get();
+
+            response = new ResponseEntity<>(projectTeamMembers, HttpStatus.OK);
         }
         return response;
     }

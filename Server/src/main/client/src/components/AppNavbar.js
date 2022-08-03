@@ -45,6 +45,11 @@ class AppNavbar extends React.Component {
                 Dashboard
               </NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink className="text-light mt-2" href="/logout">
+                Logout
+              </NavLink>
+            </NavItem>
           </Nav>
         </Navbar>
       </div>

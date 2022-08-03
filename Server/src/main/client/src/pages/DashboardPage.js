@@ -24,30 +24,32 @@ class Dashboard extends React.Component {
     }
   }
 
-  handleClick(i) {
-    console.log("row " + i + " is clicked");
-  }
-
   render() {
     let projectCard;
 
-    if (this.state.projects[0]) {
-      projectCard = (
+    const cards = this.state.projects.map((project, index) => {
+      return (
         <ProjectCard
-          key={this.state.projects[0].id}
-          project={this.state.projects[0]}
-          count={1}
+          key={project.id}
+          project={project}
+          count={index + 1}
+          isEmpty={false}
         />
       );
-    }
+    });
+
+    const newProjectCard = <ProjectCard isEmpty={true} />;
 
     return (
       <div>
         <AppNavbar />
         <ToastContainer />
-        <Container fluid className="app-body app-bg-secondary">
+        <Container fluid className="app-body app-bg-secondary pb-5">
           <h2 className="text-center py-4 text-white">Projects</h2>
-          {projectCard}
+          <div className="d-flex flex-row flex-wrap gap-5">
+            {cards}
+            {newProjectCard}
+          </div>
         </Container>
         <ToastContainer />
       </div>

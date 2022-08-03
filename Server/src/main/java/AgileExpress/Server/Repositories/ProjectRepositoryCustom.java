@@ -1,17 +1,20 @@
 package AgileExpress.Server.Repositories;
 
 import AgileExpress.Server.Entities.Project;
+import AgileExpress.Server.Entities.ProjectTeamMembers;
 import AgileExpress.Server.Inputs.Project.*;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Utility.PropertyInfo;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProjectRepositoryCustom {
 
@@ -21,6 +24,8 @@ public interface ProjectRepositoryCustom {
 
 
     List<Project> findProjectsOfUser(String userID);
+
+    Optional<ProjectTeamMembers> getProjectTeamMembers(String projectID);
 
     Document updateProject(String projectID, ArrayList<PropertyInfo<?>> propertyInfoList);
 

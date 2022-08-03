@@ -3,6 +3,8 @@ package AgileExpress.Server.Repositories;
 import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Entities.Project;
+import AgileExpress.Server.Entities.ProjectTeamMembers;
+import AgileExpress.Server.Entities.User;
 import AgileExpress.Server.Helpers.QueryHelper;
 import AgileExpress.Server.Inputs.Project.*;
 import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
@@ -11,8 +13,11 @@ import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -23,10 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
@@ -56,6 +58,51 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
         }
         return projects;
+    }
+
+    @Override
+    public Optional<ProjectTeamMembers> getProjectTeamMembers(String projectID) {
+
+        Optional<ProjectTeamMembers> optionalResult;
+
+        List<Bson> operations = new ArrayList<>();
+
+        Bson matchOperation = Aggregates.match(Filters.eq(
+                MongoConstants.Id, QueryHelper.createID(projectID)));
+
+        Bson lookupOperation = Aggregates.lookup(
+                MongoConstants.Users,
+                QueryHelper.asInnerDocumentProperty(MongoConstants.TeamMembers, MongoConstants.Id),
+                MongoConstants.Id,
+                MongoConstants.TeamMembersOfProject
+        );
+
+        Bson projectionOperation = Aggregates.project(Projections.fields(Projections.include(MongoConstants.TeamMembersOfProject)));
+
+        operations.add(matchOperation);
+        operations.add(lookupOperation);
+        operations.add(projectionOperation);
+
+        try {
+            AggregateIterable<Document> aggregateResult = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .aggregate(operations);
+
+            Document teamMembersDocument = aggregateResult.first();
+
+            if (teamMembersDocument != null) {
+                teamMembersDocument.put(
+                        MongoConstants.Class, ProjectTeamMembers.class);
+
+                ProjectTeamMembers projectTeamMembers = mongoTemplate.getConverter().read(ProjectTeamMembers.class, teamMembersDocument);
+                optionalResult = Optional.of(projectTeamMembers);
+            } else {
+                optionalResult = Optional.empty();
+            }
+        } catch (MongoException e) {
+            optionalResult = Optional.empty();
+        }
+
+        return optionalResult;
     }
 
     @Override
