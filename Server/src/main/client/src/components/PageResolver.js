@@ -1,7 +1,6 @@
 import Dashboard from "../pages/DashboardPage";
 import Hello from "../pages/HelloPage";
 import User from "../pages/UserPage";
-import ProjectDetail from "../pages/ProjectDetail";
 
 const routes = [
   {
@@ -19,10 +18,6 @@ const routes = [
   {
     path: "/dashboard",
     component: Dashboard,
-  },
-  {
-    path: "/details/:projectID",
-    component: ProjectDetail,
   },
 ];
 

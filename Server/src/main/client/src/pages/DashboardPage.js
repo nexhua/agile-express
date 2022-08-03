@@ -1,6 +1,5 @@
 import React from "react";
 import { Container, Table } from "reactstrap";
-import DetailList from "../components/DetailList";
 import { ToastContainer, toast } from "react-toastify";
 import AppNavbar from "../components/AppNavbar";
 import ProjectCard from "../components/ProjectCard";
@@ -30,17 +29,6 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const detailList = this.state.projects.map((project, i) => {
-      return (
-        <DetailList
-          key={project.id}
-          project={project}
-          row={i}
-          clickFunction={() => this.handleClick(i)}
-        />
-      );
-    });
-
     let projectCard;
 
     if (this.state.projects[0]) {
