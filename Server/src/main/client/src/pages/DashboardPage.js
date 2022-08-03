@@ -3,6 +3,7 @@ import { Container, Table } from "reactstrap";
 import DetailList from "../components/DetailList";
 import { ToastContainer, toast } from "react-toastify";
 import AppNavbar from "../components/AppNavbar";
+import ProjectCard from "../components/ProjectCard";
 
 class Dashboard extends React.Component {
   state = {
@@ -40,26 +41,27 @@ class Dashboard extends React.Component {
       );
     });
 
+    let projectCard;
+
+    if (this.state.projects[0]) {
+      projectCard = (
+        <ProjectCard
+          key={this.state.projects[0].id}
+          project={this.state.projects[0]}
+          count={1}
+        />
+      );
+    }
+
     return (
       <div>
         <AppNavbar />
         <ToastContainer />
         <Container fluid className="app-body app-bg-secondary">
-          <h2 className="text-center py-2">Projects</h2>
-          <Table dark striped hover className="mt-2">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Project Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Operation</th>
-              </tr>
-            </thead>
-            <tbody>{detailList}</tbody>
-          </Table>
+          <h2 className="text-center py-4 text-white">Projects</h2>
+          {projectCard}
         </Container>
-        <ToastContainer limit={1} />
+        <ToastContainer />
       </div>
     );
   }

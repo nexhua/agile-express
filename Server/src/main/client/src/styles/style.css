@@ -1,7 +1,10 @@
+* {
+    font-family: 'Montserrat', sans-serif;
+}
+
 .row.row-hover:hover {
     background-color: #959EAB;
 }
-
 
 .app-body {
     height: 90vh;
@@ -9,19 +12,19 @@
 }
 
 .app-bg-primary {
-    background-color: #283149;
+    background-color: rgb(22,27,34);
 }
 
 .app-bg-secondary {
-    background-color: #404B69;
+    background-color: rgb(20,20,24);
 }
 
 .app-bg-tertiary {
-    background-color: #00818A;
+    background-color: #064663;
 }
 
 .app-bg-quaternary {
-    background-color: #DBEDF3;
+    background-color: #ECB365;
 }
 
 .app-text-primary {
@@ -38,4 +41,19 @@
 
 .app-text-quaternary {
     color: #ECB365;
+}
+
+.nav-item:hover {
+    background-color: rgb(44,48,52);
+}
+
+.muted-gray-hover:hover {
+    background-color: rgb(44,48,52);
+}
+
+
+.svg-icon {
+    width: 16px;
+    height: 16px;
+    color: white
 }
