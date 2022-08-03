@@ -1,17 +1,5 @@
 import React from "react";
-import {
-  Navbar,
-  NavItem,
-  NavLink,
-  NavbarBrand,
-  UncontrolledDropdown,
-  DropdownMenu,
-  NavbarToggler,
-  Collapse,
-  Nav,
-  DropdownToggle,
-  DropdownItem,
-} from "reactstrap";
+import { Navbar, NavItem, NavLink, NavbarBrand, Nav } from "reactstrap";
 
 class AppNavbar extends React.Component {
   constructor(props) {

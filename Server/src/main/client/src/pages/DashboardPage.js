@@ -5,11 +5,16 @@ import AppNavbar from "../components/AppNavbar";
 import ProjectCard from "../components/ProjectCard";
 
 class Dashboard extends React.Component {
-  state = {
-    projects: [],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      projects: [],
+    };
 
-  async componentDidMount() {
+    this.fetchProjects = this.fetchProjects.bind(this);
+  }
+
+  async fetchProjects() {
     const response = await fetch("/api/projects", {
       method: "GET",
       headers: {
@@ -24,9 +29,11 @@ class Dashboard extends React.Component {
     }
   }
 
-  render() {
-    let projectCard;
+  async componentDidMount() {
+    this.fetchProjects();
+  }
 
+  render() {
     const cards = this.state.projects.map((project, index) => {
       return (
         <ProjectCard
@@ -38,7 +45,9 @@ class Dashboard extends React.Component {
       );
     });
 
-    const newProjectCard = <ProjectCard isEmpty={true} />;
+    const newProjectCard = (
+      <ProjectCard isEmpty={true} createCallback={this.fetchProjects} />
+    );
 
     return (
       <div>
