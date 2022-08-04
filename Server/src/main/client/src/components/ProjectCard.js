@@ -7,8 +7,8 @@ import TasksRow from "./TasksRow";
 import UserRow from "./UserRow";
 import NewProjectCard from "./NewProjectCard";
 import AccessLevelService from "../helpers/AccessLevelService";
-import userTypeStringToOrdinal from "../helpers/UserTypesConverter";
 import ProjectButtonGroup from "./ProjectButtonGroup";
+import ProjectManagerRow from "./ProjectManagerRow";
 
 export default class ProjectCard extends React.Component {
   constructor(props) {
@@ -18,29 +18,41 @@ export default class ProjectCard extends React.Component {
       count: this.props.count,
       isEmpty: this.props.isEmpty,
       createCallback: this.props.createCallback,
-      currentUserProjectRole: 0,
+      currentUserProjectRole: 0, //Assigned role of a user in a project, can be different from real role
       deleteProjectFunc: this.props.deleteProjectFunc,
+      accessLevel: this.props.accessLevel,
+      teamMembersWithUserInfo: [],
     };
 
     this.deleteProjectHandler = this.deleteProjectHandler.bind(this);
   }
 
   async componentDidMount() {
-    const currentUser = await AccessLevelService.getUser();
+    //IF THIS CARD HAS A PROJECT
+    if (!this.state.isEmpty) {
+      //GET CURRENT USER
+      const currentUser = await AccessLevelService.getUser();
 
-    if (this.state.project) {
-      const matches = this.state.project.teamMembers.filter(
-        (user) => user.id === currentUser.id
+      //GET TEAM MEMBERS IN THIS PROJECT AND THEIR USER INFORMATION
+      const teamMembers = await AccessLevelService.getTeamMembers(
+        this.state.project.id
       );
 
-      if (matches[0]) {
-        const projectRoleOrdinal = userTypeStringToOrdinal(
-          matches[0].projectRole
+      this.setState({
+        teamMembersWithUserInfo: teamMembers,
+      });
+
+      //IF ANY TEAM MEMBERS IS FOUND CHECK IF CURRENT LOGGED IN USER IS PART OF PROJECT
+      if (teamMembers.length > 0) {
+        const result = AccessLevelService.getProjectRoleIfCurrentUserIsMember(
+          currentUser,
+          teamMembers
         );
 
-        if (projectRoleOrdinal !== -1) {
+        //IF CURRENT USER IS PART OF PROJECT CHECK HIS/HER ROLE AND SET STATE
+        if (result.isMember) {
           this.setState({
-            currentUserProjectRole: projectRoleOrdinal,
+            currentUserProjectRole: result.ordinal,
           });
         }
       }
@@ -105,15 +117,31 @@ export default class ProjectCard extends React.Component {
                 title={"Team Members"}
                 component={<UserRow projectID={this.state.project.id} />}
               />
-              <CardRow id={keys[6]} title={"Tasks"} component={<TasksRow />} />
+              <CardRow
+                key="projectManager"
+                id={"projectManager"}
+                title={"Project Manager"}
+                component={
+                  <ProjectManagerRow
+                    key="projectManagerRow"
+                    teamMembers={this.state.teamMembersWithUserInfo}
+                  />
+                }
+              />
+              <CardRow
+                id={keys[6]}
+                title={"Tasks"}
+                component={<TasksRow tasks={this.state.project.tasks} />}
+              />
               <CardRow
                 id={keys[7]}
                 title={"Sprints"}
-                component={<SprintsRow />}
+                component={<SprintsRow sprints={this.state.project.sprints} />}
               />
             </div>
             <div className="mt-auto">
               <ProjectButtonGroup
+                accessLevel={this.state.accessLevel}
                 projectRole={this.state.currentUserProjectRole}
                 deleteProjectFunc={this.deleteProjectHandler}
               />

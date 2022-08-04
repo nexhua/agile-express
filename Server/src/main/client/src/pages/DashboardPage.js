@@ -17,7 +17,7 @@ class Dashboard extends React.Component {
     this.deleteProject = this.deleteProject.bind(this);
   }
 
-  async fetchProjects() {
+  async fetchProjects(hasNew) {
     const response = await fetch("/api/projects", {
       method: "GET",
       headers: {
@@ -30,12 +30,27 @@ class Dashboard extends React.Component {
       const data = await response.json();
       this.setState({ projects: data });
     }
+
+    if (hasNew) {
+      toast.success("Project created successfully", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   }
 
   async componentDidMount() {
-    this.fetchProjects();
+    const accessLevel = await AccessLevelService.getAccessLevel();
 
-    this.state.accessLevel = await AccessLevelService.getAccessLevel();
+    await this.fetchProjects(false);
+
+    this.setState({
+      accessLevel: accessLevel,
+    });
   }
 
   async deleteProject(projectID) {
@@ -65,10 +80,9 @@ class Dashboard extends React.Component {
 
         toast.success("Project deleted successfully", {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
           draggable: true,
           progress: undefined,
         });
@@ -82,6 +96,7 @@ class Dashboard extends React.Component {
         <ProjectCard
           key={project.id}
           project={project}
+          accessLevel={this.state.accessLevel}
           count={index + 1}
           isEmpty={false}
           deleteProjectFunc={this.deleteProject}

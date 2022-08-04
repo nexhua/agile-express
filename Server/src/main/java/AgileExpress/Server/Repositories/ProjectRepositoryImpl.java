@@ -77,7 +77,8 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 MongoConstants.TeamMembersOfProject
         );
 
-        Bson projectionOperation = Aggregates.project(Projections.fields(Projections.include(MongoConstants.TeamMembersOfProject)));
+        Bson projectionOperation = Aggregates.project(Projections.include(
+                MongoConstants.TeamMembersOfProject, MongoConstants.ProjectTeamMembers));
 
         operations.add(matchOperation);
         operations.add(lookupOperation);

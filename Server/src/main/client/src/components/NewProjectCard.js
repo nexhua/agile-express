@@ -74,7 +74,7 @@ export default class NewProjectCard extends React.Component {
     });
 
     if (response.status === 201) {
-      this.state.createCallback();
+      this.state.createCallback(true);
     }
   }
 
@@ -178,7 +178,7 @@ export default class NewProjectCard extends React.Component {
                   Cancel
                 </Button>
                 <Button color="primary" onClick={(e) => this.toggle(e, true)}>
-                  Do Something
+                  Create Project
                 </Button>{" "}
               </ModalFooter>
             </Modal>

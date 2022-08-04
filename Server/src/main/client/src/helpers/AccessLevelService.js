@@ -1,4 +1,5 @@
 import UserTypes from "./UserTypes";
+import userTypeStringToOrdinal from "./UserTypesConverter";
 
 export default class AccessLevelService {
   static currentUser = {
@@ -10,9 +11,14 @@ export default class AccessLevelService {
     accessLevel: -1,
     projectIds: [],
     hasFetched: false,
+    hasFetchedAccessLevel: false,
   };
 
   static async getAccessLevel() {
+    if (this.hasFetchedAccessLevel) {
+      return this.currentUser.accessLevel;
+    }
+
     const response = await fetch("/api/auth/accesslevel");
 
     const data = await response.json();
@@ -21,9 +27,10 @@ export default class AccessLevelService {
     if (response.status === 200) {
       accessLevel = data.accessLevel;
       this.currentUser.accessLevel = accessLevel;
+      this.currentUser.hasFetchedAccessLevel = true;
     }
 
-    return accessLevel;
+    return data.accessLevel;
   }
 
   static async fetchUser() {
@@ -50,6 +57,68 @@ export default class AccessLevelService {
       return this.currentUser;
     } else {
       return await this.fetchUser();
+    }
+  }
+
+  static async getTeamMembers(projectID) {
+    const response = await fetch(`/api/projects/${projectID}/users`);
+
+    if (response.status === 200) {
+      const data = await response.json();
+
+      return this.mergeTeamMemberResponse(data);
+    }
+    return [];
+  }
+
+  static mergeTeamMemberResponse(data) {
+    if (data.teamMembers && data.projectTeamMembers) {
+      const teamMembers = data.teamMembers;
+      const projectTeamMembers = data.projectTeamMembers;
+
+      const teamMembersLength = teamMembers.length;
+      const projectTeamMembersLength = projectTeamMembers.length;
+
+      let result = [];
+
+      if (teamMembersLength === projectTeamMembersLength) {
+        for (var i = 0; i < teamMembersLength; i++) {
+          for (var j = 0; j < projectTeamMembersLength; j++) {
+            const teamMember = teamMembers[i];
+            const projectMember = projectTeamMembers[j];
+            if (teamMember.id === projectMember.id) {
+              const found = projectMember;
+              found.currentProjectRole = teamMember.projectRole;
+
+              result.push(found);
+            }
+          }
+        }
+
+        return result;
+      }
+    }
+    return [];
+  }
+
+  static getProjectRoleIfCurrentUserIsMember(currentUser, projectTeamMembers) {
+    const found = projectTeamMembers.find((m) => m.id === currentUser.id);
+
+    if (found) {
+      const ordinalProjectRole = userTypeStringToOrdinal(
+        found.currentProjectRole
+      );
+
+      return {
+        isMember: true,
+        projectTeamMember: found,
+        ordinal: ordinalProjectRole,
+      };
+    } else {
+      return {
+        isMember: false,
+        projectTeamMember: null,
+      };
     }
   }
 

@@ -11,16 +11,27 @@ public class ProjectTeamMembers {
     @GeneratedValue
     private String id;
 
+    private List<TeamMember> teamMembers = Collections.emptyList();
+
     private List<User> projectTeamMembers = Collections.emptyList();
 
     public ProjectTeamMembers() { }
 
-    public ProjectTeamMembers(String id, List<User> projectTeamMembers) {
+    public ProjectTeamMembers(String id, List<TeamMember> teamMembers, List<User> projectTeamMembers) {
         this.id = id;
+        this.teamMembers = teamMembers;
         this.projectTeamMembers = projectTeamMembers;
     }
 
     //region Getter and Setters
+
+    public List<TeamMember> getTeamMembers() {
+        return teamMembers;
+    }
+
+    public void setTeamMembers(List<TeamMember> teamMembers) {
+        this.teamMembers = teamMembers;
+    }
 
     public String getId() {
         return id;
