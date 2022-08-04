@@ -6,8 +6,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./styles/style.css";
+import AccessLevelService from "./helpers/AccessLevelService";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+AccessLevelService.fetchUser();
 root.render(
   <React.StrictMode>
     <App />

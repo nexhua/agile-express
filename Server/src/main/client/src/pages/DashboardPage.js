@@ -3,15 +3,18 @@ import { Container, Table } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import AppNavbar from "../components/AppNavbar";
 import ProjectCard from "../components/ProjectCard";
+import AccessLevelService from "../helpers/AccessLevelService";
 
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       projects: [],
+      accessLevel: 0,
     };
 
     this.fetchProjects = this.fetchProjects.bind(this);
+    this.deleteProject = this.deleteProject.bind(this);
   }
 
   async fetchProjects() {
@@ -31,6 +34,46 @@ class Dashboard extends React.Component {
 
   async componentDidMount() {
     this.fetchProjects();
+
+    this.state.accessLevel = await AccessLevelService.getAccessLevel();
+  }
+
+  async deleteProject(projectID) {
+    const projectToDeleteIndex = this.state.projects.findIndex(
+      (project) => project.id === projectID
+    );
+
+    if (projectToDeleteIndex >= 0) {
+      const jsonObject = {
+        projectID: projectID,
+      };
+
+      const response = await fetch("/api/projects", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(jsonObject),
+      });
+
+      if (response.status === 200) {
+        const newProjects = [...this.state.projects];
+        newProjects.splice(projectToDeleteIndex, 1);
+        this.setState({
+          projects: newProjects,
+        });
+
+        toast.success("Project deleted successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
   }
 
   render() {
@@ -41,6 +84,7 @@ class Dashboard extends React.Component {
           project={project}
           count={index + 1}
           isEmpty={false}
+          deleteProjectFunc={this.deleteProject}
         />
       );
     });
@@ -57,7 +101,7 @@ class Dashboard extends React.Component {
           <h2 className="text-center py-4 text-white">Projects</h2>
           <div className="d-flex flex-row flex-wrap gap-5">
             {cards}
-            {newProjectCard}
+            {this.state.accessLevel >= 2 && newProjectCard}
           </div>
         </Container>
         <ToastContainer />

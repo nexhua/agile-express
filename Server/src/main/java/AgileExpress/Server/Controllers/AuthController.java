@@ -1,12 +1,16 @@
 package AgileExpress.Server.Controllers;
 
 import AgileExpress.Server.Constants.ApiRouteConstants;
+import AgileExpress.Server.Constants.ErrorMessages;
 import AgileExpress.Server.Entities.User;
+import AgileExpress.Server.Entities.UserContext;
 import AgileExpress.Server.Helpers.AuthHelper;
 import AgileExpress.Server.Inputs.User.SignUpInput;
 import AgileExpress.Server.LDAP.LDIFUser;
 import AgileExpress.Server.Repositories.UserRepository;
+import AgileExpress.Server.Services.AccessLevelService;
 import com.mongodb.MongoException;
+import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -24,8 +28,11 @@ public class AuthController {
 
     private final UserRepository repository;
 
-    public AuthController(UserRepository repository) {
+    private final AccessLevelService service;
+
+    public AuthController(UserRepository repository, AccessLevelService service) {
         this.repository = repository;
+        this.service = service;
     }
 
     @PostMapping(ApiRouteConstants.SignUp)
@@ -54,5 +61,37 @@ public class AuthController {
             return ResponseEntity.ok().body(object);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(ApiRouteConstants.GetAccessLevel)
+    public ResponseEntity<?> getAccessLevel() {
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(ErrorMessages.with(ErrorMessages.UserNotFoundError()), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(
+                    new Document("accessLevel", context.getType().ordinal()), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping(ApiRouteConstants.GetAuthenticatedUser)
+    public ResponseEntity<?> getUser() {
+        ResponseEntity response;
+        if (AuthHelper.isAuthenticated()) {
+            String username = AuthHelper.getUsername();
+
+            User user = this.repository.findByUsername(username);
+            if (user != null) {
+                response = new ResponseEntity(user, HttpStatus.OK);
+            }
+            else {
+                response = new ResponseEntity(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            response = new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+
+        return response;
     }
 }

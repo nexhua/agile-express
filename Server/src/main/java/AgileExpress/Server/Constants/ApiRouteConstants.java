@@ -8,6 +8,10 @@ public class ApiRouteConstants {
 
     public static final String GetUsername = "/api/auth/username";
 
+    public static final String GetAccessLevel = "/api/auth/accesslevel";
+
+    public static final String GetAuthenticatedUser = "/api/auth/user";
+
     //endregion
 
     //region User Routes
