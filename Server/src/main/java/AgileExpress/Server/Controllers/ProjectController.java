@@ -70,7 +70,7 @@ public class ProjectController {
     public ResponseEntity<?> getProjects() {
         UserContext context = this.service.getUserType(AuthHelper.getUsername());
 
-        if(context == null) {
+        if (context == null) {
             return new ResponseEntity<>(ErrorMessages.with(ErrorMessages.UserNotFoundError()), HttpStatus.NOT_FOUND);
         }
 
@@ -140,6 +140,7 @@ public class ProjectController {
         return response;
     }
 
+    //DELETE PROJECT
     @DeleteMapping(ApiRouteConstants.Projects)
     public ResponseEntity<?> deleteProject(@RequestBody BaseProjectInput input) {
         ResponseEntity<?> response;
@@ -158,10 +159,9 @@ public class ProjectController {
         Optional<ProjectTeamMembers> result = this.repository.getProjectTeamMembers(projectID);
         ResponseEntity<?> response;
 
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        else {
+        } else {
             ProjectTeamMembers projectTeamMembers = result.get();
 
             response = new ResponseEntity<>(projectTeamMembers, HttpStatus.OK);
@@ -511,6 +511,23 @@ public class ProjectController {
             UpdateResult result = this.repository.deleteSprint(input);
             response = new ResponseEntity(result, HttpStatus.OK);
         } catch (MongoException e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @PostMapping(ApiRouteConstants.ProjectManager)
+    public ResponseEntity<?> deleteSprint(@RequestBody ProjectAddManagerInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.addManager(input);
+            if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
+                response = new ResponseEntity(HttpStatus.OK);
+            }
+            else {
+                response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;

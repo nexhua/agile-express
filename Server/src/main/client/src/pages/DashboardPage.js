@@ -104,6 +104,18 @@ class Dashboard extends React.Component {
       );
     });
 
+    let noProjectsFound;
+    if (cards.length === 0) {
+      noProjectsFound = (
+        <h1
+          className="my-5 mx-auto text-secondary"
+          style={{ fontSize: "5rem" }}
+        >
+          NO PROJECTS FOUND
+        </h1>
+      );
+    }
+
     const newProjectCard = (
       <ProjectCard isEmpty={true} createCallback={this.fetchProjects} />
     );
@@ -116,6 +128,7 @@ class Dashboard extends React.Component {
           <h2 className="text-center py-4 text-white">Projects</h2>
           <div className="d-flex flex-row flex-wrap gap-5">
             {cards}
+            {noProjectsFound}
             {this.state.accessLevel >= 2 && newProjectCard}
           </div>
         </Container>

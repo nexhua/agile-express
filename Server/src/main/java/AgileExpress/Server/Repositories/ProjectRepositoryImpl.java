@@ -418,4 +418,26 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         }
         return result;
     }
+
+    @Override
+    public UpdateResult addManager(ProjectAddManagerInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson teamMemberFilter = Filters.eq(
+                    QueryHelper.asInnerDocumentProperty(MongoConstants.TeamMembers, MongoConstants.Id),
+                    QueryHelper.createID(input.getUserID()));
+
+            Bson update = Updates.set(
+                    QueryHelper.asInnerDocumentArrayProperty(MongoConstants.TeamMembers, MongoConstants.ProjectRole),
+                    input.getProjectRole());
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(Filters.and(projectFilter, teamMemberFilter), update);
+
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
 }

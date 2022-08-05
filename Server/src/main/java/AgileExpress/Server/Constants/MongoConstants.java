@@ -28,6 +28,8 @@ public class MongoConstants {
 
     public static final String TeamMembers = "teamMembers";
 
+    public static final String ProjectRole = "projectRole";
+
     public static final String TeamMembersOfProject = "projectTeamMembers";
 
     //endregion

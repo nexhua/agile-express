@@ -38,12 +38,12 @@ export default class ProjectCard extends React.Component {
         this.state.project.id
       );
 
-      this.setState({
-        teamMembersWithUserInfo: teamMembers,
-      });
-
       //IF ANY TEAM MEMBERS IS FOUND CHECK IF CURRENT LOGGED IN USER IS PART OF PROJECT
       if (teamMembers.length > 0) {
+        this.setState({
+          teamMembersWithUserInfo: [...teamMembers],
+        });
+
         const result = AccessLevelService.getProjectRoleIfCurrentUserIsMember(
           currentUser,
           teamMembers
@@ -69,6 +69,32 @@ export default class ProjectCard extends React.Component {
     }
 
     const keys = Object.keys(this.state.project)[1];
+
+    let teamMemberInfo;
+
+    if (this.state.teamMembersWithUserInfo.length > 0) {
+      teamMemberInfo = (
+        <CardRow
+          key="projectManager"
+          id={"projectManager"}
+          title={"Project Manager"}
+          component={
+            <ProjectManagerRow
+              key="projectManagerRow"
+              teamMembers={this.state.teamMembersWithUserInfo}
+            />
+          }
+        />
+      );
+    } else {
+      teamMemberInfo = (
+        <CardRow
+          id={"projectManagerEmpty"}
+          title={"Project Manager"}
+          component={<p className="my-2">No User Assigned</p>}
+        />
+      );
+    }
 
     return (
       <div
@@ -117,17 +143,7 @@ export default class ProjectCard extends React.Component {
                 title={"Team Members"}
                 component={<UserRow projectID={this.state.project.id} />}
               />
-              <CardRow
-                key="projectManager"
-                id={"projectManager"}
-                title={"Project Manager"}
-                component={
-                  <ProjectManagerRow
-                    key="projectManagerRow"
-                    teamMembers={this.state.teamMembersWithUserInfo}
-                  />
-                }
-              />
+              {teamMemberInfo}
               <CardRow
                 id={keys[6]}
                 title={"Tasks"}

@@ -55,4 +55,6 @@ public interface ProjectRepositoryCustom {
     Document updateSprint(String projectID, String sprintID, ArrayList<PropertyInfo<?>> propertyInfoList);
 
     UpdateResult deleteSprint(SprintDeleteInput input);
+
+    UpdateResult addManager(ProjectAddManagerInput input);
 }
