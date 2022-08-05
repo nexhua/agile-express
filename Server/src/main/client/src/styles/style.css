@@ -50,8 +50,6 @@
     background-color: rgb(44,48,52);
 }
 
-.svg-icon {
-    width: 16px;
-    height: 16px;
+.svg-icon:hover svg ,.svg-icon.show svg {
     color: white
 }

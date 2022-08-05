@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, NavLink } from "react-router-dom";
 
 export default class ProjectButtonGroup extends React.Component {
   constructor(props) {
@@ -7,6 +8,7 @@ export default class ProjectButtonGroup extends React.Component {
       accessLevel: this.props.accessLevel,
       projectRole: this.props.projectRole,
       deleteProjectFunc: this.props.deleteProjectFunc,
+      projectID: this.props.projectID,
     };
   }
 
@@ -28,6 +30,9 @@ export default class ProjectButtonGroup extends React.Component {
           <button
             type="button"
             className="btn app-bg-primary text-secondary muted-gray-hover"
+            onClick={() =>
+              (window.location.href = `project?pid=${this.state.projectID}`)
+            }
           >
             Edit
           </button>

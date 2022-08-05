@@ -1,5 +1,6 @@
 import Dashboard from "../pages/DashboardPage";
 import Hello from "../pages/HelloPage";
+import ProjectPage from "../pages/ProjectPage";
 import User from "../pages/UserPage";
 
 const routes = [
@@ -18,6 +19,10 @@ const routes = [
   {
     path: "/dashboard",
     component: Dashboard,
+  },
+  {
+    path: "/project",
+    component: ProjectPage,
   },
 ];
 

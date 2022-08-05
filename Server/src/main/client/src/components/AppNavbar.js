@@ -12,7 +12,11 @@ class AppNavbar extends React.Component {
   render() {
     return (
       <div>
-        <Navbar className="app-bg-primary" dark expand="md">
+        <Navbar
+          className="app-bg-primary border-secondary border-bottom"
+          dark
+          expand="md"
+        >
           <NavbarBrand className="ms-3 pt-2" href="/">
             Home
           </NavbarBrand>

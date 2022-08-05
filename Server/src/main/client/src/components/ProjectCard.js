@@ -68,10 +68,9 @@ export default class ProjectCard extends React.Component {
       return <NewProjectCard createCallback={this.state.createCallback} />;
     }
 
-    const keys = Object.keys(this.state.project)[1];
+    const keys = Object.keys(this.state.project);
 
     let teamMemberInfo;
-
     if (this.state.teamMembersWithUserInfo.length > 0) {
       teamMemberInfo = (
         <CardRow
@@ -101,7 +100,7 @@ export default class ProjectCard extends React.Component {
         className="text-white d-flex flex-column"
         style={{ minWidth: "420px", maxWidth: "420px" }}
       >
-        <div className="card border-radius-bottom border-secondary app-bg-primary h-100">
+        <div className="card border-secondary app-bg-primary h-100">
           <div className="card-header mt-2 fs-4">
             <p className="text-gray d-inline-block my-0 fst-italic text-muted">
               #{this.state.count}
@@ -160,6 +159,7 @@ export default class ProjectCard extends React.Component {
                 accessLevel={this.state.accessLevel}
                 projectRole={this.state.currentUserProjectRole}
                 deleteProjectFunc={this.deleteProjectHandler}
+                projectID={this.state.project.id}
               />
             </div>
           </div>
