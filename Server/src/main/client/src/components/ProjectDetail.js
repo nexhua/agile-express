@@ -10,6 +10,8 @@ import ProjectManagerRow from "./ProjectManagerRow";
 import TaskCard from "./TaskCard";
 import NewTaskCard from "./NewTaskCard";
 import { toast } from "react-toastify";
+import SprintCard from "./SprintCard";
+import NewSprintCard from "./NewSprintCard";
 
 export default class ProjectDetail extends React.Component {
   constructor(props) {
@@ -22,6 +24,9 @@ export default class ProjectDetail extends React.Component {
 
     this.deleteTask = this.deleteTask.bind(this);
     this.createTask = this.createTask.bind(this);
+    this.getSprintTasks = this.getSprintTasks.bind(this);
+    this.getTaskSprint = this.getTaskSprint.bind(this);
+    this.createSprint = this.createSprint.bind(this);
   }
 
   async componentDidMount() {
@@ -90,8 +95,56 @@ export default class ProjectDetail extends React.Component {
 
       this.state.update();
     }
+  }
 
-    console.log(body);
+  getSprintTasks(sprintID) {
+    if (this.state.project.tasks) {
+      let tasks = [];
+
+      for (let i = 0; i < this.state.project.tasks.length; i++) {
+        let task = this.state.project.tasks[i];
+
+        if (task.sprint === sprintID) {
+          tasks.push(task);
+        }
+      }
+
+      return tasks;
+    }
+  }
+
+  getTaskSprint(sprintID) {
+    if (this.state.project.sprints) {
+      return this.state.project.sprints.findIndex((s) => s.id === sprintID);
+    }
+    return -1;
+  }
+
+  async createSprint(body) {
+    if (this.state.project.id) {
+      body.projectID = this.state.project.id;
+
+      const response = await fetch("/api/projects/sprints", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (response.status === 201) {
+        toast.success("Sprint created successfully", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        this.state.update();
+      }
+    }
   }
 
   render() {
@@ -123,21 +176,39 @@ export default class ProjectDetail extends React.Component {
     }
 
     let tasks;
-    if (this.state.projectUserRoles.length > 0) {
+    if (this.state.project.tasks) {
       tasks = this.state.project.tasks.map((task, index) => {
         return (
           <TaskCard
-            key={task.id}
+            key={task.id + "_" + this.state.projectUserRoles.length}
             index={index}
             task={task}
             projectRoles={this.state.projectUserRoles}
             deleteTask={this.deleteTask}
+            getSprint={this.getTaskSprint}
           ></TaskCard>
         );
       });
     }
 
+    let sprints;
+    if (this.state.project.sprints) {
+      sprints = this.state.project.sprints.map((sprint, index) => {
+        return (
+          <SprintCard
+            key={sprint.id + "_" + this.state.project.sprints.length}
+            sprint={sprint}
+            count={index}
+            getTasks={this.getSprintTasks}
+          />
+        );
+      });
+    }
+
     const createTaskCard = <NewTaskCard createTaskFunc={this.createTask} />;
+    const createSprintCard = (
+      <NewSprintCard createSprintFunc={this.createSprint} />
+    );
 
     return (
       <div className="card app-bg-primary border-secondary mx-5">
@@ -203,8 +274,9 @@ export default class ProjectDetail extends React.Component {
           </div>
         </div>
         <hr className="text-white mx-3" />
-        <div className="row">
-          <p className="my-5 text-white">sprintler buraya gelecek</p>
+        <div className="mx-3 mt-3 mb-4 d-flex flex-row flex-wrap gap-3">
+          {sprints}
+          {createSprintCard}
         </div>
       </div>
     );

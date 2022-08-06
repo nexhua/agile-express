@@ -57,4 +57,6 @@ public interface ProjectRepositoryCustom {
     UpdateResult deleteSprint(SprintDeleteInput input);
 
     UpdateResult addManager(ProjectAddManagerInput input);
+
+    UpdateResult assignTaskToSprint(TaskSprintAssignInput input);
 }

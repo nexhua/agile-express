@@ -1,6 +1,8 @@
 package AgileExpress.Server.Entities;
 
 import AgileExpress.Server.Constants.MongoConstants;
+import AgileExpress.Server.Utility.IDGenerationPolicy;
+import org.bson.BsonNull;
 
 
 import javax.persistence.GeneratedValue;
@@ -22,7 +24,10 @@ public class Task {
     private Date createdAt;
     private int storyPoint = 20;
     private Number currentStatus = 0;
-    private String sprint;
+
+    @Id
+    @IDGenerationPolicy(generate = false)
+    private String sprintID;
     private List<Comment> comments = Collections.emptyList();
     private List<Assignee> assignees = Collections.emptyList();
     private List<Label> labels = Collections.emptyList();
@@ -36,7 +41,7 @@ public class Task {
         this.createdBy = createdBy;
         this.storyPoint = storyPoint;
         this.createdAt = new Date();
-        this.sprint = MongoConstants.Unassigned;
+        this.sprintID = BsonNull.VALUE.toString();
     }
 
     public Optional<Assignee> getAssignee(String userID) {
@@ -130,11 +135,11 @@ public class Task {
     }
 
     public String getSprint() {
-        return sprint;
+        return sprintID;
     }
 
     public void setSprint(String sprint) {
-        this.sprint = sprint;
+        this.sprintID = sprint;
     }
 
 //endregion

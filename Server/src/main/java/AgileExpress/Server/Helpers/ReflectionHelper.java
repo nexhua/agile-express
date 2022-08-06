@@ -3,6 +3,7 @@ package AgileExpress.Server.Helpers;
 import AgileExpress.Server.Constants.MongoConstants;
 import AgileExpress.Server.Utility.IncludeEmpty;
 import AgileExpress.Server.Utility.PropertyInfo;
+import org.bson.BsonNull;
 import org.bson.Document;
 import org.springframework.util.CollectionUtils;
 
@@ -97,7 +98,11 @@ public class ReflectionHelper {
 
             if (checkIfFieldAnnotationHasId(field)) {
                 if (!getIDGenerationPolicy(field)) {
-                    document.put(fieldName, QueryHelper.createID(ids.remove()));
+                    if(ids == null || ids.isEmpty()) {
+                        document.put(fieldName, BsonNull.VALUE);
+                    } else {
+                        document.put(fieldName, QueryHelper.createID(ids.remove()));
+                    }
                 } else {
                     document.put(MongoConstants.Id, QueryHelper.createdID());
                 }

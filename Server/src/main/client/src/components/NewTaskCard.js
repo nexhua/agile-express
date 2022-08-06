@@ -13,13 +13,13 @@ export default class NewTaskCard extends React.Component {
   }
 
   createTask() {
-    const usernameInput = document.getElementById("username_input");
+    const tasknameInput = document.getElementById("taskname_input");
     const descriptionInput = document.getElementById("description_input");
 
-    if (this.validateTaskInput(usernameInput, descriptionInput)) {
+    if (this.validateTaskInput(tasknameInput, descriptionInput)) {
       const task = {};
 
-      task.name = usernameInput.value;
+      task.name = tasknameInput.value;
       task.description = descriptionInput.value;
       task.storyPoint = 50;
 
@@ -27,15 +27,15 @@ export default class NewTaskCard extends React.Component {
     }
   }
 
-  validateTaskInput(usernameInput, descriptionInput) {
-    let username = "";
+  validateTaskInput(tasknameInput, descriptionInput) {
+    let taskname = "";
     let description = "";
 
-    if (usernameInput) {
-      username = usernameInput.value;
+    if (tasknameInput) {
+      taskname = tasknameInput.value;
 
-      if (username === "") {
-        toast.warn("Username can't be empty", {
+      if (taskname === "") {
+        toast.warn("Task name can't be empty", {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: false,
@@ -65,11 +65,11 @@ export default class NewTaskCard extends React.Component {
         <div className="card-body text-muted py-0 px-2 row align-items-center create-section flex-column gap-0">
           <div className="input-group mb-1">
             <input
-              id="username_input"
+              id="taskname_input"
               type="text"
               className="form-control bg-dark text-white input-sm"
-              placeholder="Username"
-              aria-label="Username"
+              placeholder="Taskname"
+              aria-label="Taskname"
             />
           </div>
           <div className="input-group mb-1">

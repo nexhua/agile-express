@@ -21,6 +21,7 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -283,12 +284,13 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         try {
             Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
             Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id), QueryHelper.createID(input.getTaskID()));
+            Bson teamMemberFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.TeamMembers, MongoConstants.Id), QueryHelper.createID(input.getUserID()));
 
             String assigneesName = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Assignees);
 
             Bson update = Updates.push(assigneesName, input.toDocument());
             result = mongoTemplate.getCollection(MongoConstants.Projects)
-                    .updateOne(Filters.and(projectFilter, taskFilter), update);
+                    .updateOne(Filters.and(projectFilter, taskFilter, teamMemberFilter), update);
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }
@@ -435,6 +437,35 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.and(projectFilter, teamMemberFilter), update);
 
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult assignTaskToSprint(TaskSprintAssignInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson taskFilter = Filters.eq(
+                    QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id),
+                    QueryHelper.createID(input.getTaskID()));
+
+
+            Bson update;
+            if (input.getSprintID().equals("")) {
+                update = Updates.set(
+                        QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.SprintID),
+                        BsonNull.VALUE);
+            } else {
+                update = Updates.set(
+                        QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.SprintID),
+                        QueryHelper.createID(input.getSprintID()));
+            }
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(Filters.and(projectFilter, taskFilter), update);
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }

@@ -50,6 +50,8 @@ public class MongoConstants {
 
     public static final String Sprint = "sprints";
 
+    public static final String SprintID = "sprintID";
+
     public static final String Comments = "comments";
 
     public static final String Assignees = "assignees";

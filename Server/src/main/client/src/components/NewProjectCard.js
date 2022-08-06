@@ -157,7 +157,11 @@ export default class NewProjectCard extends React.Component {
                       Start Date
                     </Label>
                     <Col sm={8}>
-                      <AppDatePicker id="startDatePicker" allowSameDay={true} />
+                      <AppDatePicker
+                        id="startDatePicker"
+                        allowSameDay={true}
+                        hasHours={true}
+                      />
                     </Col>
                   </FormGroup>
                   <FormGroup row className="mb-4">
@@ -165,7 +169,11 @@ export default class NewProjectCard extends React.Component {
                       End Date
                     </Label>
                     <Col sm={8}>
-                      <AppDatePicker id="endDatePicker" allowSameDay={false} />
+                      <AppDatePicker
+                        id="endDatePicker"
+                        allowSameDay={false}
+                        hasHours={true}
+                      />
                     </Col>
                   </FormGroup>
                 </Form>

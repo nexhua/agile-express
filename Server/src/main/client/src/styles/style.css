@@ -57,3 +57,7 @@
 .create-section {
     cursor: pointer;
 }
+
+.active-sprint {
+    border-color: #b19d35e8;
+}

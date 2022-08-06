@@ -32,7 +32,6 @@ export default class ProjectPage extends React.Component {
 
     if (response.status === 200) {
       const data = await response.json();
-
       this.setState({
         project: data,
       });
@@ -46,7 +45,10 @@ export default class ProjectPage extends React.Component {
   render() {
     let projectComponent;
     if (this.state.project !== null) {
-      const key = this.state.project.id + this.state.project.tasks.length;
+      const key =
+        this.state.project.id +
+        this.state.project.tasks.length +
+        this.state.project.sprints.length;
       projectComponent = (
         <ProjectDetail
           key={key}

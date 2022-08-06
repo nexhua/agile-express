@@ -380,7 +380,13 @@ public class ProjectController {
 
             if (!userAssigned) {
                 UpdateResult result = this.repository.addAssigneeToTask(input);
-                response = new ResponseEntity(result, HttpStatus.CREATED);
+
+                if(result.getMatchedCount() > 0 && result.getMatchedCount() > 0) {
+                    response = new ResponseEntity(result, HttpStatus.CREATED);
+                }
+               else {
+                   response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+                }
             } else {
                 response = new ResponseEntity(new Document(ErrorMessages.Title,
                         ErrorMessages.PropertyAlreadyExistsWithValueError(MongoConstants.UserID)), HttpStatus.BAD_REQUEST);
@@ -521,6 +527,24 @@ public class ProjectController {
         ResponseEntity response;
         try {
             UpdateResult result = this.repository.addManager(input);
+            if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
+                response = new ResponseEntity(HttpStatus.OK);
+            }
+            else {
+                response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    //ASSGIN TASK TO A SPRINT
+    @PostMapping(ApiRouteConstants.ProjectsTasksAssign)
+    public ResponseEntity<?> assignTaskToSprint(@RequestBody TaskSprintAssignInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.assignTaskToSprint(input);
             if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
                 response = new ResponseEntity(HttpStatus.OK);
             }
