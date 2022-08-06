@@ -8,6 +8,8 @@ import SprintsRow from "./SprintsRow";
 import AccessLevelService from "../helpers/AccessLevelService";
 import ProjectManagerRow from "./ProjectManagerRow";
 import TaskCard from "./TaskCard";
+import NewTaskCard from "./NewTaskCard";
+import { toast } from "react-toastify";
 
 export default class ProjectDetail extends React.Component {
   constructor(props) {
@@ -19,6 +21,7 @@ export default class ProjectDetail extends React.Component {
     };
 
     this.deleteTask = this.deleteTask.bind(this);
+    this.createTask = this.createTask.bind(this);
   }
 
   async componentDidMount() {
@@ -55,6 +58,40 @@ export default class ProjectDetail extends React.Component {
     if (response.status === 200) {
       this.state.update();
     }
+  }
+
+  async createTask(task) {
+    const currentUser = await AccessLevelService.getUsername();
+    const body = {
+      projectID: this.state.project.id,
+      name: task.name,
+      description: task.description,
+      createdBy: currentUser,
+      storyPoint: task.storyPoint,
+    };
+
+    const response = await fetch("/api/projects/task", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (response.status === 200) {
+      toast.success("Task created successfully", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      this.state.update();
+    }
+
+    console.log(body);
   }
 
   render() {
@@ -99,6 +136,8 @@ export default class ProjectDetail extends React.Component {
         );
       });
     }
+
+    const createTaskCard = <NewTaskCard createTaskFunc={this.createTask} />;
 
     return (
       <div className="card app-bg-primary border-secondary mx-5">
@@ -159,6 +198,7 @@ export default class ProjectDetail extends React.Component {
               className="d-flex flex-wrap gap-3 overflow-auto"
             >
               {tasks}
+              {createTaskCard}
             </div>
           </div>
         </div>

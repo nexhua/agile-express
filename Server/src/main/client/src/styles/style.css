@@ -53,3 +53,7 @@
 .svg-icon:hover svg ,.svg-icon.show svg {
     color: white
 }
+
+.create-section {
+    cursor: pointer;
+}

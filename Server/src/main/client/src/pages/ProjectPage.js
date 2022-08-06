@@ -2,6 +2,7 @@ import React from "react";
 import AppNavbar from "../components/AppNavbar";
 import { Container } from "reactstrap";
 import ProjectDetail from "../components/ProjectDetail";
+import { ToastContainer, toast } from "react-toastify";
 
 export default class ProjectPage extends React.Component {
   constructor(props) {
@@ -45,8 +46,10 @@ export default class ProjectPage extends React.Component {
   render() {
     let projectComponent;
     if (this.state.project !== null) {
+      const key = this.state.project.id + this.state.project.tasks.length;
       projectComponent = (
         <ProjectDetail
+          key={key}
           project={this.state.project}
           updateProject={this.updateProject}
         />
@@ -63,6 +66,7 @@ export default class ProjectPage extends React.Component {
           </h2>
           {projectComponent}
         </Container>
+        <ToastContainer />
       </div>
     );
   }

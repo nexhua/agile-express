@@ -57,7 +57,6 @@ export default class ProjectButtonGroup extends React.Component {
             <div
               className="btn-group w-100 p-0 m-0 h-100 mt-5 border-radius-bottom"
               role="group"
-              aria-label="Basic example"
             >
               <button
                 type="button"

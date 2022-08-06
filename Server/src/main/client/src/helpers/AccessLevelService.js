@@ -14,25 +14,6 @@ export default class AccessLevelService {
     hasFetchedAccessLevel: false,
   };
 
-  static async getAccessLevel() {
-    if (this.hasFetchedAccessLevel) {
-      return this.currentUser.accessLevel;
-    }
-
-    const response = await fetch("/api/auth/accesslevel");
-
-    const data = await response.json();
-
-    let accessLevel = -1;
-    if (response.status === 200) {
-      accessLevel = data.accessLevel;
-      this.currentUser.accessLevel = accessLevel;
-      this.currentUser.hasFetchedAccessLevel = true;
-    }
-
-    return data.accessLevel;
-  }
-
   static async fetchUser() {
     const response = await fetch("/api/auth/user");
 
@@ -52,11 +33,39 @@ export default class AccessLevelService {
     return this.currentUser;
   }
 
+  static async getAccessLevel() {
+    if (this.hasFetchedAccessLevel) {
+      return this.currentUser.accessLevel;
+    }
+
+    const response = await fetch("/api/auth/accesslevel");
+
+    const data = await response.json();
+
+    let accessLevel = -1;
+    if (response.status === 200) {
+      accessLevel = data.accessLevel;
+      this.currentUser.accessLevel = accessLevel;
+      this.currentUser.hasFetchedAccessLevel = true;
+    }
+
+    return data.accessLevel;
+  }
+
   static async getUser() {
     if (this.currentUser.hasFetched) {
       return this.currentUser;
     } else {
       return await this.fetchUser();
+    }
+  }
+
+  static async getUsername() {
+    if (this.currentUser.hasFetched) {
+      return this.currentUser.username;
+    } else {
+      const user = await this.fetchUser();
+      return this.currentUser.username;
     }
   }
 

@@ -49,7 +49,7 @@ export default class TaskCard extends React.Component {
             <div>
               <div className="dropdown">
                 <button
-                  className="btn app-bg-secondary muted-gray-hover svg-icon"
+                  className="btn app-bg-secondary muted-gray-hover svg-icon text-muted"
                   type="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
