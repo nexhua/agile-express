@@ -3,6 +3,7 @@ import AppNavbar from "../components/AppNavbar";
 import { Container } from "reactstrap";
 import ProjectDetail from "../components/ProjectDetail";
 import { ToastContainer, toast } from "react-toastify";
+import { hashCodeArr, hashCodeStr } from "../helpers/GetHashCode";
 
 export default class ProjectPage extends React.Component {
   constructor(props) {
@@ -48,7 +49,13 @@ export default class ProjectPage extends React.Component {
       const key =
         this.state.project.id +
         this.state.project.tasks.length +
-        this.state.project.sprints.length;
+        this.state.project.sprints.length +
+        hashCodeArr(
+          this.state.project.statusFields +
+            hashCodeStr(
+              this.state.project.startDate + this.state.project.endDate
+            )
+        );
       projectComponent = (
         <ProjectDetail
           key={key}

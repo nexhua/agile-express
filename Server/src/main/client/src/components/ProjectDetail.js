@@ -12,6 +12,9 @@ import NewTaskCard from "./NewTaskCard";
 import { toast } from "react-toastify";
 import SprintCard from "./SprintCard";
 import NewSprintCard from "./NewSprintCard";
+import AppModal from "./AppModal";
+import ProjectEdit from "./ProjectEdit";
+import { hashCodeArr } from "../helpers/GetHashCode";
 
 export default class ProjectDetail extends React.Component {
   constructor(props) {
@@ -20,13 +23,19 @@ export default class ProjectDetail extends React.Component {
       project: this.props.project,
       projectUserRoles: [],
       update: this.props.updateProject,
+      projectModal: false,
     };
+
+    this.editChild = React.createRef();
 
     this.deleteTask = this.deleteTask.bind(this);
     this.createTask = this.createTask.bind(this);
     this.getSprintTasks = this.getSprintTasks.bind(this);
     this.getTaskSprint = this.getTaskSprint.bind(this);
     this.createSprint = this.createSprint.bind(this);
+
+    this.toggleProjectModal = this.toggleProjectModal.bind(this);
+    this.editProject = this.editProject.bind(this);
   }
 
   async componentDidMount() {
@@ -44,6 +53,63 @@ export default class ProjectDetail extends React.Component {
     ).offsetHeight;
     document.getElementById("project_tasks_container").style.maxHeight =
       height + "px";
+  }
+
+  toggleProjectModal() {
+    this.setState({
+      projectModal: !this.state.projectModal,
+    });
+  }
+
+  async editProject() {
+    const newFields = this.editChild.current.getOutput();
+
+    const body = getProjectUpdateInputs(newFields);
+    body.projectID = this.state.project.id;
+
+    if (Object.keys(body).length <= 1) {
+      toast.warning("Select atleast 1 field to update", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    const response = await fetch("/api/projects", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (response.status === 200) {
+      toast.success("Project updated successfully", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      this.state.update();
+    } else {
+      toast.error("Error during project update", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+
+    this.toggleProjectModal();
   }
 
   async deleteTask(taskID) {
@@ -210,6 +276,46 @@ export default class ProjectDetail extends React.Component {
       <NewSprintCard createSprintFunc={this.createSprint} />
     );
 
+    let projectModal;
+    if (this.state.projectModal) {
+      projectModal = (
+        <AppModal
+          isOpen={this.state.projectModal}
+          toggle={this.toggleProjectModal}
+          title="Edit Project"
+          cancelString="Cancel"
+          successString="Update Project"
+          content={
+            <ProjectEdit
+              ref={this.editChild}
+              id="project_edit_modal"
+              statusFields={this.state.project.statusFields}
+            />
+          }
+          onSuccess={this.editProject}
+        />
+      );
+    }
+
+    let statusFieldRowComponent;
+    if (this.state.project) {
+      statusFieldRowComponent = (
+        <CardRow
+          key={hashCodeArr(this.state.project.statusFields)}
+          id={keys[4]}
+          title={"Status Fields"}
+          component={
+            <StatusFieldsRow
+              statusFields={this.state.project.statusFields}
+              className={["clickable"]}
+              onClick={this.toggleProjectModal}
+              hasCreate={false}
+            />
+          }
+        />
+      );
+    }
+
     return (
       <div className="card app-bg-primary border-secondary mx-5">
         <div className="row">
@@ -220,28 +326,37 @@ export default class ProjectDetail extends React.Component {
                   id={keys[1]}
                   title={"Project Name"}
                   component={
-                    <p className="my-2">{this.state.project.projectName}</p>
+                    <p
+                      className="my-2 clickable"
+                      onClick={this.toggleProjectModal}
+                    >
+                      {this.state.project.projectName}
+                    </p>
                   }
                 />
                 <CardRow
                   id={keys[2]}
                   title={"Start Date"}
-                  component={<DateRow date={this.state.project.startDate} />}
+                  component={
+                    <DateRow
+                      className={["clickable"]}
+                      date={this.state.project.startDate}
+                      onClick={this.toggleProjectModal}
+                    />
+                  }
                 />
                 <CardRow
                   id={keys[3]}
                   title={"End Date"}
-                  component={<DateRow date={this.state.project.endDate} />}
-                />
-                <CardRow
-                  id={keys[4]}
-                  title={"Status Fields"}
                   component={
-                    <StatusFieldsRow
-                      statusFields={this.state.project.statusFields}
+                    <DateRow
+                      className={["clickable"]}
+                      date={this.state.project.endDate}
+                      onClick={this.toggleProjectModal}
                     />
                   }
                 />
+                {statusFieldRowComponent}
                 <CardRow
                   id={keys[5]}
                   title={"Team Members"}
@@ -278,7 +393,45 @@ export default class ProjectDetail extends React.Component {
           {sprints}
           {createSprintCard}
         </div>
+        {projectModal}
       </div>
     );
   }
+}
+
+function getProjectUpdateInputs(statusFields) {
+  const output = {};
+
+  const projectNameCheck = document.getElementById("projectName_check");
+  if (projectNameCheck.checked) {
+    const projectNameInput = document.getElementById("projectName");
+
+    if (projectNameInput && projectNameInput.value) {
+      output.projectName = projectNameInput.value;
+    }
+  }
+
+  const startDateCheck = document.getElementById("startDate_check");
+  if (startDateCheck.checked) {
+    const startDateInput = document.getElementById("startDatePicker");
+
+    if (startDateInput) {
+      output.startDate = new Date(startDateInput.value);
+    }
+  }
+
+  const endDateCheck = document.getElementById("endDate_check");
+  if (endDateCheck.checked) {
+    const endDateInput = document.getElementById("endDatePicker");
+
+    if (endDateInput) {
+      output.endDate = new Date(endDateInput.value);
+    }
+  }
+
+  const statusFieldCheck = document.getElementById("statusField_check");
+  if (statusFieldCheck.checked && statusFields.length > 0) {
+    output.statusFields = statusFields;
+  }
+  return output;
 }

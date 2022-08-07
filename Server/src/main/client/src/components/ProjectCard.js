@@ -134,6 +134,7 @@ export default class ProjectCard extends React.Component {
                 component={
                   <StatusFieldsRow
                     statusFields={this.state.project.statusFields}
+                    hasCreatea={false}
                   />
                 }
               />

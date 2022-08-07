@@ -58,6 +58,10 @@
     cursor: pointer;
 }
 
+.clickable:hover {
+    cursor: pointer;
+}
+
 .active-sprint {
     border-color: #b19d35e8;
 }

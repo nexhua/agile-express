@@ -2,8 +2,6 @@ package AgileExpress.Server.Inputs.Project;
 
 import AgileExpress.Server.Utility.IncludeEmpty;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +16,7 @@ public class ChangeProjectInput {
     private Date endDate;
 
     @IncludeEmpty
-    private List<String> statusFields = Collections.emptyList();
+    private List<String> statusFields;
 
     public ChangeProjectInput() { }
 

@@ -75,7 +75,7 @@ export default class TaskCard extends React.Component {
         <div className="card-body text-white py-0 px-2">
           <div className="card-title pt-2 text-secondary fst-italic fs-6 d-flex justify-content-between align-items-center">
             <div>
-              #{this.state.index} {this.state.task.name}
+              #{this.state.index + 1} {this.state.task.name}
             </div>
             <div>
               <div className="dropdown">
