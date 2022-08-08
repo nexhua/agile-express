@@ -6,6 +6,8 @@ export default class ProjectManagerRow extends React.Component {
     super(props);
     this.state = {
       teamMembers: this.props.teamMembers,
+      onClick: this.props.onClick,
+      className: this.props.className,
     };
   }
 
@@ -23,6 +25,10 @@ export default class ProjectManagerRow extends React.Component {
 
   render() {
     const nameString = this.getNameString();
-    return <p className="my-2">{nameString}</p>;
+    return (
+      <p className={this.state.className} onClick={this.state.onClick}>
+        {nameString}
+      </p>
+    );
   }
 }

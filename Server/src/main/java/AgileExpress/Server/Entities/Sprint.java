@@ -20,6 +20,8 @@ public class Sprint {
     @JsonProperty("isClosed")
     private boolean isClosed;
 
+    private boolean active;
+
     public Sprint() { }
 
     public Sprint(Date startDate, Date endDate, String goal) {
@@ -27,9 +29,18 @@ public class Sprint {
         this.endDate = endDate;
         this.goal = goal;
         this.isClosed = false;
+        this.active = false;
     }
 
     //region Getter and Setters
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public String getId() {
         return id;

@@ -80,6 +80,7 @@ export default class ProjectCard extends React.Component {
           component={
             <ProjectManagerRow
               key="projectManagerRow"
+              className="my-2"
               teamMembers={this.state.teamMembersWithUserInfo}
             />
           }

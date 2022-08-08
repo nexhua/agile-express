@@ -57,7 +57,7 @@ export default class ProjectPage extends React.Component {
               this.state.project.startDate + this.state.project.endDate
             )
         ) +
-        hashCodeArr(this.state.project.teamMembers.map((u) => u.id));
+        hashCodeArr(this.state.project.teamMembers.map((u) => u.projectRole));
       projectComponent = (
         <ProjectDetail
           key={key}

@@ -16,6 +16,9 @@ import AppModal from "./AppModal";
 import ProjectEdit from "./ProjectEdit";
 import { hashCodeArr } from "../helpers/GetHashCode";
 import UserEdit from "./UserEdit";
+import ProjectManagerEdit from "./ProjectManagerEdit";
+import userTypeStringToOrdinal from "../helpers/UserTypesConverter";
+import UserTypes from "../helpers/UserTypes";
 
 export default class ProjectDetail extends React.Component {
   constructor(props) {
@@ -26,10 +29,12 @@ export default class ProjectDetail extends React.Component {
       update: this.props.updateProject,
       projectModal: false,
       userModal: false,
+      projectManagerModal: false,
     };
 
     this.editChild = React.createRef();
     this.userChild = React.createRef();
+    this.ProjectManagerChild = React.createRef();
 
     this.deleteTask = this.deleteTask.bind(this);
     this.createTask = this.createTask.bind(this);
@@ -39,8 +44,11 @@ export default class ProjectDetail extends React.Component {
 
     this.toggleProjectModal = this.toggleProjectModal.bind(this);
     this.toggleUserModal = this.toggleUserModal.bind(this);
+    this.toggleProjectManagerModal = this.toggleProjectManagerModal.bind(this);
+
     this.editProject = this.editProject.bind(this);
     this.editUsers = this.editUsers.bind(this);
+    this.editProjectManager = this.editProjectManager.bind(this);
   }
 
   async componentDidMount() {
@@ -70,6 +78,74 @@ export default class ProjectDetail extends React.Component {
     this.setState({
       userModal: !this.state.userModal,
     });
+  }
+
+  toggleProjectManagerModal() {
+    this.setState({
+      projectManagerModal: !this.state.projectManagerModal,
+    });
+  }
+
+  async editProjectManager() {
+    const managerChangeList = this.ProjectManagerChild.current.getOutput();
+
+    console.log(managerChangeList);
+
+    let changeList = [];
+    for (var i = 0; i < managerChangeList.length; i++) {
+      const teamMember = managerChangeList[i];
+
+      if (teamMember.isChecked) {
+        const currentRole = teamMember.currentProjectRole;
+        const selectedRole = parseInt(teamMember.selectedRole);
+
+        if (userTypeStringToOrdinal(currentRole) !== selectedRole) {
+          const body = {
+            projectID: this.state.project.id,
+            userID: teamMember.id,
+            projectRole: selectedRole,
+          };
+
+          changeList.push(body);
+        }
+      }
+    }
+
+    console.log(changeList);
+    let changedCount = 0;
+    if (changeList.length > 0) {
+      for (var i = 0; i < changeList.length; i++) {
+        const response = await fetch("/api/projects/manager", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(changeList[i]),
+        });
+
+        if (response.status === 200) {
+          changedCount += 1;
+        }
+      }
+
+      if (changedCount > 0) {
+        toast.success(
+          `Changed the roles of ${changedCount} team members succesfully`,
+          {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            draggable: true,
+            progress: undefined,
+          }
+        );
+
+        this.state.update();
+      }
+    }
+
+    this.toggleProjectManagerModal();
   }
 
   async editUsers() {
@@ -322,13 +398,17 @@ export default class ProjectDetail extends React.Component {
     if (this.state.projectUserRoles.length > 0) {
       teamMemberInfo = (
         <CardRow
-          key="projectManager"
+          key={hashCodeArr(
+            this.state.projectUserRoles.map((u) => u.currentProjectRole)
+          )}
           id={"projectManager"}
           title={"Project Manager"}
           component={
             <ProjectManagerRow
               key="projectManagerRow"
               teamMembers={this.state.projectUserRoles}
+              className="my-2 clickable"
+              onClick={this.toggleProjectManagerModal}
             />
           }
         />
@@ -416,6 +496,26 @@ export default class ProjectDetail extends React.Component {
             />
           }
           onSuccess={this.editUsers}
+        />
+      );
+    }
+
+    let projectManagerModal;
+    if (this.state.projectManagerModal) {
+      projectManagerModal = (
+        <AppModal
+          isOpen={this.state.projectManagerModal}
+          toggle={this.toggleProjectManagerModal}
+          title="Change Project Managers"
+          cancelString="Cancel"
+          successString="Change"
+          content={
+            <ProjectManagerEdit
+              ref={this.ProjectManagerChild}
+              projectRoles={this.state.projectUserRoles}
+            />
+          }
+          onSuccess={this.editProjectManager}
         />
       );
     }
@@ -524,6 +624,7 @@ export default class ProjectDetail extends React.Component {
         </div>
         {projectModal}
         {userModal}
+        {projectManagerModal}
       </div>
     );
   }

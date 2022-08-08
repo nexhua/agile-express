@@ -1,5 +1,6 @@
 package AgileExpress.Server.Inputs.Task;
 
+import AgileExpress.Server.Constants.CommentTypes;
 import AgileExpress.Server.Entities.Comment;
 import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Interfaces.IToInputDocument;
@@ -16,6 +17,8 @@ public class TaskAddCommentInput implements IToInputObject<Comment>, IToInputDoc
 
     private String comment;
 
+    private CommentTypes action;
+
     public TaskAddCommentInput() { }
 
     public TaskAddCommentInput(String projectID, String taskID, String username, String comment) {
@@ -27,7 +30,7 @@ public class TaskAddCommentInput implements IToInputObject<Comment>, IToInputDoc
 
     @Override
     public Comment toObject() {
-        return new Comment(this.getUsername(), this.getComment());
+        return new Comment(this.getUsername(), this.getComment(), this.getAction());
     }
 
     @Override
@@ -36,6 +39,14 @@ public class TaskAddCommentInput implements IToInputObject<Comment>, IToInputDoc
     }
 
     //region Getters and Setters
+
+    public CommentTypes getAction() {
+        return action;
+    }
+
+    public void setAction(CommentTypes action) {
+        this.action = action;
+    }
 
     public String getProjectID() {
         return projectID;

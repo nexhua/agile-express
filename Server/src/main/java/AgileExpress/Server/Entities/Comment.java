@@ -1,5 +1,8 @@
 package AgileExpress.Server.Entities;
 
+import AgileExpress.Server.Constants.CommentTypes;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
@@ -11,17 +14,29 @@ public class Comment {
     private String id;
     private String username;
     private String comment;
+
+    @Field("action")
+    private CommentTypes action;
     private Date date;
 
     public Comment() { }
 
-    public Comment(String username, String comment) {
+    public Comment(String username, String comment, CommentTypes action) {
         this.username = username;
         this.comment = comment;
         this.date = new Date();
+        this.action = action;
     }
 
     //region Getter and Setters
+
+    public CommentTypes getAction() {
+        return action;
+    }
+
+    public void setAction(CommentTypes action) {
+        this.action = action;
+    }
 
     public String getId() {
         return id;
