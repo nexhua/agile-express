@@ -17,4 +17,24 @@ function hashCodeArr(array) {
   return Math.abs(hash);
 }
 
-export { hashCodeStr, hashCodeArr };
+function hashProject(project) {
+  let activeSprint = project.sprints.find((sprint) => sprint.active === true);
+  let activeSprintID = "Not Found";
+  if (activeSprint) {
+    activeSprintID = activeSprint.id;
+  }
+
+  return (
+    project.id +
+    project.tasks.length +
+    project.sprints.length +
+    hashCodeStr(project.projectName) +
+    hashCodeArr(
+      project.statusFields + hashCodeStr(project.startDate + project.endDate)
+    ) +
+    hashCodeArr(project.teamMembers.map((u) => u.projectRole)) +
+    hashCodeStr(activeSprintID)
+  );
+}
+
+export { hashCodeStr, hashCodeArr, hashProject };

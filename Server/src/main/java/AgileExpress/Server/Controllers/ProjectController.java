@@ -10,6 +10,7 @@ import AgileExpress.Server.Helpers.AuthHelper;
 import AgileExpress.Server.Helpers.ProjectHelper;
 import AgileExpress.Server.Helpers.ReflectionHelper;
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintActiveInput;
 import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
@@ -546,6 +547,24 @@ public class ProjectController {
         try {
             UpdateResult result = this.repository.assignTaskToSprint(input);
             if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
+                response = new ResponseEntity(HttpStatus.OK);
+            }
+            else {
+                response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    //SET SPRINT ACTIVE
+    @PostMapping(ApiRouteConstants.SprintActive)
+    public ResponseEntity<?> activateSprint(@RequestBody SprintActiveInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.setActiveSprint(input);
+            if(result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
                 response = new ResponseEntity(HttpStatus.OK);
             }
             else {

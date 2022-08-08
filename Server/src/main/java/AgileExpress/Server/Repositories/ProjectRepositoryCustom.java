@@ -3,6 +3,7 @@ package AgileExpress.Server.Repositories;
 import AgileExpress.Server.Entities.Project;
 import AgileExpress.Server.Entities.ProjectTeamMembers;
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintActiveInput;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
@@ -59,4 +60,6 @@ public interface ProjectRepositoryCustom {
     UpdateResult addManager(ProjectAddManagerInput input);
 
     UpdateResult assignTaskToSprint(TaskSprintAssignInput input);
+
+    UpdateResult setActiveSprint(SprintActiveInput input);
 }

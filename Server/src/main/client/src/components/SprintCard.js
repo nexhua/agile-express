@@ -9,6 +9,8 @@ export default class SprintCard extends React.Component {
       count: this.props.count,
       getTasks: this.props.getTasks,
       tasks: [],
+      delete: this.props.deleteSprint,
+      activate: this.props.activateSprint,
     };
   }
 
@@ -27,14 +29,20 @@ export default class SprintCard extends React.Component {
 
   render() {
     let status;
-    if (this.state.sprint.isClosed === true) {
-      status = "Closed";
-    } else {
-      status = "Not Started";
-    }
-
-    if (this.state.isActive) {
+    if (this.state.sprint.active) {
       status = "Active";
+
+      const card = document.getElementById("sprint_" + this.state.count);
+      if (card) {
+        card.classList.remove("border-0");
+        card.classList.add("border-1", "active-sprint");
+      }
+    } else {
+      if (this.state.sprint.isClosed) {
+        status = "Finished";
+      } else {
+        status = "Not Started";
+      }
     }
 
     return (
@@ -67,7 +75,26 @@ export default class SprintCard extends React.Component {
                   </svg>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-dark">
-                  <li>
+                  <li onClick={() => this.state.activate(this.state.sprint.id)}>
+                    <a
+                      className="dropdown-item text-warning align-items-center fst-normal"
+                      href="#"
+                    >
+                      <svg
+                        width={"16px"}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 448 512"
+                        className="me-2"
+                      >
+                        <path
+                          d="M438.6 105.4C451.1 117.9 451.1 138.1 438.6 150.6L182.6 406.6C170.1 419.1 149.9 419.1 137.4 406.6L9.372 278.6C-3.124 266.1-3.124 245.9 9.372 233.4C21.87 220.9 42.13 220.9 54.63 233.4L159.1 338.7L393.4 105.4C405.9 92.88 426.1 92.88 438.6 105.4H438.6z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Activate
+                    </a>
+                  </li>
+                  <li onClick={() => this.state.delete(this.state.sprint.id)}>
                     <a
                       className="dropdown-item text-danger align-items-center fst-normal"
                       href="#"
@@ -95,6 +122,14 @@ export default class SprintCard extends React.Component {
             <div className="text-white mt-3">{status}</div>
             <div className="text-white mt-3">
               Has {this.state.tasks.length} tasks
+            </div>
+            <div className="text-white mt-3">
+              Start Date -{" "}
+              {new Date(this.state.sprint.startDate).toLocaleDateString()}
+            </div>
+            <div className="text-white mt-3">
+              End Date -{" "}
+              {new Date(this.state.sprint.endDate).toLocaleDateString()}
             </div>
           </div>
         </div>

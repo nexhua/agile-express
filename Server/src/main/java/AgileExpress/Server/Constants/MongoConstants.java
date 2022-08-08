@@ -61,4 +61,12 @@ public class MongoConstants {
     public static final String UserID = "userID";
 
     //endregion
+
+    //region Sprints
+
+    public static final String Active = "active";
+
+    public static final String IsClosed = "isClosed";
+
+    //endregion
 }

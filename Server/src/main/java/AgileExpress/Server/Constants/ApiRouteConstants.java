@@ -47,5 +47,7 @@ public class ApiRouteConstants {
 
     public static final String ProjectsTasksAssign = "/api/projects/task/assign";
 
+    public static final String SprintActive = "/api/projects/sprints/active";
+
     //endregion
 }

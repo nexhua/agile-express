@@ -7,6 +7,7 @@ import AgileExpress.Server.Entities.ProjectTeamMembers;
 import AgileExpress.Server.Entities.User;
 import AgileExpress.Server.Helpers.QueryHelper;
 import AgileExpress.Server.Inputs.Project.*;
+import AgileExpress.Server.Inputs.Sprint.SprintActiveInput;
 import AgileExpress.Server.Inputs.Sprint.SprintChangeInput;
 import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
@@ -21,6 +22,7 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import org.bson.BsonBoolean;
 import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -415,6 +417,10 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(projectFilter, update);
+
+            if (result.getModifiedCount() > 0) {
+                this.clearSprintFromTask(input);
+            }
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }
@@ -466,6 +472,74 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
             result = mongoTemplate.getCollection(MongoConstants.Projects)
                     .updateOne(Filters.and(projectFilter, taskFilter), update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    public UpdateResult clearSprintFromTask(SprintDeleteInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson taskWithSprint = Filters.eq(
+                    QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.SprintID),
+                    QueryHelper.createID(input.getSprintID()));
+
+            Bson update = Updates.set(
+                    QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.SprintID),
+                    BsonNull.VALUE);
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateMany(Filters.and(projectFilter, taskWithSprint), update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    @Override
+    public UpdateResult setActiveSprint(SprintActiveInput input) {
+        UpdateResult result;
+
+        this.cleanActiveSprints(input);
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson sprintFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Sprint, MongoConstants.Id),
+                    QueryHelper.createID(input.getSprintID()));
+
+            Bson update = Updates.set(
+                    QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Sprint, MongoConstants.Active),
+                    true);
+
+            Bson openIfClosed = Updates.set(
+                    QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Sprint, MongoConstants.IsClosed),
+                    false);
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(Filters.and(projectFilter, sprintFilter), Updates.combine(update, openIfClosed));
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
+
+    public UpdateResult cleanActiveSprints(SprintActiveInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson activeSprintFilter = Filters.eq(
+                    QueryHelper.asInnerDocumentProperty(MongoConstants.Sprint, MongoConstants.Active), true);
+
+            Bson closeActiveUpdate = Updates.set(
+                    QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Sprint, MongoConstants.Active), false);
+
+            Bson setIsClosedUpdate = Updates.set(
+                    QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Sprint, MongoConstants.IsClosed), true);
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateMany(Filters.and(projectFilter, activeSprintFilter),
+                            Updates.combine(closeActiveUpdate, setIsClosedUpdate));
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }

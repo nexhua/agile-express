@@ -3,7 +3,7 @@ import AppNavbar from "../components/AppNavbar";
 import { Container } from "reactstrap";
 import ProjectDetail from "../components/ProjectDetail";
 import { ToastContainer, toast } from "react-toastify";
-import { hashCodeArr, hashCodeStr } from "../helpers/GetHashCode";
+import { hashCodeArr, hashCodeStr, hashProject } from "../helpers/GetHashCode";
 
 export default class ProjectPage extends React.Component {
   constructor(props) {
@@ -46,21 +46,9 @@ export default class ProjectPage extends React.Component {
   render() {
     let projectComponent;
     if (this.state.project !== null) {
-      const key =
-        this.state.project.id +
-        this.state.project.tasks.length +
-        this.state.project.sprints.length +
-        hashCodeStr(this.state.project.projectName) +
-        hashCodeArr(
-          this.state.project.statusFields +
-            hashCodeStr(
-              this.state.project.startDate + this.state.project.endDate
-            )
-        ) +
-        hashCodeArr(this.state.project.teamMembers.map((u) => u.projectRole));
       projectComponent = (
         <ProjectDetail
-          key={key}
+          key={hashProject(this.state.project)}
           project={this.state.project}
           updateProject={this.updateProject}
         />

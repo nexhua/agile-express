@@ -18,7 +18,6 @@ import { hashCodeArr } from "../helpers/GetHashCode";
 import UserEdit from "./UserEdit";
 import ProjectManagerEdit from "./ProjectManagerEdit";
 import userTypeStringToOrdinal from "../helpers/UserTypesConverter";
-import UserTypes from "../helpers/UserTypes";
 
 export default class ProjectDetail extends React.Component {
   constructor(props) {
@@ -38,9 +37,13 @@ export default class ProjectDetail extends React.Component {
 
     this.deleteTask = this.deleteTask.bind(this);
     this.createTask = this.createTask.bind(this);
+
     this.getSprintTasks = this.getSprintTasks.bind(this);
+
     this.getTaskSprint = this.getTaskSprint.bind(this);
     this.createSprint = this.createSprint.bind(this);
+    this.deleteSprint = this.deleteSprint.bind(this);
+    this.activateSprint = this.activateSprint.bind(this);
 
     this.toggleProjectModal = this.toggleProjectModal.bind(this);
     this.toggleUserModal = this.toggleUserModal.bind(this);
@@ -111,7 +114,6 @@ export default class ProjectDetail extends React.Component {
       }
     }
 
-    console.log(changeList);
     let changedCount = 0;
     if (changeList.length > 0) {
       for (var i = 0; i < changeList.length; i++) {
@@ -290,6 +292,25 @@ export default class ProjectDetail extends React.Component {
     this.toggleProjectModal();
   }
 
+  async deleteSprint(sprintID) {
+    const body = {
+      projectID: this.state.project.id,
+      sprintID: sprintID,
+    };
+
+    const response = await fetch("/api/projects/sprints", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (response.status === 200) {
+      this.state.update();
+    }
+  }
+
   async deleteTask(taskID) {
     const body = {
       projectID: this.state.project.id,
@@ -362,6 +383,27 @@ export default class ProjectDetail extends React.Component {
       return this.state.project.sprints.findIndex((s) => s.id === sprintID);
     }
     return -1;
+  }
+
+  async activateSprint(sprintID) {
+    const body = {
+      projectID: this.state.project.id,
+      sprintID: sprintID,
+    };
+
+    console.log(body);
+
+    const response = await fetch("/api/projects/sprints/active", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (response.status === 200) {
+      this.state.update();
+    }
   }
 
   async createSprint(body) {
@@ -448,6 +490,8 @@ export default class ProjectDetail extends React.Component {
             sprint={sprint}
             count={index}
             getTasks={this.getSprintTasks}
+            deleteSprint={this.deleteSprint}
+            activateSprint={this.activateSprint}
           />
         );
       });
