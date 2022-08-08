@@ -232,6 +232,31 @@ public class ProjectController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    //GET TASK WITH QUERIES
+    @GetMapping(ApiRouteConstants.ProjectsTaskPath)
+    public ResponseEntity<?> getTask(@PathVariable String taskID, @RequestParam String pid) {
+        BaseProjectAndTaskInput input = new BaseProjectAndTaskInput(pid, taskID);
+        ResponseEntity response;
+        try {
+            Optional<Project> optionalProject = this.repository.findById(input.getProjectID());
+            if (optionalProject.isEmpty()) {
+                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                Optional<Task> optionalTask = optionalProject.get().getTask(input.getTaskID());
+                if (optionalTask.isEmpty()) {
+                    response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } else {
+                    Task task = optionalTask.get();
+                    response = new ResponseEntity<>(task, HttpStatus.OK);
+                }
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+
+    }
+
     //UPDATE SOME PROPERTIES OF AN TASK IN A PROJECT
     @PutMapping(ApiRouteConstants.ProjectsTaskPath)
     public ResponseEntity<?> updateProject(@PathVariable String taskID, @RequestBody(required = false) ProjectUpdateTaskInput input) {
@@ -382,11 +407,10 @@ public class ProjectController {
             if (!userAssigned) {
                 UpdateResult result = this.repository.addAssigneeToTask(input);
 
-                if(result.getMatchedCount() > 0 && result.getMatchedCount() > 0) {
-                    response = new ResponseEntity(result, HttpStatus.CREATED);
-                }
-               else {
-                   response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+                if (result.getMatchedCount() > 0 && result.getMatchedCount() > 0) {
+                    response = new ResponseEntity(result, HttpStatus.OK);
+                } else {
+                    response = new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
             } else {
                 response = new ResponseEntity(new Document(ErrorMessages.Title,
@@ -404,7 +428,11 @@ public class ProjectController {
         ResponseEntity response;
         try {
             UpdateResult result = this.repository.removeAssigneeFromTask(input);
-            response = new ResponseEntity(result, HttpStatus.OK);
+            if (result.getModifiedCount() > 0) {
+                response = new ResponseEntity(result, HttpStatus.OK);
+            } else {
+                response = new ResponseEntity(result, HttpStatus.BAD_REQUEST);
+            }
         } catch (MongoException e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -530,8 +558,7 @@ public class ProjectController {
             UpdateResult result = this.repository.addManager(input);
             if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
                 response = new ResponseEntity(HttpStatus.OK);
-            }
-            else {
+            } else {
                 response = new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
@@ -548,8 +575,7 @@ public class ProjectController {
             UpdateResult result = this.repository.assignTaskToSprint(input);
             if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
                 response = new ResponseEntity(HttpStatus.OK);
-            }
-            else {
+            } else {
                 response = new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
@@ -564,10 +590,9 @@ public class ProjectController {
         ResponseEntity response;
         try {
             UpdateResult result = this.repository.setActiveSprint(input);
-            if(result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
+            if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
                 response = new ResponseEntity(HttpStatus.OK);
-            }
-            else {
+            } else {
                 response = new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {

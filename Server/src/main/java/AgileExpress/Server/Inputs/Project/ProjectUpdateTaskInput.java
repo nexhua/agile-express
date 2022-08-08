@@ -13,17 +13,17 @@ public class ProjectUpdateTaskInput {
     private String description;
     private int storyPoint = 0;
     private Number currentStatus = 0;
-    private String sprint;
+    private String sprintID;
 
     public ProjectUpdateTaskInput() { }
 
-    public ProjectUpdateTaskInput(String projectID, String name, String description, int storyPoint, Number currentStatus, String sprint) {
+    public ProjectUpdateTaskInput(String projectID, String name, String description, int storyPoint, Number currentStatus, String sprintID) {
         this.projectID = projectID;
         this.name = name;
         this.description = description;
         this.storyPoint = storyPoint;
         this.currentStatus = currentStatus;
-        this.sprint = sprint;
+        this.sprintID = sprintID;
     }
 
     //region Getter and Setters
@@ -69,11 +69,11 @@ public class ProjectUpdateTaskInput {
     }
 
     public String getSprint() {
-        return sprint;
+        return sprintID;
     }
 
     public void setSprint(String sprint) {
-        this.sprint = sprint;
+        this.sprintID = sprint;
     }
 
     //endregion

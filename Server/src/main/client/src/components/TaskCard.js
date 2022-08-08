@@ -1,5 +1,6 @@
 import React from "react";
 import { Progress } from "reactstrap";
+import { calculateSpentPoints } from "../helpers/CommentHelper";
 
 export default class TaskCard extends React.Component {
   constructor(props) {
@@ -13,7 +14,17 @@ export default class TaskCard extends React.Component {
       delete: this.props.deleteTask,
       getSprint: this.props.getSprint,
       sprintIndex: -1,
+      toggleSidePane: this.props.toggleSidePane,
+      spendStoryPoint: 0,
     };
+
+    this.toggleSidePaneHandler = this.toggleSidePaneHandler.bind(this);
+  }
+
+  toggleSidePaneHandler() {
+    const response = this.state.toggleSidePane(this.state.task);
+
+    console.log(response);
   }
 
   componentDidMount() {
@@ -49,6 +60,10 @@ export default class TaskCard extends React.Component {
         });
       }
     }
+
+    const storyPointsAdded = calculateSpentPoints(this.state.task.comments);
+
+    this.setState({ spendStoryPoint: storyPointsAdded });
   }
 
   render() {
@@ -97,7 +112,7 @@ export default class TaskCard extends React.Component {
                   </svg>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-dark">
-                  <li>
+                  <li onClick={() => this.toggleSidePaneHandler()}>
                     <a
                       className="dropdown-item text-secondary fst-normal"
                       href="#"
@@ -159,12 +174,12 @@ export default class TaskCard extends React.Component {
                 style={{ height: "3px" }}
                 className="mt-2"
                 color="info"
-                value={20}
+                value={this.state.spendStoryPoint}
                 max={this.state.task.storyPoint}
               />
             </div>
-            <p className="col-3 px-2 m-0 d-inline-block">
-              20 / {this.state.task.storyPoint}
+            <p className="col-3 px-0 m-0 d-inline-block">
+              {this.state.spendStoryPoint} / {this.state.task.storyPoint}
             </p>
           </div>
         </div>

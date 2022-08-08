@@ -14,10 +14,21 @@ import SprintCard from "./SprintCard";
 import NewSprintCard from "./NewSprintCard";
 import AppModal from "./AppModal";
 import ProjectEdit from "./ProjectEdit";
-import { hashCodeArr } from "../helpers/GetHashCode";
+import { hashCodeArr, hashTask } from "../helpers/GetHashCode";
 import UserEdit from "./UserEdit";
 import ProjectManagerEdit from "./ProjectManagerEdit";
 import userTypeStringToOrdinal from "../helpers/UserTypesConverter";
+import { SidePane } from "react-side-pane";
+import TaskEdit from "./TaskEdit";
+import commentTypeToOrdinal from "../helpers/CommentTypeConverter";
+import {
+  addAssigneeToTask,
+  addCommentToTask,
+  assignToSprint,
+  changeTask,
+  deleteAssigneeFromTask,
+  fetchTask,
+} from "../helpers/TaskRequestHelper";
 
 export default class ProjectDetail extends React.Component {
   constructor(props) {
@@ -29,6 +40,7 @@ export default class ProjectDetail extends React.Component {
       projectModal: false,
       userModal: false,
       projectManagerModal: false,
+      sidePaneOpen: false,
     };
 
     this.editChild = React.createRef();
@@ -52,6 +64,124 @@ export default class ProjectDetail extends React.Component {
     this.editProject = this.editProject.bind(this);
     this.editUsers = this.editUsers.bind(this);
     this.editProjectManager = this.editProjectManager.bind(this);
+
+    this.toggleSidePane = this.toggleSidePane.bind(this);
+
+    this.onSave = this.onSave.bind(this);
+    this.updateTaskCard = this.updateTaskCard.bind(this);
+  }
+
+  updateTaskCard(newTask) {
+    const index = this.state.project.tasks.findIndex(
+      (task) => task.id === newTask.id
+    );
+
+    if (index !== -1) {
+      const project = structuredClone(this.state.project);
+      project.tasks[index] = newTask;
+      this.setState({ project: project });
+    }
+  }
+
+  async onSave(operations) {
+    const currentUser = await AccessLevelService.getUsername();
+
+    const passedTaskID = this.taskToPass.id;
+
+    //region Put Task
+    const putTaskBody = {
+      projectID: this.state.project.id,
+    };
+
+    if (operations.name) {
+      putTaskBody.name = operations.name;
+    }
+
+    if (operations.description) {
+      putTaskBody.description = operations.description;
+    }
+
+    if (operations.storyPoint) {
+      putTaskBody.storyPoint = operations.storyPoint;
+    }
+    //endregion
+
+    //region assign sprint
+    const assignSprintBody = {
+      projectID: this.state.project.id,
+      taskID: this.taskToPass.id,
+    };
+
+    if (operations.sprint) {
+      assignSprintBody.sprintID = operations.sprint;
+    }
+    //endregion
+
+    //region Add Comments
+    let commentBodyArr = [];
+    if (operations.commentsToAdd) {
+      for (var i = 0; i < operations.commentsToAdd.length; i++) {
+        const commentAddBody = {
+          projectID: this.state.project.id,
+          taskID: this.taskToPass.id,
+        };
+
+        const comment = operations.commentsToAdd[i];
+
+        commentAddBody.username = comment.username;
+        commentAddBody.comment = comment.comment;
+        commentAddBody.action = commentTypeToOrdinal(comment.action);
+
+        commentBodyArr.push(commentAddBody);
+      }
+    }
+    //endregion
+
+    //region add assignees
+    let assigneesToAddArr = [];
+    if (operations.assigneesToAdd) {
+      for (var i = 0; i < operations.assigneesToAdd.length; i++) {
+        const assigneeAddBody = {
+          projectID: this.state.project.id,
+          taskID: this.taskToPass.id,
+          userID: operations.assigneesToAdd[i],
+          assignedBy: currentUser,
+        };
+
+        assigneesToAddArr.push(assigneeAddBody);
+      }
+    }
+    //endregion
+
+    //region delete assignees
+    let assigneesToRemove = [];
+    if (operations.assigneesToDelete) {
+      for (var i = 0; i < operations.assigneesToDelete.length; i++) {
+        const assigneeDeleteBody = {
+          projectID: this.state.project.id,
+          taskID: this.taskToPass.id,
+          assigneeID: operations.assigneesToDelete[i],
+        };
+        assigneesToRemove.push(assigneeDeleteBody);
+      }
+    }
+    //endregion
+
+    changeTask(this.taskToPass.id, putTaskBody);
+    assignToSprint(assignSprintBody);
+    commentBodyArr.forEach((comment) => addCommentToTask(comment));
+    assigneesToAddArr.forEach((assignee) => addAssigneeToTask(assignee));
+    assigneesToRemove.forEach((assignee) => deleteAssigneeFromTask(assignee));
+
+    const updatedTask = await fetchTask(
+      this.state.project.id,
+      this.taskToPass.id
+    );
+
+    if (updatedTask) {
+      this.updateTaskCard(updatedTask);
+    }
+    return updatedTask;
   }
 
   async componentDidMount() {
@@ -69,6 +199,13 @@ export default class ProjectDetail extends React.Component {
     ).offsetHeight;
     document.getElementById("project_tasks_container").style.maxHeight =
       height + "px";
+  }
+
+  toggleSidePane(task) {
+    this.taskToPass = task;
+    this.setState({
+      sidePaneOpen: !this.state.sidePaneOpen,
+    });
   }
 
   toggleProjectModal() {
@@ -91,8 +228,6 @@ export default class ProjectDetail extends React.Component {
 
   async editProjectManager() {
     const managerChangeList = this.ProjectManagerChild.current.getOutput();
-
-    console.log(managerChangeList);
 
     let changeList = [];
     for (var i = 0; i < managerChangeList.length; i++) {
@@ -391,8 +526,6 @@ export default class ProjectDetail extends React.Component {
       sprintID: sprintID,
     };
 
-    console.log(body);
-
     const response = await fetch("/api/projects/sprints/active", {
       method: "POST",
       headers: {
@@ -470,12 +603,13 @@ export default class ProjectDetail extends React.Component {
       tasks = this.state.project.tasks.map((task, index) => {
         return (
           <TaskCard
-            key={task.id + "_" + this.state.projectUserRoles.length}
+            key={hashTask(task)}
             index={index}
             task={task}
             projectRoles={this.state.projectUserRoles}
             deleteTask={this.deleteTask}
             getSprint={this.getTaskSprint}
+            toggleSidePane={this.toggleSidePane}
           ></TaskCard>
         );
       });
@@ -669,6 +803,21 @@ export default class ProjectDetail extends React.Component {
         {projectModal}
         {userModal}
         {projectManagerModal}
+        <SidePane
+          open={this.state.sidePaneOpen}
+          width={80}
+          onClose={this.toggleSidePane}
+          disableEscapeKeyDown={true}
+        >
+          <TaskEdit
+            task={this.taskToPass}
+            statusFields={this.state.project.statusFields}
+            sprints={this.state.project.sprints}
+            onClose={this.toggleSidePane}
+            teamMembers={this.state.projectUserRoles}
+            onSave={this.onSave}
+          />
+        </SidePane>
       </div>
     );
   }

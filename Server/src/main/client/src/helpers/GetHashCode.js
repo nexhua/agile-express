@@ -37,4 +37,16 @@ function hashProject(project) {
   );
 }
 
-export { hashCodeStr, hashCodeArr, hashProject };
+function hashTask(task) {
+  return Math.abs(
+    hashCodeStr(task.name) +
+      hashCodeStr(task.sprint === null ? task.id : task.sprint) +
+      hashCodeStr(task.storyPoint) +
+      hashCodeStr(task.description) +
+      hashCodeStr(task.currentStatus) +
+      hashCodeStr(task.assignees.length + task.comments.length) +
+      hashCodeArr(new Date().toISOString())
+  );
+}
+
+export { hashCodeStr, hashCodeArr, hashProject, hashTask };

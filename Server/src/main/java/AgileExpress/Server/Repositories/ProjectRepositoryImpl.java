@@ -202,8 +202,14 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         for (PropertyInfo<?> propertyInfo : propertyInfoList) {
             if (propertyInfo.isString() || propertyInfo.isNumeric()) {
                 if (!propertyInfo.getPropertyName().equals("projectID")) {
-                    String property = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, propertyInfo.getPropertyName());
-                    updatePredicates.add(Updates.set(property, propertyInfo.getPropertyValue()));
+                    if (propertyInfo.getPropertyName().equals(MongoConstants.SprintID)) {
+                        String property = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Sprint);
+                        updatePredicates.add(Updates.set(property, QueryHelper.createID(propertyInfo.getPropertyValue().toString())));
+                    } else {
+                        String property = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, propertyInfo.getPropertyName());
+                        updatePredicates.add(Updates.set(property, propertyInfo.getPropertyValue()));
+                    }
+
                 }
             }
         }
@@ -286,13 +292,12 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         try {
             Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
             Bson taskFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id), QueryHelper.createID(input.getTaskID()));
-            Bson teamMemberFilter = Filters.eq(QueryHelper.asInnerDocumentProperty(MongoConstants.TeamMembers, MongoConstants.Id), QueryHelper.createID(input.getUserID()));
 
             String assigneesName = QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.Assignees);
 
             Bson update = Updates.push(assigneesName, input.toDocument());
             result = mongoTemplate.getCollection(MongoConstants.Projects)
-                    .updateOne(Filters.and(projectFilter, taskFilter, teamMemberFilter), update);
+                    .updateOne(Filters.and(projectFilter, taskFilter), update);
         } catch (MongoException e) {
             result = UpdateResult.unacknowledged();
         }
