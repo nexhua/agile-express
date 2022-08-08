@@ -50,12 +50,14 @@ export default class ProjectPage extends React.Component {
         this.state.project.id +
         this.state.project.tasks.length +
         this.state.project.sprints.length +
+        hashCodeStr(this.state.project.projectName) +
         hashCodeArr(
           this.state.project.statusFields +
             hashCodeStr(
               this.state.project.startDate + this.state.project.endDate
             )
-        );
+        ) +
+        hashCodeArr(this.state.project.teamMembers.map((u) => u.id));
       projectComponent = (
         <ProjectDetail
           key={key}

@@ -15,6 +15,7 @@ import NewSprintCard from "./NewSprintCard";
 import AppModal from "./AppModal";
 import ProjectEdit from "./ProjectEdit";
 import { hashCodeArr } from "../helpers/GetHashCode";
+import UserEdit from "./UserEdit";
 
 export default class ProjectDetail extends React.Component {
   constructor(props) {
@@ -24,9 +25,11 @@ export default class ProjectDetail extends React.Component {
       projectUserRoles: [],
       update: this.props.updateProject,
       projectModal: false,
+      userModal: false,
     };
 
     this.editChild = React.createRef();
+    this.userChild = React.createRef();
 
     this.deleteTask = this.deleteTask.bind(this);
     this.createTask = this.createTask.bind(this);
@@ -35,7 +38,9 @@ export default class ProjectDetail extends React.Component {
     this.createSprint = this.createSprint.bind(this);
 
     this.toggleProjectModal = this.toggleProjectModal.bind(this);
+    this.toggleUserModal = this.toggleUserModal.bind(this);
     this.editProject = this.editProject.bind(this);
+    this.editUsers = this.editUsers.bind(this);
   }
 
   async componentDidMount() {
@@ -59,6 +64,103 @@ export default class ProjectDetail extends React.Component {
     this.setState({
       projectModal: !this.state.projectModal,
     });
+  }
+
+  toggleUserModal() {
+    this.setState({
+      userModal: !this.state.userModal,
+    });
+  }
+
+  async editUsers() {
+    const userChangeList = this.userChild.current.getOutput();
+
+    const usersToAdd = {
+      userIds: [],
+      projectID: this.state.project.id,
+    };
+
+    const usersToDelete = [];
+
+    for (var i = 0; i < userChangeList.length; i++) {
+      const user = userChangeList[i];
+
+      if (user.isTeamMember === false && user.isChecked === true) {
+        usersToAdd.userIds.push(user.id);
+        continue;
+      }
+
+      if (user.isTeamMember === true && user.isChecked === false) {
+        const userToDelete = {
+          projectID: this.state.project.id,
+          userID: user.id,
+        };
+
+        usersToDelete.push(userToDelete);
+      }
+    }
+
+    let addedUser = false;
+    if (usersToAdd.userIds.length > 0) {
+      const response = await fetch("/api/projects/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(usersToAdd),
+      });
+
+      if (response.status === 200) {
+        addedUser = true;
+
+        toast.success(`${usersToAdd.userIds.length} users added succesfully`, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+
+    let deletedUser = false;
+    let deletedCount = 0;
+    if (usersToDelete.length > 0) {
+      for (var i = 0; i < usersToDelete.length; i++) {
+        const deleteBody = usersToDelete[i];
+
+        const response = await fetch("/api/projects/user", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(deleteBody),
+        });
+
+        if (response.status === 200) {
+          deletedCount += 1;
+          deletedUser = true;
+        }
+      }
+
+      if (deletedCount > 0) {
+        toast.success(`${deletedCount} users deleted succesfully`, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+
+    if (addedUser || deletedUser) {
+      this.state.update();
+    }
+
+    this.toggleUserModal();
   }
 
   async editProject() {
@@ -297,6 +399,27 @@ export default class ProjectDetail extends React.Component {
       );
     }
 
+    let userModal;
+    if (this.state.userModal) {
+      userModal = (
+        <AppModal
+          isOpen={this.state.userModal}
+          toggle={this.toggleUserModal}
+          title="Edit Project Users"
+          cancelString="Cancel"
+          successString="Change"
+          content={
+            <UserEdit
+              ref={this.userChild}
+              id="user_edit_modal"
+              userList={this.state.projectUserRoles}
+            />
+          }
+          onSuccess={this.editUsers}
+        />
+      );
+    }
+
     let statusFieldRowComponent;
     if (this.state.project) {
       statusFieldRowComponent = (
@@ -360,7 +483,13 @@ export default class ProjectDetail extends React.Component {
                 <CardRow
                   id={keys[5]}
                   title={"Team Members"}
-                  component={<UserRow projectID={this.state.project.id} />}
+                  component={
+                    <UserRow
+                      className="clickable"
+                      projectID={this.state.project.id}
+                      onClick={this.toggleUserModal}
+                    />
+                  }
                 />
                 {teamMemberInfo}
                 <CardRow
@@ -394,6 +523,7 @@ export default class ProjectDetail extends React.Component {
           {createSprintCard}
         </div>
         {projectModal}
+        {userModal}
       </div>
     );
   }

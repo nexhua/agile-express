@@ -6,6 +6,8 @@ export default class UserRow extends React.Component {
     this.state = {
       projectID: this.props.projectID,
       teamMembers: [],
+      className: this.props.className,
+      onClick: this.props.onClick,
     };
   }
 
@@ -36,10 +38,27 @@ export default class UserRow extends React.Component {
       })
       .join(", ");
 
+    let noUserClassNames = ["my-2"];
+
+    let userRowClassnames = ["my-2", "w-100"];
     if (this.state.teamMembers.length === 0) {
-      return <p className="my-2">No User Assigned</p>;
+      return (
+        <p
+          className={noUserClassNames.concat(this.state.className).join(" ")}
+          onClick={this.state.onClick}
+        >
+          No User Assigned
+        </p>
+      );
     }
 
-    return <div className="my-2 w-100">{names}</div>;
+    return (
+      <div
+        className={userRowClassnames.concat(this.state.className).join(" ")}
+        onClick={this.state.onClick}
+      >
+        {names}
+      </div>
+    );
   }
 }
