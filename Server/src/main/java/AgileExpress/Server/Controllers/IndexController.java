@@ -37,4 +37,9 @@ public class IndexController {
     public ModelAndView getProjectPage(@RequestParam String pid) {
         return new ModelAndView("index");
     }
+
+    @GetMapping("/board")
+    public ModelAndView getBoardPage(@RequestParam String pid) {
+        return new ModelAndView("index");
+    }
 }

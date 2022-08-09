@@ -1,6 +1,7 @@
 import React from "react";
 import { Progress } from "reactstrap";
 import { calculateSpentPoints } from "../helpers/CommentHelper";
+import { hashTask } from "../helpers/GetHashCode";
 
 export default class TaskCard extends React.Component {
   constructor(props) {
@@ -17,14 +18,6 @@ export default class TaskCard extends React.Component {
       toggleSidePane: this.props.toggleSidePane,
       spendStoryPoint: 0,
     };
-
-    this.toggleSidePaneHandler = this.toggleSidePaneHandler.bind(this);
-  }
-
-  toggleSidePaneHandler() {
-    const response = this.state.toggleSidePane(this.state.task);
-
-    console.log(response);
   }
 
   componentDidMount() {
@@ -64,6 +57,22 @@ export default class TaskCard extends React.Component {
     const storyPointsAdded = calculateSpentPoints(this.state.task.comments);
 
     this.setState({ spendStoryPoint: storyPointsAdded });
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    const hash1 = hashTask(props.task);
+    const hash2 = hashTask(state.task);
+    if (hash1 !== hash2) {
+      return {
+        index: props.index,
+        task: props.task,
+        projectRoles: props.projectRoles,
+        delete: props.deleteTask,
+        getSprint: props.getSprint,
+        toggleSidePane: props.toggleSidePane,
+      };
+    }
+    return null;
   }
 
   render() {
@@ -112,7 +121,9 @@ export default class TaskCard extends React.Component {
                   </svg>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-dark">
-                  <li onClick={() => this.toggleSidePaneHandler()}>
+                  <li
+                    onClick={() => this.state.toggleSidePane(this.state.task)}
+                  >
                     <a
                       className="dropdown-item text-secondary fst-normal"
                       href="#"

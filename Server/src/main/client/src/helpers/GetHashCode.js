@@ -39,13 +39,15 @@ function hashProject(project) {
 
 function hashTask(task) {
   return Math.abs(
-    hashCodeStr(task.name) +
+    hashCodeStr(task.id) +
+      hashCodeStr(task.name) +
       hashCodeStr(task.sprint === null ? task.id : task.sprint) +
-      hashCodeStr(task.storyPoint) +
+      hashCodeStr(String(task.storyPoint)) +
       hashCodeStr(task.description) +
-      hashCodeStr(task.currentStatus) +
+      hashCodeStr(String(task.currentStatus)) +
       hashCodeStr(task.assignees.length + task.comments.length) +
-      hashCodeArr(new Date().toISOString())
+      hashCodeArr(new Date().toISOString()) +
+      hashCodeStr(String(Math.random()))
   );
 }
 

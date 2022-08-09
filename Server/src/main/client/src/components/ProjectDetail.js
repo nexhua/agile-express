@@ -14,7 +14,7 @@ import SprintCard from "./SprintCard";
 import NewSprintCard from "./NewSprintCard";
 import AppModal from "./AppModal";
 import ProjectEdit from "./ProjectEdit";
-import { hashCodeArr, hashTask } from "../helpers/GetHashCode";
+import { hashCodeArr, hashCodeStr, hashTask } from "../helpers/GetHashCode";
 import UserEdit from "./UserEdit";
 import ProjectManagerEdit from "./ProjectManagerEdit";
 import userTypeStringToOrdinal from "../helpers/UserTypesConverter";
@@ -77,9 +77,10 @@ export default class ProjectDetail extends React.Component {
     );
 
     if (index !== -1) {
-      const project = structuredClone(this.state.project);
-      project.tasks[index] = newTask;
-      this.setState({ project: project });
+      const newProject = structuredClone(this.state.project);
+
+      newProject.tasks[index] = newTask;
+      this.setState({ project: newProject });
     }
   }
 
@@ -181,7 +182,8 @@ export default class ProjectDetail extends React.Component {
     if (updatedTask) {
       this.updateTaskCard(updatedTask);
     }
-    return updatedTask;
+
+    this.toggleSidePane();
   }
 
   async componentDidMount() {
