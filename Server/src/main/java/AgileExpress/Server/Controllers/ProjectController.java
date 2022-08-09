@@ -600,4 +600,20 @@ public class ProjectController {
         }
         return response;
     }
+
+    @PutMapping(ApiRouteConstants.ProjectTaskStatus)
+    public ResponseEntity<?> changeCurrentStatus(@RequestBody TaskCurrentStatusInput input) {
+        ResponseEntity response;
+        try {
+            UpdateResult result = this.repository.changeCurrentStatus(input);
+            if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
+                response = new ResponseEntity(HttpStatus.OK);
+            } else {
+                response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
 }

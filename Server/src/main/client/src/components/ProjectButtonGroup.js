@@ -39,6 +39,9 @@ export default class ProjectButtonGroup extends React.Component {
           <button
             type="button"
             className="btn app-bg-primary muted-gray-hover text-primary"
+            onClick={() =>
+              (window.location.href = `board?pid=${this.state.projectID}`)
+            }
           >
             Board
           </button>
@@ -61,6 +64,9 @@ export default class ProjectButtonGroup extends React.Component {
               <button
                 type="button"
                 className="btn app-bg-primary muted-gray-hover text-primary"
+                onClick={() =>
+                  (window.location.href = `board?pid=${this.state.projectID}`)
+                }
               >
                 Board
               </button>

@@ -1,3 +1,4 @@
+import BoardPage from "../pages/BoardPage";
 import Dashboard from "../pages/DashboardPage";
 import Hello from "../pages/HelloPage";
 import ProjectPage from "../pages/ProjectPage";
@@ -23,6 +24,10 @@ const routes = [
   {
     path: "/project",
     component: ProjectPage,
+  },
+  {
+    path: "/board",
+    component: BoardPage,
   },
 ];
 

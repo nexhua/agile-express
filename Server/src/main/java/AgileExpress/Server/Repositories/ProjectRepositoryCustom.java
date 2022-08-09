@@ -62,4 +62,6 @@ public interface ProjectRepositoryCustom {
     UpdateResult assignTaskToSprint(TaskSprintAssignInput input);
 
     UpdateResult setActiveSprint(SprintActiveInput input);
+
+    UpdateResult changeCurrentStatus(TaskCurrentStatusInput input);
 }

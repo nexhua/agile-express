@@ -550,4 +550,25 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         }
         return result;
     }
+
+    @Override
+    public UpdateResult changeCurrentStatus(TaskCurrentStatusInput input) {
+        UpdateResult result;
+        try {
+            Bson projectFilter = Filters.eq(MongoConstants.Id, QueryHelper.createID(input.getProjectID()));
+            Bson taskFilter = Filters.eq(
+                    QueryHelper.asInnerDocumentProperty(MongoConstants.Tasks, MongoConstants.Id),
+                    QueryHelper.createID(input.getTaskID()));
+
+            Bson update = Updates.set(
+                    QueryHelper.asInnerDocumentArrayProperty(MongoConstants.Tasks, MongoConstants.CurrentStatus),
+                    input.getCurrentStatus());
+
+            result = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .updateOne(Filters.and(projectFilter, taskFilter), update);
+        } catch (MongoException e) {
+            result = UpdateResult.unacknowledged();
+        }
+        return result;
+    }
 }

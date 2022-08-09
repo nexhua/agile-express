@@ -1,78 +1,22 @@
 import React from "react";
 import { Progress } from "reactstrap";
 import { calculateSpentPoints } from "../helpers/CommentHelper";
-import { hashTask } from "../helpers/GetHashCode";
 
-export default class TaskCard extends React.Component {
+export default class TaskView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       index: this.props.index,
       task: this.props.task,
       assigneeString: "No User Assigned",
-      assigneeCount: 0,
-      projectRoles: this.props.projectRoles,
-      delete: this.props.deleteTask,
-      getSprint: this.props.getSprint,
-      sprintIndex: -1,
-      toggleSidePane: this.props.toggleSidePane,
       spendStoryPoint: 0,
     };
   }
 
   componentDidMount() {
-    const assignees = this.state.task.assignees;
-    const projectRoles = this.state.projectRoles;
-
-    let assigneeString;
-    if (assignees && projectRoles) {
-      let assignedUserNames = [];
-      for (var i = 0; i < assignees.length; i++) {
-        for (var j = 0; j < projectRoles.length; j++) {
-          if (assignees[i].userID === projectRoles[j].id) {
-            assignedUserNames.push(projectRoles[j].username);
-          }
-        }
-      }
-
-      if (assignedUserNames.length > 0) {
-        assigneeString = assignedUserNames.join(", ");
-        this.setState({
-          assigneeString: assigneeString,
-          assigneeCount: assignedUserNames.length,
-        });
-      }
-    }
-
-    if (this.state.task.sprint && this.state.task.sprint.length > 0) {
-      const result = this.state.getSprint(this.state.task.sprint);
-
-      if (result !== -1) {
-        this.setState({
-          sprintIndex: result,
-        });
-      }
-    }
-
-    const storyPointsAdded = calculateSpentPoints(this.state.task.comments);
-
-    this.setState({ spendStoryPoint: storyPointsAdded });
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    const hash1 = hashTask(props.task);
-    const hash2 = hashTask(state.task);
-    if (hash1 !== hash2) {
-      return {
-        index: props.index,
-        task: props.task,
-        projectRoles: props.projectRoles,
-        delete: props.deleteTask,
-        getSprint: props.getSprint,
-        toggleSidePane: props.toggleSidePane,
-      };
-    }
-    return null;
+    this.setState({
+      spendStoryPoint: calculateSpentPoints(this.state.task.comments),
+    });
   }
 
   render() {
@@ -96,9 +40,8 @@ export default class TaskCard extends React.Component {
 
     return (
       <div
-        id={this.state.task.id}
+        id={this.state.task.id + "_view"}
         className="card app-bg-secondary mb-2"
-        style={{ width: "17rem" }}
       >
         <div className="card-body text-white py-0 px-2">
           <div className="card-title pt-2 text-secondary fst-italic fs-6 d-flex justify-content-between align-items-center">
@@ -125,9 +68,7 @@ export default class TaskCard extends React.Component {
                   </svg>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-dark">
-                  <li
-                    onClick={() => this.state.toggleSidePane(this.state.task)}
-                  >
+                  <li>
                     <a
                       className="dropdown-item text-secondary fst-normal"
                       href="#"
@@ -146,7 +87,7 @@ export default class TaskCard extends React.Component {
                       Edit
                     </a>
                   </li>
-                  <li onClick={() => this.state.delete(this.state.task.id)}>
+                  <li>
                     <a
                       className="dropdown-item text-danger align-items-center fst-normal"
                       href="#"
@@ -175,13 +116,6 @@ export default class TaskCard extends React.Component {
           >
             <div className="d-inline-block">{this.state.task.description}</div>
             {userInfo}
-          </div>
-          <div className="my-2 mb-3">
-            <p>
-              {this.state.sprintIndex === -1
-                ? "Sprint - Not Assigned"
-                : "Sprint - #" + (this.state.sprintIndex + 1)}
-            </p>
           </div>
           <div className="row d-flex">
             <div className="col">
