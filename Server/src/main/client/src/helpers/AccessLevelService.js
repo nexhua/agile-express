@@ -27,9 +27,9 @@ export default class AccessLevelService {
       this.currentUser.surname = data.surname;
       this.currentUser.type = data.type;
       this.currentUser.projectIds = data.projectIds;
+      this.currentUser.accessLevel = userTypeStringToOrdinal(data.type);
       this.currentUser.hasFetched = true;
     }
-
     return this.currentUser;
   }
 
@@ -42,7 +42,7 @@ export default class AccessLevelService {
 
     const data = await response.json();
 
-    let accessLevel = 0;
+    let accessLevel = -1;
     if (response.status === 200) {
       accessLevel = data.accessLevel;
       this.currentUser.accessLevel = accessLevel;
