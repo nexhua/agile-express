@@ -574,8 +574,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     public Optional<List<Project>> findProjects(String query) {
         Optional<List<Project>> optionalProjects;
         try {
-            TextSearchOptions options = new TextSearchOptions().caseSensitive(false).language("tr");
-            Bson filter = Filters.text(query, options);
+            Bson filter = Filters.text(query);
 
             FindIterable<Document> searchResult = mongoTemplate.getCollection(MongoConstants.Projects)
                     .find(filter);

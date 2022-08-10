@@ -194,7 +194,7 @@ export default class TaskEdit extends React.Component {
     return (
       <div
         key={"comments_" + this.state.task.comments.length}
-        className="app-bg-secondary h-100 overflow-auto"
+        className="app-bg-secondary h-100 overflow-auto d-flex flex-column"
       >
         <div className="d-flex justify-content-between text-white pt-4 px-3">
           <div className="fs-3 d-inline-block">
@@ -203,7 +203,7 @@ export default class TaskEdit extends React.Component {
               text={this.state.task.name}
               onChange={this.handleNameChange}
             />
-            <div className="d-inline-block text-muted fs-6">
+            <div className="d-inline-block text-muted fs-6 mb-3">
               Created by {this.state.task.createdBy} on{" "}
               {new Date(this.state.task.createdAt).toLocaleString()}
             </div>
@@ -215,8 +215,8 @@ export default class TaskEdit extends React.Component {
             &#10006;
           </div>
         </div>
-        <hr className="text-white" />
-        <div className="main-content mt-4 mx-3 text-white row">
+        <hr className="text-white m-0 p-0" />
+        <div className="main-content app-bg-primary flex-grow-1 text-white row pt-4 px-4">
           <div className="col-5 ">
             <div>
               <div className="fs-2">
@@ -284,7 +284,7 @@ export default class TaskEdit extends React.Component {
               </div>
             </div>
             <button
-              className="btn btn-primary position-absolute bottom-0 end-0"
+              className="btn btn-primary position-absolute bottom-0 end-0 mb-5 mx-3"
               onClick={() => {
                 this.onSaveHandler();
               }}

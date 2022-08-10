@@ -40,8 +40,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         try {
             ArrayList<Bson> stages = new ArrayList<>();
 
-            TextSearchOptions options = new TextSearchOptions().caseSensitive(false).language("tr");
-            Bson matchStage = Aggregates.match(Filters.text(query, options));
+            Bson matchStage = Aggregates.match(Filters.text(query));
             Bson lookupStage = Aggregates.lookup(
                     MongoConstants.Projects,
                     MongoConstants.Id,

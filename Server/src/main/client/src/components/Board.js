@@ -65,8 +65,6 @@ export default class Board extends React.Component {
       },
       body: JSON.stringify(body),
     });
-
-    console.log(response);
   }
 
   render() {
