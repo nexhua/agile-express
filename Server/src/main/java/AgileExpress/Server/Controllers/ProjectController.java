@@ -27,8 +27,10 @@ import org.bson.Document;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.web.servlet.headers.HttpPublicKeyPinningDsl;
 import org.springframework.web.bind.annotation.*;
 
+import javax.enterprise.inject.New;
 import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,22 +54,50 @@ public class ProjectController {
     //GET PROJECT
     @GetMapping(ApiRouteConstants.Project)
     public ResponseEntity<?> getProject(@PathVariable String projectID) {
-        ResponseEntity response;
-        try {
-            Optional<Project> project = this.repository.findById(projectID);
-            if (project.isEmpty()) {
-                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            } else {
-                Project projectObject = project.get();
-                response = new ResponseEntity<Project>(projectObject, HttpStatus.OK);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
 
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.ADMIN)) {
+                ResponseEntity response;
+                try {
+                    Optional<Project> project = this.repository.findById(projectID);
+                    if (project.isEmpty()) {
+                        response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    } else {
+                        Project projectObject = project.get();
+                        response = new ResponseEntity<Project>(projectObject, HttpStatus.OK);
+
+                    }
+                } catch (MongoException e) {
+                    response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                } catch (Exception e) {
+                    response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return response;
+            } else {
+                ResponseEntity response;
+                try {
+                    Optional<Project> project = this.repository.findById(projectID);
+                    if (project.isEmpty()) {
+                        response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    } else {
+                        Project projectObject = project.get();
+                        if (projectObject.isPartOf(context.getId())) {
+                            response = new ResponseEntity<Project>(projectObject, HttpStatus.OK);
+                        } else {
+                            response = new ResponseEntity(HttpStatus.UNAUTHORIZED);
+                        }
+                    }
+                } catch (MongoException e) {
+                    response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                } catch (Exception e) {
+                    response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return response;
             }
-        } catch (MongoException e) {
-            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     //GET PROJECTS
@@ -110,52 +140,83 @@ public class ProjectController {
     //CREATE PROJECT
     @PostMapping(ApiRouteConstants.Projects)
     public ResponseEntity createProject(@RequestBody CreateProjectInput input) {
-        DateTime startDateMilis = new DateTime(input.getStartDate());
-        DateTime endDateMilis = new DateTime(input.getEndDate());
-        Project project = new Project(input.getProjectName(), new Date(startDateMilis.getMillis()), new Date(endDateMilis.getMillis()));
-        HttpStatus status = HttpStatus.CREATED;
-        try {
-            repository.insert(project);
-        } catch (MongoException e) {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
 
-        return new ResponseEntity(status);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.PROJECT_MANAGER)) {
+                DateTime startDateMilis = new DateTime(input.getStartDate());
+                DateTime endDateMilis = new DateTime(input.getEndDate());
+                Project project = new Project(input.getProjectName(), new Date(startDateMilis.getMillis()), new Date(endDateMilis.getMillis()));
+                HttpStatus status = HttpStatus.CREATED;
+                try {
+                    repository.insert(project);
+                } catch (MongoException e) {
+                    status = HttpStatus.INTERNAL_SERVER_ERROR;
+                }
+
+                return new ResponseEntity(status);
+            } else {
+                return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            }
+        }
     }
 
     //UPDATE PROJECT
     @PutMapping(ApiRouteConstants.Projects)
     public ResponseEntity<?> updateProject(@RequestBody(required = false) ChangeProjectInput input) {
-        ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(input);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
 
-
-        ResponseEntity response;
-        Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
-        if (optionalPropertyInfo.isEmpty()) {
-            response = new ResponseEntity(
-                    new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
-                    HttpStatus.BAD_REQUEST);
-        } else {
-            PropertyInfo<?> propertyInfo = optionalPropertyInfo.get();
-            String projectID = propertyInfo.getPropertyValue().toString();
-            Document result = this.repository.updateProject(projectID, propertyInfoList);
-            response = new ResponseEntity<>(result, HttpStatus.OK);
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return response;
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.PROJECT_MANAGER)) {
+            ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(input);
+
+
+            ResponseEntity response;
+            Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
+            if (optionalPropertyInfo.isEmpty()) {
+                response = new ResponseEntity(
+                        new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
+                        HttpStatus.BAD_REQUEST);
+            } else {
+                PropertyInfo<?> propertyInfo = optionalPropertyInfo.get();
+                String projectID = propertyInfo.getPropertyValue().toString();
+                Document result = this.repository.updateProject(projectID, propertyInfoList);
+                response = new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            return response;
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     //DELETE PROJECT
     @DeleteMapping(ApiRouteConstants.Projects)
     public ResponseEntity<?> deleteProject(@RequestBody BaseProjectInput input) {
-        ResponseEntity<?> response;
-        try {
-            DeleteResult result = this.repository.deleteProject(input);
-            response = new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
+
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.ADMIN)) {
+            ResponseEntity<?> response;
+            try {
+                DeleteResult result = this.repository.deleteProject(input);
+                response = new ResponseEntity<>(result, HttpStatus.OK);
+            } catch (Exception e) {
+                response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return response;
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     //GET USERS JOINED WITH PROJECT - TEAM MEMBERS
@@ -177,33 +238,79 @@ public class ProjectController {
     //ADD USER TO PROJECT
     @PostMapping(ApiRouteConstants.ProjectUser)
     public ResponseEntity addUsers(@RequestBody ProjectAddUserInput input) {
-        UpdateResult result = this.repository.addTeamMember(input);
-        return new ResponseEntity(result, HttpStatus.OK);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.PROJECT_MANAGER)) {
+            UpdateResult result = this.repository.addTeamMember(input);
+            return new ResponseEntity(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     //DELETE USER FROM PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectUser)
     public ResponseEntity removeUser(@RequestBody ProjectRemoveUserInput input) {
-        UpdateResult result = this.repository.removeTeamMember(input);
-        return new ResponseEntity(result, HttpStatus.OK);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.PROJECT_MANAGER)) {
+                UpdateResult result = this.repository.removeTeamMember(input);
+                return new ResponseEntity(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            }
+        }
     }
 
     //GET TASKS FROM PROJECT
     @GetMapping(ApiRouteConstants.ProjectsTasks)
     public ResponseEntity<?> getTasks(@RequestBody ProjectGetTasksInput input) {
-        ResponseEntity response;
-        try {
-            Optional<Project> project = this.repository.findById(input.getProjectID());
-            if (project.isEmpty()) {
-                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            } else {
-                Project projectObject = project.get();
-                response = new ResponseEntity<>(projectObject.getTasks(), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
+
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+            ResponseEntity response;
+            try {
+                Optional<Project> project = this.repository.findById(input.getProjectID());
+                if (project.isEmpty()) {
+                    response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } else {
+                    Project projectObject = project.get();
+                    response = new ResponseEntity<>(projectObject.getTasks(), HttpStatus.OK);
+                }
+            } catch (Exception e) {
+                response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return response;
+        } else {
+            ResponseEntity response;
+            try {
+                Optional<Project> project = this.repository.findById(input.getProjectID());
+                if (project.isEmpty()) {
+                    response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } else {
+                    Project projectObject = project.get();
+                    if (projectObject.isPartOf(context.getId())) {
+                        response = new ResponseEntity<>(projectObject.getTasks(), HttpStatus.OK);
+                    } else {
+                        response = new ResponseEntity(HttpStatus.UNAUTHORIZED);
+                    }
+                }
+            } catch (Exception e) {
+                response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return response;
+        }
     }
 
     //GET A TASK FROM A PROJECT
@@ -232,8 +339,19 @@ public class ProjectController {
     //CREATE TASK IN A PROJECT
     @PostMapping(ApiRouteConstants.ProjectsTask)
     public ResponseEntity<?> addTask(@RequestBody ProjectCreateTaskInput input) {
-        UpdateResult result = this.repository.addTask(input);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+            UpdateResult result = this.repository.addTask(input);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
     }
 
     //GET TASK WITH QUERIES
@@ -264,36 +382,58 @@ public class ProjectController {
     //UPDATE SOME PROPERTIES OF AN TASK IN A PROJECT
     @PutMapping(ApiRouteConstants.ProjectsTaskPath)
     public ResponseEntity<?> updateProject(@PathVariable String taskID, @RequestBody(required = false) ProjectUpdateTaskInput input) {
-        ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(input);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
 
-
-        ResponseEntity response;
-        Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
-        if (optionalPropertyInfo.isEmpty()) {
-            response = new ResponseEntity(
-                    new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
-                    HttpStatus.BAD_REQUEST);
-        } else {
-            PropertyInfo<?> propertyInfo = optionalPropertyInfo.get();
-            String projectID = propertyInfo.getPropertyValue().toString();
-            Document result = this.repository.updateTask(projectID, taskID, propertyInfoList);
-            response = new ResponseEntity<>(result, HttpStatus.OK);
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return response;
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+            ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(input);
+
+
+            ResponseEntity response;
+            Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
+            if (optionalPropertyInfo.isEmpty()) {
+                response = new ResponseEntity(
+                        new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
+                        HttpStatus.BAD_REQUEST);
+            } else {
+                PropertyInfo<?> propertyInfo = optionalPropertyInfo.get();
+                String projectID = propertyInfo.getPropertyValue().toString();
+                Document result = this.repository.updateTask(projectID, taskID, propertyInfoList);
+                response = new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            return response;
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     //DELETE TASK FROM A PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectsTask)
     public ResponseEntity<?> deleteTask(@RequestBody ProjectDeleteTaskInput input) {
-        ResponseEntity<?> response;
-        try {
-            UpdateResult result = this.repository.deleteTask(input);
-            response = new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
+
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+
+
+            ResponseEntity<?> response;
+            try {
+                UpdateResult result = this.repository.deleteTask(input);
+                response = new ResponseEntity<>(result, HttpStatus.OK);
+            } catch (Exception e) {
+                response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return response;
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     //GET COMMENTS FROM A TASK IN A PROJECT
@@ -336,14 +476,29 @@ public class ProjectController {
     //DELETE A COMMENT FROM A TASK IN A PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectsTaskComment)
     public ResponseEntity<?> deleteCommentFromTask(@RequestBody TaskDeleteCommentInput input) {
-        ResponseEntity response;
-        try {
-            UpdateResult result = this.repository.removeCommentFromTask(input);
-            response = new ResponseEntity(result, HttpStatus.OK);
-        } catch (MongoException e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+                ResponseEntity response;
+                try {
+                    UpdateResult result = this.repository.removeCommentFromTask(input);
+
+                    if (result.getModifiedCount() > 0) {
+                        response = new ResponseEntity(result, HttpStatus.OK);
+                    } else {
+                        response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+                    }
+                } catch (MongoException e) {
+                    response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return response;
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
         }
-        return response;
     }
 
 
@@ -404,43 +559,65 @@ public class ProjectController {
     //ADD ASSIGNEE TO A TASK IN A PROJECT
     @PostMapping(ApiRouteConstants.ProjectTaskAssignee)
     public ResponseEntity<?> addAssigneeToTask(@RequestBody TaskAddAssigneeInput input) {
-        ResponseEntity response;
-        try {
-            boolean userAssigned = ProjectHelper.isUserAssigned(this.repository.findById(input.getProjectID()), input);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
 
-            if (!userAssigned) {
-                UpdateResult result = this.repository.addAssigneeToTask(input);
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
 
-                if (result.getMatchedCount() > 0 && result.getMatchedCount() > 0) {
-                    response = new ResponseEntity(result, HttpStatus.OK);
-                } else {
-                    response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+                ResponseEntity response;
+                try {
+                    boolean userAssigned = ProjectHelper.isUserAssigned(this.repository.findById(input.getProjectID()), input);
+
+                    if (!userAssigned) {
+                        UpdateResult result = this.repository.addAssigneeToTask(input);
+
+                        if (result.getMatchedCount() > 0 && result.getMatchedCount() > 0) {
+                            response = new ResponseEntity(result, HttpStatus.OK);
+                        } else {
+                            response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+                        }
+                    } else {
+                        response = new ResponseEntity(new Document(ErrorMessages.Title,
+                                ErrorMessages.PropertyAlreadyExistsWithValueError(MongoConstants.UserID)), HttpStatus.BAD_REQUEST);
+                    }
+                } catch (Exception e) {
+                    response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
+                return response;
             } else {
-                response = new ResponseEntity(new Document(ErrorMessages.Title,
-                        ErrorMessages.PropertyAlreadyExistsWithValueError(MongoConstants.UserID)), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-        } catch (Exception e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     //DELETE ASSIGNEE FROM A TASK IN A PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectTaskAssignee)
     public ResponseEntity<?> removeAssigneeFromTask(@RequestBody TaskDeleteAssigneeInput input) {
-        ResponseEntity response;
-        try {
-            UpdateResult result = this.repository.removeAssigneeFromTask(input);
-            if (result.getModifiedCount() > 0) {
-                response = new ResponseEntity(result, HttpStatus.OK);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+                ResponseEntity response;
+                try {
+                    UpdateResult result = this.repository.removeAssigneeFromTask(input);
+                    if (result.getModifiedCount() > 0) {
+                        response = new ResponseEntity(result, HttpStatus.OK);
+                    } else {
+                        response = new ResponseEntity(result, HttpStatus.BAD_REQUEST);
+                    }
+                } catch (MongoException e) {
+                    response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return response;
             } else {
-                response = new ResponseEntity(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-        } catch (MongoException e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     //GET LABELS FROM A TASK IN A PROJECT
@@ -511,52 +688,81 @@ public class ProjectController {
     //ADD SPRINT TO A PROJECT
     @PostMapping(ApiRouteConstants.ProjectsSprint)
     public ResponseEntity<?> addSprint(@RequestBody SprintCreateInput input) {
-        ResponseEntity response;
-        try {
-            UpdateResult result = this.repository.addSprint(input);
-            response = new ResponseEntity<>(result, HttpStatus.CREATED);
-        } catch (MongoException e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+                ResponseEntity response;
+                try {
+                    UpdateResult result = this.repository.addSprint(input);
+                    response = new ResponseEntity<>(result, HttpStatus.CREATED);
+                } catch (MongoException e) {
+                    response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return response;
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
         }
-        return response;
     }
 
     //CHANGE A SPRINT IN A PROJECT
     @PutMapping(ApiRouteConstants.ProjectsSprintPath)
     public ResponseEntity<?> changeSprint(@PathVariable String sprintID, @RequestBody(required = false) SprintChangeInput i̇nput) {
-        ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(i̇nput);
-
-
-        ResponseEntity response;
-        Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
-        if (optionalPropertyInfo.isEmpty()) {
-            response = new ResponseEntity(
-                    new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
-                    HttpStatus.BAD_REQUEST);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            Document result = this.repository.updateSprint(i̇nput.getProjectID(), sprintID, propertyInfoList);
-            response = new ResponseEntity<>(result, HttpStatus.OK);
-        }
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
 
-        return response;
+                ArrayList<PropertyInfo<?>> propertyInfoList = ReflectionHelper.getFieldsWithValues(i̇nput);
+
+                ResponseEntity response;
+                Optional<PropertyInfo<?>> optionalPropertyInfo = propertyInfoList.stream().filter(propertyInfo -> propertyInfo.getPropertyName().equals("projectID")).findFirst();
+                if (optionalPropertyInfo.isEmpty()) {
+                    response = new ResponseEntity(
+                            new Document(ErrorMessages.Title, ErrorMessages.MissingPropertyError("projectID")),
+                            HttpStatus.BAD_REQUEST);
+                } else {
+                    Document result = this.repository.updateSprint(i̇nput.getProjectID(), sprintID, propertyInfoList);
+                    response = new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                return response;
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        }
     }
 
 
     //DELETE A SPRINT FROM A PROJECT
     @DeleteMapping(ApiRouteConstants.ProjectsSprint)
     public ResponseEntity<?> deleteSprint(@RequestBody SprintDeleteInput input) {
-        ResponseEntity response;
-        try {
-            UpdateResult result = this.repository.deleteSprint(input);
-            response = new ResponseEntity(result, HttpStatus.OK);
-        } catch (MongoException e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+                ResponseEntity response;
+                try {
+                    UpdateResult result = this.repository.deleteSprint(input);
+                    response = new ResponseEntity(result, HttpStatus.OK);
+                } catch (MongoException e) {
+                    response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return response;
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
         }
-        return response;
     }
 
     @PostMapping(ApiRouteConstants.ProjectManager)
-    public ResponseEntity<?> deleteSprint(@RequestBody ProjectAddManagerInput input) {
+    public ResponseEntity<?> changeUserRoleInProject(@RequestBody ProjectAddManagerInput input) {
         ResponseEntity response;
         try {
             UpdateResult result = this.repository.addManager(input);
@@ -574,35 +780,56 @@ public class ProjectController {
     //ASSGIN TASK TO A SPRINT
     @PostMapping(ApiRouteConstants.ProjectsTasksAssign)
     public ResponseEntity<?> assignTaskToSprint(@RequestBody TaskSprintAssignInput input) {
-        ResponseEntity response;
-        try {
-            UpdateResult result = this.repository.assignTaskToSprint(input);
-            if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
-                response = new ResponseEntity(HttpStatus.OK);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+                ResponseEntity response;
+                try {
+                    UpdateResult result = this.repository.assignTaskToSprint(input);
+                    if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
+                        response = new ResponseEntity(HttpStatus.OK);
+                    } else {
+                        response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+                    }
+                } catch (Exception e) {
+                    response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return response;
             } else {
-                response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-        } catch (Exception e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
     }
 
     //SET SPRINT ACTIVE
     @PostMapping(ApiRouteConstants.SprintActive)
     public ResponseEntity<?> activateSprint(@RequestBody SprintActiveInput input) {
-        ResponseEntity response;
-        try {
-            UpdateResult result = this.repository.setActiveSprint(input);
-            if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
-                response = new ResponseEntity(HttpStatus.OK);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+                ResponseEntity response;
+                try {
+                    UpdateResult result = this.repository.setActiveSprint(input);
+                    if (result.getMatchedCount() > 0 && result.getModifiedCount() > 0) {
+                        response = new ResponseEntity(HttpStatus.OK);
+                    } else {
+                        response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+                    }
+                } catch (Exception e) {
+                    response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                return response;
             } else {
-                response = new ResponseEntity(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-        } catch (Exception e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
+
     }
 
     @PutMapping(ApiRouteConstants.ProjectTaskStatus)
@@ -623,6 +850,12 @@ public class ProjectController {
 
     @GetMapping(ApiRouteConstants.Search)
     public ResponseEntity<?> searchInProject(@RequestParam String q) {
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         ResponseEntity<?> response;
         try {
             Optional<List<Project>> optionalProjects = this.repository.findProjects(q);
@@ -633,10 +866,17 @@ public class ProjectController {
 
             List<Project> result = Stream.concat(projectQueryResult.stream(), userQueryResult.stream()).toList().stream().distinct().collect(Collectors.toList());
 
-            if(result.size() == 0) {
+            if (result.size() == 0) {
                 response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
-                response = new ResponseEntity<>(result, HttpStatus.OK);
+                if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.ADMIN)) {
+                    response = new ResponseEntity<>(result, HttpStatus.OK);
+                } else {
+                    response = new ResponseEntity<>(result.stream().filter(project -> project.isPartOf(context.getId())).collect(Collectors.toList()),
+                            HttpStatus.OK);
+                }
+
+
             }
         } catch (Exception e) {
             response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

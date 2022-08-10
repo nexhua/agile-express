@@ -28,7 +28,8 @@ public class Project {
 
     private List<Sprint> sprints = Collections.emptyList();
 
-    public Project() { }
+    public Project() {
+    }
 
     public Project(String projectName, Date startDate, Date endDate) {
         this.projectName = projectName;
@@ -36,7 +37,7 @@ public class Project {
         this.endDate = endDate;
     }
 
-    public Project(String projectName, Date  startDate, Date endDate, List<String> statusFields, List<Task> tasks, List<TeamMember> teamMembers) {
+    public Project(String projectName, Date startDate, Date endDate, List<String> statusFields, List<Task> tasks, List<TeamMember> teamMembers) {
         this.projectName = projectName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -46,7 +47,11 @@ public class Project {
     }
 
     public Optional<Task> getTask(String id) {
-        return this.getTasks().stream().filter(t-> t.getId().equals(id)).findFirst();
+        return this.getTasks().stream().filter(t -> t.getId().equals(id)).findFirst();
+    }
+
+    public boolean isPartOf(String id) {
+        return this.getTeamMembers().stream().anyMatch(m -> m.getId().equals(id));
     }
 
     //region Getter and Setters
