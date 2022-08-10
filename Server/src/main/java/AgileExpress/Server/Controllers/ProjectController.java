@@ -152,7 +152,8 @@ public class ProjectController {
                 Project project = new Project(input.getProjectName(), new Date(startDateMilis.getMillis()), new Date(endDateMilis.getMillis()));
                 HttpStatus status = HttpStatus.CREATED;
                 try {
-                    repository.insert(project);
+                    Project insertedProject =  repository.insert(project);
+                    ProjectHelper.addFirstSprintAndActivate(insertedProject.getId(), this.repository);
                 } catch (MongoException e) {
                     status = HttpStatus.INTERNAL_SERVER_ERROR;
                 }
