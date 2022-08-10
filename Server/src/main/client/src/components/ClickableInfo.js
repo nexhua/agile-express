@@ -10,6 +10,8 @@ export default class ClickableInfo extends React.Component {
       type: typeof this.props.text,
       isUpdating: false,
       onChange: this.props.onChange,
+      accessLevel: this.props.accessLevel,
+      requiredAccessLevel: this.props.requiredAccessLevel,
     };
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -56,9 +58,16 @@ export default class ClickableInfo extends React.Component {
   }
 
   render() {
+    let className =
+      this.state.accessLevel >= this.state.requiredAccessLevel
+        ? "clickable muted-gray-hover d-flex justify-content-between"
+        : "muted-gray-hover d-flex justify-content-between";
     let content;
 
     if (this.state.isUpdating) {
+      if (this.state.accessLevel < this.requiredAccessLevel) {
+        return;
+      }
       content = (
         <div className="input-group mb-1">
           <input
@@ -73,7 +82,7 @@ export default class ClickableInfo extends React.Component {
     } else {
       content = (
         <div
-          className="clickable muted-gray-hover d-flex justify-content-between"
+          className={className}
           key={"clickable_info_" + this.state.text}
           onClick={() => this.setState({ isUpdating: true })}
         >

@@ -18,10 +18,20 @@ function hashCodeArr(array) {
 }
 
 function hashProject(project) {
+  if (!project) {
+    return Math.random();
+  }
+
   let activeSprint = project.sprints.find((sprint) => sprint.active === true);
   let activeSprintID = "Not Found";
   if (activeSprint) {
     activeSprintID = activeSprint.id;
+  }
+
+  let taskHashArr = [];
+  for (var i = 0; i < project.tasks.length; i++) {
+    const task = project.tasks[i];
+    taskHashArr.push(hashTask(task));
   }
 
   return (

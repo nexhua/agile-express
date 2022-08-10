@@ -9,6 +9,19 @@ export default class ProjectManagerRow extends React.Component {
       onClick: this.props.onClick,
       className: this.props.className,
     };
+
+    if (this.props.accessLevel) {
+      this.state.accessLevel = this.props.accessLevel;
+    } else {
+      this.state.accessLevel = 0;
+    }
+  }
+
+  componentDidMount() {
+    if (this.state.accessLevel < 2) {
+      const row = document.getElementById("project_manager_row");
+      row.classList.remove("clickable");
+    }
   }
 
   getNameString() {
@@ -26,7 +39,11 @@ export default class ProjectManagerRow extends React.Component {
   render() {
     const nameString = this.getNameString();
     return (
-      <p className={this.state.className} onClick={this.state.onClick}>
+      <p
+        id="project_manager_row"
+        className={this.state.className}
+        onClick={this.state.accessLevel >= 2 ? this.state.onClick : undefined}
+      >
         {nameString}
       </p>
     );

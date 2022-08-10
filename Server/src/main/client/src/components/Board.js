@@ -32,8 +32,6 @@ export default class Board extends React.Component {
         (task) => task.currentStatus > maxStatusAllowed
       );
 
-      console.log(statusMismacthTasks);
-
       if (statusMismacthTasks.length > 0) {
         for (var i = 0; i < statusMismacthTasks.length; i++) {
           const task = statusMismacthTasks[i];

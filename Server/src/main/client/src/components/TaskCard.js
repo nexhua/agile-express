@@ -1,5 +1,6 @@
 import React from "react";
 import { Progress } from "reactstrap";
+import AccessLevelService from "../helpers/AccessLevelService";
 import { calculateSpentPoints } from "../helpers/CommentHelper";
 import { hashTask } from "../helpers/GetHashCode";
 
@@ -17,12 +18,19 @@ export default class TaskCard extends React.Component {
       sprintIndex: -1,
       toggleSidePane: this.props.toggleSidePane,
       spendStoryPoint: 0,
+      accessLevel: 0,
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const assignees = this.state.task.assignees;
     const projectRoles = this.state.projectRoles;
+
+    const accessLevel = await AccessLevelService.getAccessLevel();
+
+    this.setState({
+      accessLevel: accessLevel,
+    });
 
     let assigneeString;
     if (assignees && projectRoles) {
@@ -96,6 +104,7 @@ export default class TaskCard extends React.Component {
 
     return (
       <div
+        key={this.state.task.id + this.state.accessLevel}
         id={this.state.task.id}
         className="card app-bg-secondary mb-2"
         style={{ width: "17rem" }}
@@ -126,7 +135,11 @@ export default class TaskCard extends React.Component {
                 </button>
                 <ul className="dropdown-menu dropdown-menu-dark">
                   <li
-                    onClick={() => this.state.toggleSidePane(this.state.task)}
+                    onClick={
+                      this.state.accessLevel >= 1
+                        ? () => this.state.toggleSidePane(this.state.task)
+                        : undefined
+                    }
                   >
                     <a
                       className="dropdown-item text-secondary fst-normal"
@@ -146,7 +159,13 @@ export default class TaskCard extends React.Component {
                       Edit
                     </a>
                   </li>
-                  <li onClick={() => this.state.delete(this.state.task.id)}>
+                  <li
+                    onClick={
+                      this.state.accessLevel >= 1
+                        ? () => this.state.delete(this.state.task.id)
+                        : undefined
+                    }
+                  >
                     <a
                       className="dropdown-item text-danger align-items-center fst-normal"
                       href="#"

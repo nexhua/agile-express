@@ -168,3 +168,13 @@ cn: Mert Koca
 sn: Koca
 uid: mert.koca
 userPassword: {bcrypt}$2a$10$23FrZUS6k/CsKT5kZ4hkJetziXgV0SsOvKirBr.FGk2mKD0KXWfZO
+
+dn: uid=mükopm,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: pm_hüsnü asds
+sn: asds
+uid: mükopm
+userPassword: {bcrypt}$2a$10$9S6X5NHzAvgH21gSuuQ/1./4snsnuFj7HS4bqI7Sh5n6IJACs.EGq

@@ -1,14 +1,26 @@
 import { useEffect, useState } from "react";
+import AccessLevelService from "../helpers/AccessLevelService";
 import FieldPill from "./FieldPill";
 
 export default function StatusFieldsRow(props) {
   const [createStarted, setCreate] = useState(false);
   const [statusFieldsArr, updateFields] = useState([...props.statusFields]);
   const [statusHistory, updateHistory] = useState([props.statusFields]);
+  const [accessLevel, setAccessLevel] = useState(0);
 
   useEffect(() => {
     updateFields(props.statusFields);
   }, [props.statusFields]);
+
+  useEffect(() => {
+    const fetchAccessLevel = async () => {
+      const level = await AccessLevelService.getAccessLevel();
+
+      setAccessLevel(level);
+    };
+
+    fetchAccessLevel();
+  }, []);
 
   let statusFields;
   if (props.clickableFields === true) {
@@ -38,6 +50,12 @@ export default function StatusFieldsRow(props) {
 
   if (props.className) {
     classNames = classNames.concat(props.className);
+    if (accessLevel < 2) {
+      const index = classNames.indexOf("clickable");
+      if (index > 0) {
+        classNames.splice(index, 1);
+      }
+    }
   }
 
   let createButton;
@@ -78,7 +96,10 @@ export default function StatusFieldsRow(props) {
   }
 
   return (
-    <div className={classNames.join(" ")} onClick={props.onClick}>
+    <div
+      className={classNames.join(" ")}
+      onClick={accessLevel >= 2 ? props.onClick : undefined}
+    >
       {statusFields}
       {createButton}
       {createInput}

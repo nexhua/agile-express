@@ -42,7 +42,7 @@ export default class AccessLevelService {
 
     const data = await response.json();
 
-    let accessLevel = -1;
+    let accessLevel = 0;
     if (response.status === 200) {
       accessLevel = data.accessLevel;
       this.currentUser.accessLevel = accessLevel;

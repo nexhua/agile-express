@@ -21,6 +21,7 @@ export default class TaskEdit extends React.Component {
       teamMembers: this.props.teamMembers,
       assignedSprint: "",
       onSave: this.props.onSave,
+      accessLevel: 0,
     };
 
     this.setText = this.setText.bind(this);
@@ -30,8 +31,17 @@ export default class TaskEdit extends React.Component {
     this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
     this.handleStoryPointChange = this.handleStoryPointChange.bind(this);
     this.onSaveHandler = this.onSaveHandler.bind(this);
+    this.initialize = this.initialize.bind(this);
 
     this.assigneeRef = React.createRef();
+
+    this.initialize();
+  }
+
+  async initialize() {
+    const accessLevel = await AccessLevelService.getAccessLevel();
+
+    this.setState({ accessLevel: accessLevel });
   }
 
   onSaveHandler() {
@@ -199,9 +209,12 @@ export default class TaskEdit extends React.Component {
         <div className="d-flex justify-content-between text-white pt-4 px-3">
           <div className="fs-3 d-inline-block">
             <ClickableInfo
+              key={"clickable_name_change" + this.state.accessLevel}
               classNames={"d-inline-block"}
               text={this.state.task.name}
               onChange={this.handleNameChange}
+              accessLevel={this.state.accessLevel}
+              requiredAccessLevel={2}
             />
             <div className="d-inline-block text-muted fs-6 mb-3">
               Created by {this.state.task.createdBy} on{" "}
@@ -226,9 +239,12 @@ export default class TaskEdit extends React.Component {
                 </div>
               </div>
               <ClickableInfo
+                key={"handle_description_change" + this.state.accessLevel}
                 classNames="mt-2 py-2"
                 text={this.state.task.description}
                 onChange={this.handleDescriptionChange}
+                accessLevel={this.state.accessLevel}
+                requiredAccessLevel={2}
               />
             </div>
             <div className="my-4">
@@ -258,9 +274,12 @@ export default class TaskEdit extends React.Component {
               <div className="col">Story Point :</div>
               <div className="col-2">
                 <ClickableInfo
+                  key={"handle_story_point_change" + this.state.accessLevel}
                   classNames="mx-auto"
                   text={this.state.task.storyPoint}
                   onChange={this.handleStoryPointChange}
+                  accessLevel={this.state.accessLevel}
+                  requiredAccessLevel={2}
                 />
               </div>
             </div>

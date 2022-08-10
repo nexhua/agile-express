@@ -41,6 +41,7 @@ export default class ProjectDetail extends React.Component {
       userModal: false,
       projectManagerModal: false,
       sidePaneOpen: false,
+      accessLevel: 0,
     };
 
     this.editChild = React.createRef();
@@ -69,6 +70,14 @@ export default class ProjectDetail extends React.Component {
 
     this.onSave = this.onSave.bind(this);
     this.updateTaskCard = this.updateTaskCard.bind(this);
+
+    this.initialize = this.initialize.bind(this);
+    this.initialize();
+  }
+
+  async initialize() {
+    const accessLevel = await AccessLevelService.getAccessLevel();
+    this.state.accessLevel = accessLevel;
   }
 
   updateTaskCard(newTask) {
@@ -587,6 +596,7 @@ export default class ProjectDetail extends React.Component {
               teamMembers={this.state.projectUserRoles}
               className="my-2 clickable"
               onClick={this.toggleProjectManagerModal}
+              accessLevel={this.state.accessLevel}
             />
           }
         />
@@ -727,48 +737,74 @@ export default class ProjectDetail extends React.Component {
             <div className="card-body pt-0 d-flex flex-column px-0 pb-0 text-white overflow-hidden">
               <div id="general_project_info_container" className="px-3">
                 <CardRow
+                  key={keys[1] + this.state.accessLevel}
                   id={keys[1]}
                   title={"Project Name"}
                   component={
                     <p
-                      className="my-2 clickable"
-                      onClick={this.toggleProjectModal}
+                      className={
+                        this.state.accessLevel >= 2 ? "my-2 clickable" : "my-2"
+                      }
+                      onClick={
+                        this.state.accessLevel >= 2
+                          ? this.toggleProjectModal
+                          : undefined
+                      }
                     >
                       {this.state.project.projectName}
                     </p>
                   }
                 />
                 <CardRow
+                  key={keys[2] + this.state.accessLevel}
                   id={keys[2]}
                   title={"Start Date"}
                   component={
                     <DateRow
-                      className={["clickable"]}
+                      className={
+                        this.state.accessLevel >= 2 ? ["clickable"] : []
+                      }
                       date={this.state.project.startDate}
-                      onClick={this.toggleProjectModal}
+                      onClick={
+                        this.state.accessLevel >= 2
+                          ? this.toggleProjectModal
+                          : undefined
+                      }
                     />
                   }
                 />
                 <CardRow
+                  key={keys[3] + this.state.accessLevel}
                   id={keys[3]}
                   title={"End Date"}
                   component={
                     <DateRow
-                      className={["clickable"]}
+                      className={
+                        this.state.accessLevel >= 2 ? ["clickable"] : []
+                      }
                       date={this.state.project.endDate}
-                      onClick={this.toggleProjectModal}
+                      onClick={
+                        this.state.accessLevel >= 2
+                          ? this.toggleProjectModal
+                          : undefined
+                      }
                     />
                   }
                 />
                 {statusFieldRowComponent}
                 <CardRow
+                  key={keys[5] + this.state.accessLevel}
                   id={keys[5]}
                   title={"Team Members"}
                   component={
                     <UserRow
-                      className="clickable"
+                      className={this.state.accessLevel >= 2 ? "clickable" : ""}
                       projectID={this.state.project.id}
-                      onClick={this.toggleUserModal}
+                      onClick={
+                        this.state.accessLevel >= 2
+                          ? this.toggleUserModal
+                          : undefined
+                      }
                     />
                   }
                 />

@@ -34,7 +34,7 @@ export default class ProjectButtonGroup extends React.Component {
               (window.location.href = `project?pid=${this.state.projectID}`)
             }
           >
-            Edit
+            Detail
           </button>
           <button
             type="button"
@@ -49,31 +49,58 @@ export default class ProjectButtonGroup extends React.Component {
       </div>
     );
 
-    if (this.state.accessLevel === 3) {
+    const detailAndBoard = (
+      <div>
+        <div
+          className="btn-group w-100 p-0 m-0 h-100 mt-5 border-radius-bottom"
+          role="group"
+          aria-label="Basic example"
+        >
+          <button
+            type="button"
+            className="btn app-bg-primary text-secondary muted-gray-hover"
+            onClick={() =>
+              (window.location.href = `project?pid=${this.state.projectID}`)
+            }
+          >
+            Detail
+          </button>
+          <button
+            type="button"
+            className="btn app-bg-primary muted-gray-hover text-primary"
+            onClick={() =>
+              (window.location.href = `board?pid=${this.state.projectID}`)
+            }
+          >
+            Board
+          </button>
+        </div>
+      </div>
+    );
+
+    if (this.state.accessLevel >= 3) {
       return allButtons;
+    } else if (this.state.accessLevel >= 1) {
+      return detailAndBoard;
     } else {
-      if (this.state.projectRole !== 0) {
-        return allButtons;
-      } else {
-        return (
-          <div>
-            <div
-              className="btn-group w-100 p-0 m-0 h-100 mt-5 border-radius-bottom"
-              role="group"
+      return (
+        <div>
+          <div
+            className="btn-group w-100 p-0 m-0 h-100 mt-5 border-radius-bottom"
+            role="group"
+          >
+            <button
+              type="button"
+              className="btn app-bg-primary muted-gray-hover text-primary"
+              onClick={() =>
+                (window.location.href = `board?pid=${this.state.projectID}`)
+              }
             >
-              <button
-                type="button"
-                className="btn app-bg-primary muted-gray-hover text-primary"
-                onClick={() =>
-                  (window.location.href = `board?pid=${this.state.projectID}`)
-                }
-              >
-                Board
-              </button>
-            </div>
+              Board
+            </button>
           </div>
-        );
-      }
+        </div>
+      );
     }
   }
 }

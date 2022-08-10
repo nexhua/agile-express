@@ -42,6 +42,7 @@ export default class ProjectPage extends React.Component {
 
   updateProject() {
     this.fetchProject();
+    this.forceUpdate();
   }
 
   render() {

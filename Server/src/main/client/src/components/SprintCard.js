@@ -1,4 +1,5 @@
 import React from "react";
+import AccessLevelService from "../helpers/AccessLevelService";
 
 export default class SprintCard extends React.Component {
   constructor(props) {
@@ -11,10 +12,13 @@ export default class SprintCard extends React.Component {
       tasks: [],
       delete: this.props.deleteSprint,
       activate: this.props.activateSprint,
+      accessLevel: 0,
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    const accessLevel = await AccessLevelService.getAccessLevel();
+
     if (this.state.isActive) {
       const card = document.getElementById("sprint_" + this.state.count);
       card.classList.remove("border-0");
@@ -24,6 +28,7 @@ export default class SprintCard extends React.Component {
     const tasks = this.state.getTasks(this.state.sprint.id);
     this.setState({
       tasks: [...tasks],
+      accessLevel: accessLevel,
     });
   }
 
@@ -48,7 +53,7 @@ export default class SprintCard extends React.Component {
     return (
       <div>
         <div
-          key={"sprint_" + this.state.count}
+          key={"sprint_" + this.state.count + this.state.accessLevel}
           id={"sprint_" + this.state.count}
           className="card border-0"
           style={{ width: "20rem" }}
@@ -75,7 +80,13 @@ export default class SprintCard extends React.Component {
                   </svg>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-dark">
-                  <li onClick={() => this.state.activate(this.state.sprint.id)}>
+                  <li
+                    onClick={
+                      this.state.accessLevel >= 1
+                        ? () => this.state.activate(this.state.sprint.id)
+                        : undefined
+                    }
+                  >
                     <a
                       className="dropdown-item text-warning align-items-center fst-normal"
                       href="#"
@@ -94,7 +105,13 @@ export default class SprintCard extends React.Component {
                       Activate
                     </a>
                   </li>
-                  <li onClick={() => this.state.delete(this.state.sprint.id)}>
+                  <li
+                    onClick={
+                      this.state.accessLevel >= 1
+                        ? () => this.state.delete(this.state.sprint.id)
+                        : undefined
+                    }
+                  >
                     <a
                       className="dropdown-item text-danger align-items-center fst-normal"
                       href="#"

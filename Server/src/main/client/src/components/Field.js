@@ -33,6 +33,8 @@ function Field(props) {
         classNames={"text-white m-2 my-3"}
         text={fieldName}
         onChange={setField}
+        accessLevel={props.accessLevel ? props.accessLevel : 0}
+        requiredAccessLevel={2}
       />
       {props.children}
     </div>
