@@ -16,6 +16,7 @@ import AgileExpress.Server.Inputs.Sprint.SprintCreateInput;
 import AgileExpress.Server.Inputs.Sprint.SprintDeleteInput;
 import AgileExpress.Server.Inputs.Task.*;
 import AgileExpress.Server.Repositories.ProjectRepository;
+import AgileExpress.Server.Repositories.UserRepository;
 import AgileExpress.Server.Services.AccessLevelService;
 import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
@@ -29,19 +30,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class ProjectController {
 
     private final ProjectRepository repository;
 
+    private final UserRepository userRepository;
+
     private final AccessLevelService service;
 
-    public ProjectController(ProjectRepository repository, AccessLevelService service) {
+    public ProjectController(ProjectRepository repository, UserRepository userRepository, AccessLevelService service) {
         this.repository = repository;
+        this.userRepository = userRepository;
         this.service = service;
     }
 
@@ -613,6 +617,29 @@ public class ProjectController {
             }
         } catch (Exception e) {
             response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @GetMapping(ApiRouteConstants.Search)
+    public ResponseEntity<?> searchInProject(@RequestParam String q) {
+        ResponseEntity<?> response;
+        try {
+            Optional<List<Project>> optionalProjects = this.repository.findProjects(q);
+            Optional<List<Project>> optionalUserProjects = this.userRepository.getUserProjets(q);
+
+            List<Project> projectQueryResult = optionalProjects.isEmpty() ? Collections.emptyList() : optionalProjects.get();
+            List<Project> userQueryResult = optionalUserProjects.isEmpty() ? Collections.emptyList() : optionalUserProjects.get();
+
+            List<Project> result = Stream.concat(projectQueryResult.stream(), userQueryResult.stream()).toList().stream().distinct().collect(Collectors.toList());
+
+            if(result.size() == 0) {
+                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                response = new ResponseEntity<>(result, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }

@@ -52,4 +52,10 @@ public class ApiRouteConstants {
     public static final String SprintActive = "/api/projects/sprints/active";
 
     //endregion
+
+    //region Search
+
+    public static final String Search = "/api/search";
+
+    //endregion
 }

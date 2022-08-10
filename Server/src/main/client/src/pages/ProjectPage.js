@@ -4,6 +4,7 @@ import { Container } from "reactstrap";
 import ProjectDetail from "../components/ProjectDetail";
 import { ToastContainer, toast } from "react-toastify";
 import { hashCodeArr, hashCodeStr, hashProject } from "../helpers/GetHashCode";
+import SearchBar from "../components/SearchBar";
 
 export default class ProjectPage extends React.Component {
   constructor(props) {

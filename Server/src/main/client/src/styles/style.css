@@ -65,3 +65,16 @@
 .active-sprint {
     border-color: #b19d35e8;
 }
+
+.mw-300px{
+    min-width: 300px;
+}
+
+.mh-800px {
+    min-height: 800px;
+}
+
+.spinner-border {
+    width: 300px; 
+    height: 300px;
+}

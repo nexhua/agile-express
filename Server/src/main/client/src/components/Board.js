@@ -19,16 +19,30 @@ export default class Board extends React.Component {
     if (this.state.tasks) {
       this.state.tasks.map((task, index) => (task.selfIndex = index));
     }
+
+    this.checkStatusMismatch = this.checkStatusMismatch.bind(this);
+    this.checkStatusMismatch();
   }
 
-  componentDidMount() {
-    if (this.state.tasks) {
-      for (var i = 0; i < this.state.tasks.length; i++) {
-        const taskDOM = document.getElementById(this.state.tasks[i].id);
+  checkStatusMismatch() {
+    if (this.state.tasks && this.state.statusFields) {
+      const maxStatusAllowed = this.state.statusFields.length - 1;
 
-        if (!taskDOM) {
-          this.changeTaskStatus(this.state.tasks[i].id, 0);
+      const statusMismacthTasks = this.state.tasks.filter(
+        (task) => task.currentStatus > maxStatusAllowed
+      );
+
+      console.log(statusMismacthTasks);
+
+      if (statusMismacthTasks.length > 0) {
+        for (var i = 0; i < statusMismacthTasks.length; i++) {
+          const task = statusMismacthTasks[i];
+
+          task.currentStatus = 0;
+          this.changeTaskStatus(task.id, 0);
         }
+
+        this.forceUpdate();
       }
     }
   }
@@ -51,6 +65,8 @@ export default class Board extends React.Component {
       },
       body: JSON.stringify(body),
     });
+
+    console.log(response);
   }
 
   render() {
@@ -62,7 +78,7 @@ export default class Board extends React.Component {
             key={"board_" + index}
             id={"board_" + index}
             index={index}
-            className="w-25 app-bg-tertiary mx-4"
+            className="w-25 app-bg-tertiary mx-4 mw-300px"
             fieldName={field}
             onDropCallback={this.onDropHandler}
           >
@@ -91,7 +107,7 @@ export default class Board extends React.Component {
         onDrop={this.drop}
         onDragOver={this.dragOver}
         style={{ minHeight: "800px" }}
-        className="app-bg-primary mx-5 rounded-1 d-flex"
+        className="app-bg-primary mx-5 rounded-1 d-flex overflow-auto"
       >
         {statusFields}
       </div>

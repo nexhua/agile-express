@@ -183,6 +183,7 @@ export default class ProjectDetail extends React.Component {
       this.updateTaskCard(updatedTask);
     }
 
+    this.state.update();
     this.toggleSidePane();
   }
 

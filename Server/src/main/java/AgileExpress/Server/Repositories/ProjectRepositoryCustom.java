@@ -64,4 +64,6 @@ public interface ProjectRepositoryCustom {
     UpdateResult setActiveSprint(SprintActiveInput input);
 
     UpdateResult changeCurrentStatus(TaskCurrentStatusInput input);
+
+    Optional<List<Project>> findProjects(String query);
 }

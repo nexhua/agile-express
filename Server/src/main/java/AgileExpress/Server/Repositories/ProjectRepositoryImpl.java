@@ -16,10 +16,7 @@ import AgileExpress.Server.Utility.PropertyInfo;
 import com.mongodb.MongoException;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.BsonBoolean;
@@ -29,6 +26,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
 
 
 import java.util.*;
@@ -570,5 +568,33 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
             result = UpdateResult.unacknowledged();
         }
         return result;
+    }
+
+    @Override
+    public Optional<List<Project>> findProjects(String query) {
+        Optional<List<Project>> optionalProjects;
+        try {
+            TextSearchOptions options = new TextSearchOptions().caseSensitive(false).language("tr");
+            Bson filter = Filters.text(query, options);
+
+            FindIterable<Document> searchResult = mongoTemplate.getCollection(MongoConstants.Projects)
+                    .find(filter);
+
+            ArrayList<Project> projects = new ArrayList<>();
+
+            Iterator<Document> iterator = searchResult.iterator();
+            MongoConverter converter =  mongoTemplate.getConverter();
+
+            while(iterator.hasNext()) {
+                Document document = iterator.next();
+                Project project = converter.read(Project.class, document);
+                projects.add(project);
+            }
+
+            optionalProjects = Optional.of(projects);
+        } catch (MongoException e) {
+            optionalProjects = Optional.empty();
+        }
+        return optionalProjects;
     }
 }
