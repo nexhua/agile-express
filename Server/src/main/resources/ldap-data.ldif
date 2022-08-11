@@ -178,3 +178,43 @@ cn: pm_hüsnü asds
 sn: asds
 uid: mükopm
 userPassword: {bcrypt}$2a$10$9S6X5NHzAvgH21gSuuQ/1./4snsnuFj7HS4bqI7Sh5n6IJACs.EGq
+
+dn: uid=user1,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: user1 user1surname
+sn: user1surname
+uid: user1
+userPassword: {bcrypt}$2a$10$g5sUOS5pNP1HrdKx9dDI0unhWfD4prA3CXAy0INQ/y.uzMRzD2bt.
+
+dn: uid=user2,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: user2 user2surname
+sn: user2surname
+uid: user2
+userPassword: {bcrypt}$2a$10$L8mJctpYk8yMkTBzKwf.P.rIKZQtaM0e0w5g/A7YDCm5PUtu3BKH6
+
+dn: uid=user3,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: user3 user3surname
+sn: user3surname
+uid: user3
+userPassword: {bcrypt}$2a$10$VludEYwgl5oXvOoE29qBI.E92lGflBeYkpvm0N0AtsDp5k84EEJJO
+
+dn: uid=user4,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: user4 user4surname
+sn: user4surname
+uid: user4
+userPassword: {bcrypt}$2a$10$1LORNg7gwGxrKmHMIkrI9Oth5SOBuZX6.J6ANU.xSQI63ITb8xYGG
