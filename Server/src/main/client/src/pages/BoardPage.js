@@ -3,6 +3,7 @@ import { Container } from "reactstrap";
 import { ToastContainer } from "react-toastify";
 import AppNavbar from "../components/AppNavbar";
 import Board from "../components/Board";
+import AppFooter from "../components/AppFooter";
 
 export default class BoardPage extends React.Component {
   constructor(props) {
@@ -48,6 +49,7 @@ export default class BoardPage extends React.Component {
           {board}
         </Container>
         <ToastContainer />
+        <AppFooter />
       </div>
     );
   }

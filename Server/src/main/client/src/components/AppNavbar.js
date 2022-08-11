@@ -23,16 +23,6 @@ class AppNavbar extends React.Component {
 
           <Nav className="ml-auto">
             <NavItem>
-              <NavLink className="text-light mt-2" href="/hello">
-                Hello
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink className="text-light mt-2" href="/user">
-                User
-              </NavLink>
-            </NavItem>
-            <NavItem>
               <NavLink className="text-light mt-2" href="/dashboard">
                 Dashboard
               </NavLink>

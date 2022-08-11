@@ -96,7 +96,7 @@ export default class NewProjectCard extends React.Component {
   render() {
     return (
       <div
-        className="text-white d-flex flex-column"
+        className="text-white d-flex flex-column mb-3"
         style={{ minWidth: "420px", maxWidth: "420px", minHeight: "300px" }}
       >
         <div className="card border-secondary app-bg-primary h-100">

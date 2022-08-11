@@ -4,7 +4,7 @@ import { Container } from "reactstrap";
 import ProjectDetail from "../components/ProjectDetail";
 import { ToastContainer, toast } from "react-toastify";
 import { hashCodeArr, hashCodeStr, hashProject } from "../helpers/GetHashCode";
-import SearchBar from "../components/SearchBar";
+import AppFooter from "../components/AppFooter";
 
 export default class ProjectPage extends React.Component {
   constructor(props) {
@@ -68,6 +68,7 @@ export default class ProjectPage extends React.Component {
           {projectComponent}
         </Container>
         <ToastContainer />
+        <AppFooter />
       </div>
     );
   }

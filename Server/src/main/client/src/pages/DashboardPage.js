@@ -6,6 +6,7 @@ import ProjectCard from "../components/ProjectCard";
 import AccessLevelService from "../helpers/AccessLevelService";
 import SearchBar from "../components/SearchBar";
 import { Spinner } from "reactstrap";
+import AppFooter from "../components/AppFooter";
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -247,6 +248,7 @@ class Dashboard extends React.Component {
           {content}
         </Container>
         <ToastContainer />
+        <AppFooter />
       </div>
     );
   }
