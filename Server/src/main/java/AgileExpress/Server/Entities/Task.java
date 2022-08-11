@@ -48,6 +48,10 @@ public class Task {
         return this.getAssignees().stream().filter(a -> a.getUserID().equals(userID)).findFirst();
     }
 
+    public boolean isAssigne(String userID) {
+        return this.getAssignees().stream().anyMatch(a -> a.getUserID().equals(userID));
+    }
+
     //region Getter and Setters
 
     public String getId() {

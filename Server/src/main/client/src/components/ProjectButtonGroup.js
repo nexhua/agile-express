@@ -80,27 +80,8 @@ export default class ProjectButtonGroup extends React.Component {
 
     if (this.state.accessLevel >= 3) {
       return allButtons;
-    } else if (this.state.accessLevel >= 1) {
-      return detailAndBoard;
     } else {
-      return (
-        <div>
-          <div
-            className="btn-group w-100 p-0 m-0 h-100 mt-5 border-radius-bottom"
-            role="group"
-          >
-            <button
-              type="button"
-              className="btn app-bg-primary muted-gray-hover text-primary"
-              onClick={() =>
-                (window.location.href = `board?pid=${this.state.projectID}`)
-              }
-            >
-              Board
-            </button>
-          </div>
-        </div>
-      );
+      return <div>{detailAndBoard}</div>;
     }
   }
 }

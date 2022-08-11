@@ -29,6 +29,7 @@ import {
   deleteAssigneeFromTask,
   fetchTask,
 } from "../helpers/TaskRequestHelper";
+import { isPast, isToday } from "../helpers/DateHelper";
 
 export default class ProjectDetail extends React.Component {
   constructor(props) {
@@ -730,8 +731,54 @@ export default class ProjectDetail extends React.Component {
       );
     }
 
+    const activeSprint = this.state.project.sprints.find((s) => s.active);
+    let sprintError;
+    if (activeSprint) {
+      console.log(activeSprint);
+      const endDate = activeSprint.endDate;
+
+      if (isToday(new Date(endDate))) {
+        sprintError = (
+          <div
+            className="alert alert-warning alert-dismissible fade show my-2"
+            role="alert"
+          >
+            <strong>
+              Be careful, active sprint is about to end!Be sure to create a new
+              one
+            </strong>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+        );
+      } else if (isPast(new Date(endDate))) {
+        sprintError = (
+          <div
+            className="alert alert-warning alert-dismissible fade show my-2"
+            role="alert"
+          >
+            <strong>
+              Active spring end date has been passed!! Please creat a new sprint
+              and activate.
+            </strong>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+        );
+      }
+    }
+
     return (
       <div className="card app-bg-primary border-secondary mx-5">
+        {sprintError}
         <div className="row">
           <div className="col-4 pe-0">
             <div className="card-body pt-0 d-flex flex-column px-0 pb-0 text-white overflow-hidden">

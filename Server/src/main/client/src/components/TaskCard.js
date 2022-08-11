@@ -136,7 +136,7 @@ export default class TaskCard extends React.Component {
                 <ul className="dropdown-menu dropdown-menu-dark">
                   <li
                     onClick={
-                      this.state.accessLevel >= 1
+                      this.state.accessLevel >= 0
                         ? () => this.state.toggleSidePane(this.state.task)
                         : undefined
                     }

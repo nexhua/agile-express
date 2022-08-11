@@ -152,7 +152,7 @@ public class ProjectController {
                 Project project = new Project(input.getProjectName(), new Date(startDateMilis.getMillis()), new Date(endDateMilis.getMillis()));
                 HttpStatus status = HttpStatus.CREATED;
                 try {
-                    Project insertedProject =  repository.insert(project);
+                    Project insertedProject = repository.insert(project);
                     ProjectHelper.addFirstSprintAndActivate(insertedProject.getId(), this.repository);
                 } catch (MongoException e) {
                     status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -464,14 +464,50 @@ public class ProjectController {
     //ADD COMMENT TO A TASK IN A PROJECT
     @PostMapping(ApiRouteConstants.ProjectsTaskComment)
     public ResponseEntity<?> addCommentToTask(@RequestBody TaskAddCommentInput input) {
-        ResponseEntity response;
-        try {
-            UpdateResult result = this.repository.addCommentToTask(input);
-            response = new ResponseEntity(result, HttpStatus.CREATED);
-        } catch (Exception e) {
-            response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        UserContext context = this.service.getUserType(AuthHelper.getUsername());
+
+        if (context == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return response;
+
+        if (AccessLevelHelper.hasHigherOrEqualAccessLevel(context.getType(), UserTypes.TEAM_LEAD)) {
+            ResponseEntity response;
+            try {
+                UpdateResult result = this.repository.addCommentToTask(input);
+                response = new ResponseEntity(result, HttpStatus.CREATED);
+            } catch (Exception e) {
+                response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return response;
+        } else {
+            ResponseEntity response;
+            try {
+                Optional<Project> optionalProject = this.repository.findById(input.getProjectID());
+                if (optionalProject.isEmpty()) {
+                    response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                } else {
+                    Optional<Task> optionalTask = optionalProject.get().getTask(input.getTaskID());
+                    if (optionalTask.isEmpty()) {
+                        response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    } else {
+                        Task task = optionalTask.get();
+                        if (task.isAssigne(context.getId())) {
+                            try {
+                                UpdateResult result = this.repository.addCommentToTask(input);
+                                response = new ResponseEntity(result, HttpStatus.CREATED);
+                            } catch (Exception e) {
+                                response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                            }
+                        } else {
+                            response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                response = new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return response;
+        }
     }
 
     //DELETE A COMMENT FROM A TASK IN A PROJECT
