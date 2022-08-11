@@ -221,7 +221,7 @@ class Dashboard extends React.Component {
       content = (
         <div className="flex-grow-1">
           <h2 className="text-center py-4 text-white">Projects</h2>
-          <div className="d-flex flex-row flex-wrap gap-5">
+          <div className="d-flex flex-row flex-wrap gap-5 justify-content-around">
             {cards}
             {noProjectsFound}
             {this.state.accessLevel >= 2 && newProjectCard}
