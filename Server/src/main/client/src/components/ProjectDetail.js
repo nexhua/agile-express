@@ -734,7 +734,6 @@ export default class ProjectDetail extends React.Component {
     const activeSprint = this.state.project.sprints.find((s) => s.active);
     let sprintError;
     if (activeSprint) {
-      console.log(activeSprint);
       const endDate = activeSprint.endDate;
 
       if (isToday(new Date(endDate))) {
