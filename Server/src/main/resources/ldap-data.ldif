@@ -218,3 +218,13 @@ cn: user4 user4surname
 sn: user4surname
 uid: user4
 userPassword: {bcrypt}$2a$10$1LORNg7gwGxrKmHMIkrI9Oth5SOBuZX6.J6ANU.xSQI63ITb8xYGG
+
+dn: uid=ilkem,ou=people,dc=springframework,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: ilkem ilkem.erol
+sn: ilkem.erol
+uid: ilkem
+userPassword: {bcrypt}$2a$10$YsBwUX7uMrtkim5rNjS21OpSQIYv/38TRS73VlHDEeA2ZtjT28l66
